@@ -38,3 +38,35 @@ ChurchSigns is intentionally designed so that personal data (such as teacher or 
 - **Target**: Microsoft Store (packaged MSIX)
 
 ## Solution Structure
+src/
+ChurchSigns/          # Main WinUI 3 application
+ChurchSignsLib/       # Shared logic and models
+tests/
+ChurchSigns.Test/     # Unit tests
+
+## Building & Running
+
+### Prerequisites
+
+- Windows 10 version 1903 or later (Windows 11 recommended)
+- Visual Studio 2026 or later with the **Windows application development** workload
+- Windows App SDK
+
+### Build
+
+1. Clone the repository
+2. Open `ChurchSigns.sln` in Visual Studio
+3. Set `ChurchSigns` as the startup project
+4. Build and run (F5)
+
+You can also build from the command line:
+
+```bash
+dotnet build
+
+## Contributing
+This project is in early development. Feedback, bug reports, and pull requests are welcome.
+Please keep the focus on simplicity and the church-specific use case.
+## License
+This project is licensed under the MIT License — see the LICENSE [blocked] file for details.
+
