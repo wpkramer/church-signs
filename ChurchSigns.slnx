@@ -6,6 +6,7 @@
   </Configurations>
   <Folder Name="/Solution Items/">
     <File Path="LICENSE.txt" />
+    <File Path="PRIVACY.md" />
     <File Path="README.md" />
   </Folder>
   <Project Path="src/ChurchSigns/ChurchSigns.csproj" Id="adc96214-1613-486f-9029-d739c6c73528">
