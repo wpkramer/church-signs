@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "ChurchSigns (Package)": {
+      "commandName": "MsixPackage"
+    },
+    "ChurchSigns (Unpackaged)": {
+      "commandName": "Project"
+    }
+  }
+}

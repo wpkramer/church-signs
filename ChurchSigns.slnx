@@ -1,0 +1,15 @@
+<Solution>
+  <Configurations>
+    <Platform Name="ARM64" />
+    <Platform Name="x64" />
+    <Platform Name="x86" />
+  </Configurations>
+  <Project Path="src/ChurchSigns/ChurchSigns.csproj" Id="adc96214-1613-486f-9029-d739c6c73528">
+    <Platform Solution="*|ARM64" Project="ARM64" />
+    <Platform Solution="*|x64" Project="x64" />
+    <Platform Solution="*|x86" Project="x86" />
+    <Deploy />
+  </Project>
+  <Project Path="src/ChurchSignsLib/ChurchSignsLib.csproj" Id="298ba840-01ce-4a62-aa60-96eef6139d74" />
+  <Project Path="tests/ChurchSigns.Test/ChurchSigns.Test.csproj" Id="95370e85-144c-4d2b-9089-f24e8ac655e2" />
+</Solution>
