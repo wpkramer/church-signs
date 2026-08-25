@@ -1,0 +1,429 @@
+﻿<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   width="100%"
+   height="100%"
+   viewBox="0 0 3300 2550"
+   version="1.1"
+   xml:space="preserve"
+   style="fill-rule:evenodd;clip-rule:evenodd;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:1.5;"
+   id="svg30"
+   sodipodi:docname="awana_sparx_bucket_landscape.svg"
+   inkscape:version="1.3.2 (091e20e, 2023-11-25, custom)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg"><defs
+   id="defs30" /><sodipodi:namedview
+   id="namedview30"
+   pagecolor="#ffffff"
+   bordercolor="#666666"
+   borderopacity="1.0"
+   inkscape:showpageshadow="2"
+   inkscape:pageopacity="0.0"
+   inkscape:pagecheckerboard="0"
+   inkscape:deskcolor="#d1d1d1"
+   inkscape:zoom="0.39454545"
+   inkscape:cx="1650"
+   inkscape:cy="1278.6867"
+   inkscape:window-width="2256"
+   inkscape:window-height="1398"
+   inkscape:window-x="-11"
+   inkscape:window-y="-11"
+   inkscape:window-maximized="1"
+   inkscape:current-layer="svg30" />
+    <g
+ transform="matrix(1.70353,0,0,1.21364,-83.7481,-38.4828)"
+ id="g1">
+        <rect
+   id="GroupLineColor"
+   x="124"
+   y="138"
+   width="1786"
+   height="1891"
+   style="fill:none;stroke:rgb(0,179,0);stroke-width:101.42px;" />
+    </g>
+    <g
+ transform="translate(-25.820848,-137.84952)"
+ id="g2">
+        <text
+   id="LastName"
+   x="1650"
+   y="1275"
+   dominant-baseline="middle"
+   text-anchor="middle"
+   style="font-size:541.667px;font-family:ArialMT, Arial, sans-serif">{{Name}}</text>
+    </g>
+    <g
+ id="Sparky"
+ transform="matrix(1.54366,0,0,1.2954322,64.478942,1520.837)">
+        <g
+   id="leftLegAndFoot">
+            <g
+   id="leftLeg"
+   transform="translate(-16,20)">
+                <path
+   d="m 425,493 c 34.333,-32.353 64.667,-53.982 99,-65 11.556,-4.199 40.667,82.163 50,128 17.39,3.238 37.498,9.873 62,22 26.436,-1.447 50.618,-0.39 61,16 0.104,6.667 -9.771,13.333 -31,20 -25.324,9.378 -51.897,12.514 -79,13 -24.459,4.098 -31.211,-11.872 -29,-38 -19.057,-37.276 -35.838,-76.829 -46,-123 -38.056,37.389 -64.5,56.834 -83,64 z"
+   id="path2" />
+            </g>
+            <g
+   id="leftFootAccent"
+   transform="translate(71,126)">
+                <path
+   d="m 552,485 c 7.333,-1.394 14.667,-1.608 22,1 5.345,4.188 6.657,7.479 0,9 h -5 l -17,-10"
+   style="fill:#ffffff"
+   id="path3" />
+            </g>
+        </g>
+        <g
+   id="butt"
+   transform="matrix(1.31,0,0,1.21939,-285.12,-160.306)">
+            <ellipse
+   cx="452"
+   cy="578"
+   rx="100"
+   ry="98"
+   style="fill:#fefe6a;stroke:#000000;stroke-width:3.81px"
+   id="ellipse3" />
+        </g>
+        <g
+   id="neck"
+   transform="matrix(1.68476,-0.441254,0.253363,0.967371,2.89817,34.8535)">
+            <g
+   id="chest"
+   transform="matrix(1.35294,0,0,1.51515,46.4118,-225.303)">
+                <path
+   d="M 64,391.25 C 64,386.697 62.147,383 59.865,383 H 34.135 C 31.853,383 30,386.697 30,391.25 v 16.5 c 0,4.553 1.853,8.25 4.135,8.25 h 25.73 C 62.147,416 64,412.303 64,407.75 Z"
+   style="fill:#ffffff"
+   id="path4" />
+            </g>
+            <g
+   id="neckLine"
+   transform="matrix(-0.086538,-0.723964,-0.721485,0.546417,311.715,606.139)">
+                <path
+   d="m 474,222 3,-3 10,-2 8,-7 h 6 l -1,5 -6,5 -7,3 z"
+   id="path5" />
+            </g>
+        </g>
+        <g
+   id="Head">
+            <g
+   id="backOfBrim"
+   transform="matrix(0.966675,-0.170845,0.336044,1.90141,-44.0701,-70.9551)">
+                <ellipse
+   cx="254"
+   cy="156"
+   rx="164"
+   ry="24"
+   style="fill:#ea3323;stroke:#000000;stroke-width:3.3px"
+   id="ellipse5" />
+            </g>
+            <g
+   id="middle"
+   transform="matrix(10.874,-0.480773,0.487385,11.0235,-4723.62,-96.3152)">
+                <ellipse
+   cx="456"
+   cy="44.5"
+   rx="13"
+   ry="14.5"
+   style="fill:#ffffff;stroke:#000000;stroke-width:0.44px"
+   id="ellipse6" />
+            </g>
+            <g
+   id="Smile">
+                <g
+   id="mouth"
+   transform="matrix(1.06843,-0.090155,0.0902737,1.06983,-366.842,72.4217)">
+                    <path
+   d="m 490,223 c 31.012,42.312 144.027,29.946 180,-37 -2.979,92.966 -148.277,105.673 -180,37 z"
+   style="stroke:#ff0000;stroke-width:0.89px"
+   id="path6" />
+                </g>
+                <g
+   id="rightDimple"
+   transform="translate(-311,49)">
+                    <path
+   d="m 474,222 3,-3 10,-2 8,-7 h 6 l -1,5 -6,5 -7,3 z"
+   style="stroke:#ff0000;stroke-width:0.97px"
+   id="path7" />
+                </g>
+                <g
+   id="leftDimple"
+   transform="matrix(-1,0,0,1,854,-5)">
+                    <path
+   d="m 474,222 3,-3 10,-2 8,-7 h 6 l -1,5 -6,5 -7,3 z"
+   style="stroke:#ff0000;stroke-width:0.97px"
+   id="path8" />
+                </g>
+                <g
+   id="tounge"
+   transform="rotate(-6.1146877,688.26195,3150.8043)">
+                    <path
+   d="m 563,263 c 15,-1.25 25.667,-1.417 30,0 6.677,-5.615 13.99,-8.052 22,-7 -0.151,8.091 -7.516,12.576 -21,14 -14.771,2.844 -24.23,-0.51 -31,-7 z"
+   style="fill:#efc1de"
+   id="path9" />
+                </g>
+            </g>
+            <g
+   id="leftEye"
+   transform="rotate(-6.3095488,307.92513,167.6124)">
+                <g
+   id="leftEyeBall"
+   transform="matrix(1.38866,-0.257514,0.308241,1.66221,-33.7853,-424.102)">
+                    <ellipse
+   cx="161.5"
+   cy="381"
+   rx="24.5"
+   ry="27"
+   style="fill:#ffffff;stroke:#000000;stroke-width:1.78px"
+   id="ellipse9" />
+                </g>
+                <g
+   id="leftEyeIris"
+   transform="matrix(1.34721,-0.175111,0.177582,1.36622,21.5054,-334.193)">
+                    <ellipse
+   cx="161.5"
+   cy="381"
+   rx="24.5"
+   ry="27"
+   style="stroke:#000000;stroke-width:2.02px"
+   id="ellipse10" />
+                </g>
+                <g
+   id="leftEyeGlimmer"
+   transform="matrix(0.326221,-0.034114,0.0478147,0.457237,232.485,-4.83075)">
+                    <ellipse
+   cx="161.5"
+   cy="381"
+   rx="24.5"
+   ry="27"
+   style="fill:#ffffff"
+   id="ellipse11" />
+                </g>
+            </g>
+            <g
+   id="rightEye"
+   transform="rotate(-3.7513663,533.23507,1688.1393)">
+                <g
+   id="rightEyeBall"
+   transform="matrix(1.38866,-0.257514,0.308241,1.66221,-33.7853,-424.102)">
+                    <ellipse
+   cx="161.5"
+   cy="381"
+   rx="24.5"
+   ry="27"
+   style="fill:#ffffff;stroke:#000000;stroke-width:1.8px"
+   id="ellipse12" />
+                </g>
+                <g
+   id="rightEyeIris"
+   transform="matrix(1.34721,-0.175111,0.177582,1.36622,21.5054,-334.193)">
+                    <ellipse
+   cx="161.5"
+   cy="381"
+   rx="24.5"
+   ry="27"
+   style="stroke:#000000;stroke-width:2.04px"
+   id="ellipse13" />
+                </g>
+                <g
+   id="rightEyeGlimmer"
+   transform="matrix(0.326221,-0.034114,0.0478147,0.457237,232.485,-4.83075)">
+                    <ellipse
+   cx="161.5"
+   cy="381"
+   rx="24.5"
+   ry="27"
+   style="fill:#ffffff"
+   id="ellipse14" />
+                </g>
+            </g>
+            <g
+   id="Hat">
+                <g
+   id="top"
+   transform="matrix(1.73077,0,0,1.44828,-569.731,-43.4483)">
+                    <ellipse
+   cx="456"
+   cy="44.5"
+   rx="13"
+   ry="14.5"
+   style="fill:#ea3323;stroke:#000000;stroke-width:2.98px"
+   id="ellipse15" />
+                </g>
+                <g
+   id="brim"
+   transform="matrix(0.997015,0,0,0.993457,1.24179,-0.593251)">
+                    <path
+   d="m 113,113 c 37.554,-26.129 90.223,-39.108 130,-43 40.371,-6.024 83.958,-12.542 131,-3 l 38.991,86 c 0,0 -108.733,-11.864 -162.991,-1 -48.15,7.116 -154.958,54.947 -154.958,54.947 z"
+   style="fill:#ea3323;stroke:#000000;stroke-width:4.89px"
+   id="path15" />
+                </g>
+                <g
+   id="cap"
+   transform="matrix(0.998988,0.0278898,-0.0295847,1.0597,1.94386,-7.67745)">
+                    <path
+   d="M 130,99 C 200.07,71.878 275.041,59.456 354,59 318.028,27.426 276.194,11.24 226,17 173.396,25.521 141.715,53.146 130,99 Z"
+   style="fill:#ea3323;stroke:#000000;stroke-width:4.8px"
+   id="path16" />
+                </g>
+                <g
+   id="creases">
+                    <g
+   transform="translate(-3,11)"
+   id="g17">
+                        <path
+   d="m 184,71 6,-14"
+   style="fill:none;stroke:#000000;stroke-width:1.95px"
+   id="path17" />
+                    </g>
+                    <g
+   transform="matrix(1.09456,-0.204878,-0.204878,1.4439,-13.2293,28.6634)"
+   id="g18">
+                        <path
+   d="m 200,39 6,-13"
+   style="fill:none;stroke:#000000;stroke-width:1.89px"
+   id="path18" />
+                    </g>
+                    <g
+   transform="matrix(1.156,0.108,0.108,1.07477,-42.972,-29.7498)"
+   id="g19">
+                        <path
+   d="m 241,22 13,9"
+   style="fill:none;stroke:#000000;stroke-width:1.58px"
+   id="path19" />
+                    </g>
+                    <g
+   transform="translate(6,6)"
+   id="g20">
+                        <path
+   d="m 271,43 11,13"
+   style="fill:none;stroke:#000000;stroke-width:1.95px"
+   id="path20" />
+                    </g>
+                </g>
+            </g>
+        </g>
+        <g
+   id="leftArmAndHand">
+            <g
+   id="leftHand"
+   transform="translate(-89,48)">
+                <path
+   id="leftHandGlove"
+   d="m 542,152 c -44.296,-31.129 13.687,-66.694 34,-11 14.167,-25.833 29.5,-48.278 49,-51 19.907,-5.605 22.17,10.553 18,21 -8.092,7.968 -14.941,28.824 -45,36 3.232,1.16 10.035,1.35 15,7 -7.906,-13.451 25.009,-30.122 40,-40 21.229,-1.133 32.555,5.907 20,27 -17.215,5.801 -42.729,29.024 -54,22 1.44,4.56 4.113,7.887 10,8 -3.696,-6.632 25.682,-19.542 38,-18 22.762,3.87 28.819,18.733 8,30 -18.063,1.781 -32.827,4.552 -42,9 -5.452,14.764 -25.814,26.448 -42.837,33.202 C 587.524,215.174 587.75,204.917 578,202 c 24.133,32.773 11.313,40.006 -25,31 -40.244,-15.488 -43.358,-49.093 -1,-44 l -22,-1 z"
+   style="fill:#ffffff;stroke:#000000;stroke-width:4.87px" />
+                <g
+   id="leftHandOpening"
+   transform="translate(91,72)">
+                    <path
+   d="m 450,134 c 13.288,-0.967 23.713,2.521 29,14"
+   style="fill:none;stroke:#000000;stroke-width:4.87px"
+   id="path21" />
+                </g>
+            </g>
+            <g
+   id="leftArm"
+   transform="translate(-159,-73)">
+                <path
+   d="m 497,410 83,32 c 7.63,-32.297 19.676,-69.009 34,-108 9.708,-9.5 16.625,-7.833 21,4 -10.983,53.157 -21.726,108.466 -35,141 -8.565,16.64 -58.394,-13.879 -114,-51 z"
+   id="path22" />
+            </g>
+        </g>
+        <g
+   id="Vest">
+            <g
+   id="leftVest"
+   transform="translate(-208,-14)">
+                <path
+   d="m 448,427 c 39.094,-23.051 58.834,-51.794 60,-86 19.49,-10.55 33.665,-11.53 42,-2 2.83,69.531 28.856,123.935 83,160 -46.876,31.367 -96.992,51.213 -164,11 z"
+   style="fill:#ea3323;stroke:#000000;stroke-width:4.87px"
+   id="path23" />
+            </g>
+            <g
+   id="rightVest"
+   transform="translate(-206,-19)">
+                <path
+   d="m 370,348 c 95.643,-27.411 159.083,80.676 170,180 -16.511,31.964 -44.178,44.964 -83,39 -19.244,-5.691 -47.212,-9.003 -91,-8 -2.104,-35.112 7.254,-71.657 23,-109 10.938,-32.671 -0.897,-67.095 -19,-102 z"
+   style="fill:#ea3323;stroke:#000000;stroke-width:4.87px"
+   id="path24" />
+            </g>
+            <g
+   id="rightTopButton"
+   transform="matrix(1.13609,-0.26535,0.297106,1.27206,-396.345,-6.30445)">
+                <ellipse
+   cx="468"
+   cy="424.5"
+   rx="12"
+   ry="16.5"
+   style="fill:#ffffff;stroke:#000000;stroke-width:3.76px"
+   id="ellipse24" />
+            </g>
+            <g
+   id="rightBottomButton"
+   transform="matrix(1.13609,-0.26535,0.297106,1.27206,-377.345,60.6956)">
+                <ellipse
+   cx="468"
+   cy="424.5"
+   rx="12"
+   ry="16.5"
+   style="fill:#ffffff;stroke:#000000;stroke-width:3.76px"
+   id="ellipse25" />
+            </g>
+            <g
+   id="leftTopButton"
+   transform="matrix(1.04289,-0.197854,0.22894,1.20675,-260.792,-21.669)">
+                <ellipse
+   cx="468"
+   cy="424.5"
+   rx="12"
+   ry="16.5"
+   style="fill:#ffffff;stroke:#000000;stroke-width:4.11px"
+   id="ellipse26" />
+            </g>
+            <g
+   id="leftBottomButton"
+   transform="matrix(1.0364,-0.28639,0.351409,1.2717,-281.743,52.1939)">
+                <ellipse
+   cx="468"
+   cy="424.5"
+   rx="12"
+   ry="16.5"
+   style="fill:#ffffff;stroke:#000000;stroke-width:3.87px"
+   id="ellipse27" />
+            </g>
+            <g
+   id="rightArm"
+   transform="translate(-286,30)">
+                <path
+   d="m 369,500 c -11.543,-34.457 -19.151,-72.849 -24,-114 28.985,-29.507 72.702,-51.649 124,-70 8.621,5.856 15.314,12.676 15,23 -32.813,18.76 -67.725,36.471 -105,53 5.663,36.33 9.799,71.133 11,103 -4.865,2.734 -11.673,4.497 -21,5 z"
+   id="path27" />
+            </g>
+        </g>
+        <g
+   id="rightLegAndFoot">
+            <g
+   id="rightLeg"
+   transform="translate(-110,41)">
+                <path
+   d="m 401,600 c -6.693,-7.32 -6.693,-17.987 0,-32 16.22,-41.224 38.852,-79.241 64,-116 10.667,-10.556 21.333,-9.216 32,7 16.608,31.3 36.699,77.696 60,138 28.093,32.27 62.752,55.347 102,72 33.341,24.517 17.296,35.566 -23,40 -26.465,-0.088 -57.676,-7.891 -102,-37 l -7,-75 -54,-100 -45,95 c -9,9.886 -18,11.501 -27,8"
+   id="path28" />
+            </g>
+            <g
+   id="rightFootAccent"
+   transform="translate(-75,220)">
+                <path
+   d="m 570,502 c 7.719,-8.434 24.276,-8.571 35,-4 -9.542,2.583 -17.459,4.416 -25,11 -8.667,6 -12,3.667 -10,-7 z"
+   style="fill:#ffffff"
+   id="path29" />
+            </g>
+        </g>
+        <g
+   id="rightHand"
+   transform="translate(-373,206)">
+            <path
+   d="m 443,331 c 11.15,-20.425 29.406,-22.576 53,-11 6.833,9.917 4.278,15.861 -12,16 20.948,-0.948 34.163,5.837 40,20 9.575,3.092 18.203,7.13 26,12 9.681,17.729 4.986,28.16 -12,29 -17.849,0.667 -28.377,-7.108 -24,-26 -0.944,11.577 -8.834,15.645 -24,13 l 24,43 c 0.625,24.88 -10.292,28.12 -31,13 -8.592,-10.075 -13.63,-23.703 -16,-40 -5.91,-4.396 -9.646,-2.271 -12,4 -2.778,11.694 -2.333,27.417 2,48 -6.759,20.021 -16.907,16.315 -29,-1 -7.669,-22.667 -1.891,-42.889 10,-62 -13.778,25 -30.111,39.667 -43,38 -15.229,4.016 -16.104,-6.794 -10,-25 10.417,-10.917 21.806,-16.972 34,-19 1.293,-23.634 18.815,-36.256 45,-43 l -25,4 z"
+   style="fill:#ffffff;stroke:#000000;stroke-width:4.87px"
+   id="path30" />
+        </g>
+    </g>
+</svg>
