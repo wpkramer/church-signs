@@ -9,8 +9,8 @@
     <File Path="README.md" />
   </Folder>
   <Folder Name="/Solution Items/docs/">
+    <File Path="docs/index.md" />
     <File Path="docs/PRIVACY.md" />
-    <File Path="index.md" />
   </Folder>
   <Project Path="src/ChurchSigns/ChurchSigns.csproj" Id="adc96214-1613-486f-9029-d739c6c73528">
     <Platform Solution="*|ARM64" Project="ARM64" />
