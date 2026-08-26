@@ -6,7 +6,8 @@
     xmlns:local="using:ChurchSigns"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:mdl="using:SignLib.Model"
+    xmlns:controls="using:ChurchSigns.UI.Controls"
+    xmlns:models="using:ChurchSigns.UI.Models"
     mc:Ignorable="d"
     Title="ChurchSigns">
 
@@ -34,7 +35,8 @@
             <TextBlock Grid.Column="0" Grid.Row="0" Text="Paste Label Content Here:"/>
             <GridView Grid.Column="0" Grid.Row="1" x:Name="SignDataGridView"/>
         </Grid>
-        <FlipView x:Name="SignFlipView" Grid.Column="1" Grid.Row="0" 
+        
+        <FlipView x:Name="SignFlipView" Grid.Column="1" Grid.Row="0" ItemsSource="{x:Bind Signs}"
                    BorderBrush="Black" BorderThickness="1">
             <FlipView.ItemsPanel>
                 <ItemsPanelTemplate>
@@ -42,17 +44,17 @@
                 </ItemsPanelTemplate>
             </FlipView.ItemsPanel>
             <FlipView.ItemTemplate>
-                <DataTemplate x:DataType="mdl:MergedSign">
+                <DataTemplate x:DataType="models:SignData">
                     <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="*"/>
                             <RowDefinition Height="Auto"/>
                         </Grid.RowDefinitions>
-                        <WebView2 x:Name="SvgWebView" Grid.Row="0"
-                                  HorizontalAlignment="Stretch"
-                                  VerticalAlignment="Stretch"
-                                  NavigationCompleted="SvgWebView_NavigationCompleted"
-                                  Loaded="SvgWebView_Loaded"/>
+                        <controls:SvgSignControl
+                            SvgTemplate="{x:Bind Template}"
+                            Data="{x:Bind Fields}"
+                            RenderHeight="800"
+                            RenderWidth="1200"/>
                         <TextBlock Grid.Row="1" Text="{x:Bind Title}"/>
                     </Grid>
                 </DataTemplate>

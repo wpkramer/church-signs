@@ -15,14 +15,8 @@
     <File Path="docs/index.md" />
     <File Path="docs/PRIVACY.md" />
   </Folder>
+  <Project Path="src/ChurchSigns.UI/ChurchSigns.UI.csproj" Id="ba89a186-1b8c-411c-86b3-24abd7a4755d" />
   <Project Path="src/ChurchSigns/ChurchSigns.csproj" Id="adc96214-1613-486f-9029-d739c6c73528">
-    <Platform Solution="*|ARM64" Project="ARM64" />
-    <Platform Solution="*|x64" Project="x64" />
-    <Platform Solution="*|x86" Project="x86" />
-    <Deploy />
-  </Project>
-  <Project Path="src/SignLib/SignLib.csproj" Id="0269f997-215c-463a-8d1a-fb2a6d57c655" />
-  <Project Path="tests/SignLib.Test/SignLib.Test.csproj" Id="55d2d8b5-9e00-418d-8463-84d4908f52df">
     <Platform Solution="*|ARM64" Project="ARM64" />
     <Platform Solution="*|x64" Project="x64" />
     <Platform Solution="*|x86" Project="x86" />
