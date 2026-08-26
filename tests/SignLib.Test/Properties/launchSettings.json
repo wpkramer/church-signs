@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "SignLib.Test (Package)": {
+      "commandName": "MsixPackage"
+    },
+    "SignLib.Test (Unpackaged)": {
+      "commandName": "Project"
+    }
+  }
+}

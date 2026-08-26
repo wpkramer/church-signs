@@ -1,5 +1,5 @@
 ﻿
-using ChurchSignsLib;
+using SignLib;
 namespace ChurchSigns.Test.BasicTests
 {
     public class Class1Tests

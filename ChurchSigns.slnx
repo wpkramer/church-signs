@@ -8,6 +8,9 @@
     <File Path="LICENSE.txt" />
     <File Path="README.md" />
   </Folder>
+  <Folder Name="/Solution Items/affinity/">
+    <File Path="affinity/ChurchSigns.af" />
+  </Folder>
   <Folder Name="/Solution Items/docs/">
     <File Path="docs/index.md" />
     <File Path="docs/PRIVACY.md" />
@@ -18,6 +21,11 @@
     <Platform Solution="*|x86" Project="x86" />
     <Deploy />
   </Project>
-  <Project Path="src/ChurchSignsLib/ChurchSignsLib.csproj" Id="298ba840-01ce-4a62-aa60-96eef6139d74" />
-  <Project Path="tests/ChurchSigns.Test/ChurchSigns.Test.csproj" Id="95370e85-144c-4d2b-9089-f24e8ac655e2" />
+  <Project Path="src/SignLib/SignLib.csproj" Id="0269f997-215c-463a-8d1a-fb2a6d57c655" />
+  <Project Path="tests/SignLib.Test/SignLib.Test.csproj" Id="55d2d8b5-9e00-418d-8463-84d4908f52df">
+    <Platform Solution="*|ARM64" Project="ARM64" />
+    <Platform Solution="*|x64" Project="x64" />
+    <Platform Solution="*|x86" Project="x86" />
+    <Deploy />
+  </Project>
 </Solution>
