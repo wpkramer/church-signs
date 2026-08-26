@@ -23,7 +23,7 @@ namespace ChurchSigns
             InitializeComponent();
             
             Signs = [];
-            
+
         }
 
 
@@ -60,6 +60,18 @@ namespace ChurchSigns
                     { "Name", "Smith" }
                 }
             });
+            for(int i = 0; i < 100; ++i)
+            {
+                Signs.Add(new SignData
+                {
+                    Title = $"Jones #{i}",
+                    Template = template.Template,
+                    Fields = new Dictionary<string, string>
+                    {
+                        { "Name", $"Jones{i}" }
+                    }
+                });
+            }
 
         }
 
@@ -83,7 +95,6 @@ namespace ChurchSigns
         }
 
         public ObservableCollection<SignData> Signs { get; private set; }
-
 
     }
 }

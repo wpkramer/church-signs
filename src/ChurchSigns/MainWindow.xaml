@@ -19,47 +19,52 @@
 
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto"/>
-            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="Auto"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        <Grid Grid.Column="0" Grid.Row="0">
+        <Grid Grid.Column="0" Grid.Row="0" Margin="24">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
-                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
-            <TextBlock Grid.Column="0" Grid.Row="0" Text="Paste Label Content Here:"/>
-            <GridView Grid.Column="0" Grid.Row="1" x:Name="SignDataGridView"/>
+            <TextBlock Grid.Column="0" Grid.Row="0" Text="Show Templates Here:" Margin="24,0,0,24"/>
+            <TextBlock Grid.Column="0" Grid.Row="1" Text="Paste Label Content Here:"/>
         </Grid>
         
-        <FlipView x:Name="SignFlipView" Grid.Column="1" Grid.Row="0" ItemsSource="{x:Bind Signs}"
-                   BorderBrush="Black" BorderThickness="1">
-            <FlipView.ItemsPanel>
+
+        <GridView x:Name="SignGridView" Grid.Column="1" Grid.Row="0" 
+                  Margin="24"
+                  ItemsSource="{x:Bind Signs}"
+                   BorderBrush="Black" BorderThickness="1" VerticalAlignment="Top">
+            <GridView.ItemsPanel>
                 <ItemsPanelTemplate>
-                    <StackPanel Orientation="Horizontal" />
+                    <ItemsWrapGrid MaximumRowsOrColumns="3" Orientation="Horizontal"/>
                 </ItemsPanelTemplate>
-            </FlipView.ItemsPanel>
-            <FlipView.ItemTemplate>
+            </GridView.ItemsPanel>
+            <GridView.ItemTemplate>
                 <DataTemplate x:DataType="models:SignData">
                     <Grid>
                         <Grid.RowDefinitions>
-                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="Auto"/>
                             <RowDefinition Height="Auto"/>
                         </Grid.RowDefinitions>
                         <controls:SvgSignControl
                             SvgTemplate="{x:Bind Template}"
                             Data="{x:Bind Fields}"
-                            RenderHeight="800"
-                            RenderWidth="1200"/>
+                            Height="130"
+                            Width="190"
+                            RenderHeight="130"
+                            RenderWidth="190"/>
                         <TextBlock Grid.Row="1" Text="{x:Bind Title}"/>
                     </Grid>
                 </DataTemplate>
-            </FlipView.ItemTemplate>
-        </FlipView>
+            </GridView.ItemTemplate>
+        </GridView>
 
 
     </Grid>        
