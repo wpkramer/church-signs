@@ -54,8 +54,8 @@
                             <RowDefinition Height="Auto"/>
                         </Grid.RowDefinitions>
                         <controls:SvgSignControl
-                            SvgTemplate="{x:Bind Template}"
-                            Data="{x:Bind Fields}"
+                            SvgTemplate="{x:Bind Template, Mode=OneTime}"
+                            Data="{x:Bind Fields, Mode=OneTime}"
                             Height="130"
                             Width="190"
                             RenderHeight="130"

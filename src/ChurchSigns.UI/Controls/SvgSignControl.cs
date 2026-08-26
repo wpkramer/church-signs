@@ -16,7 +16,8 @@ namespace ChurchSigns.UI.Controls
     public partial class SvgSignControl : Control
     {
         private Image? _image;
-
+        private bool _templatePropertyChanged = false;
+        private bool _dataPropertyChanged = false;
         public SvgSignControl()
         {
             DefaultStyleKey = typeof(SvgSignControl);
@@ -29,7 +30,19 @@ namespace ChurchSigns.UI.Controls
                 nameof(SvgTemplate),
                 typeof(string),
                 typeof(SvgSignControl),
-                new PropertyMetadata(null, OnRenderPropertyChanged));
+                new PropertyMetadata(null, OnTemplatePropertyChanged));
+
+        private static void OnTemplatePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            if (d is SvgSignControl control)
+            {
+                if (control._dataPropertyChanged)
+                {
+                    _ = control.UpdateVisualAsync();
+                }
+                control._templatePropertyChanged = true;
+            }
+        }
 
         public string? SvgTemplate
         {
@@ -44,7 +57,19 @@ namespace ChurchSigns.UI.Controls
                 nameof(Data),
                 typeof(IDictionary<string, string>),
                 typeof(SvgSignControl),
-                new PropertyMetadata(null, OnRenderPropertyChanged));
+                new PropertyMetadata(null, OnDataPropertyChanged));
+
+        private static void OnDataPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            if (d is SvgSignControl control)
+            {
+                if (control._templatePropertyChanged)
+                {
+                    _ = control.UpdateVisualAsync();
+                }
+                control._dataPropertyChanged = true;
+            }
+        }
 
         public IDictionary<string, string>? Data
         {
@@ -97,6 +122,10 @@ namespace ChurchSigns.UI.Controls
 
         private async Task UpdateVisualAsync()
         {
+            if (!_templatePropertyChanged && !_dataPropertyChanged)
+                return;
+
+
             if (_image is null || string.IsNullOrWhiteSpace(SvgTemplate))
             {
                 if (_image is not null)
