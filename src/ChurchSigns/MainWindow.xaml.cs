@@ -7,9 +7,6 @@ using System.Diagnostics;
 using System.Threading.Tasks;
 using Windows.Storage;
 
-// To learn more about WinUI, the WinUI project structure,
-// and more about our project templates, see: http://aka.ms/winui-project-info.
-
 namespace ChurchSigns
 {
     /// <summary>
@@ -30,7 +27,9 @@ namespace ChurchSigns
         /// <summary>
         /// Called from the App to load our templates.
         /// </summary>
-        /// <returns></returns>
+        /// <remarks>
+        /// Just test data now until I add copy and paste logic
+        /// </remarks>
         public async Task InitializeTemplatesAsync()
         {
             SignData template = new()
@@ -81,8 +80,7 @@ namespace ChurchSigns
         {
             try
             {
-              
-                
+                      
                 var svgFile = await StorageFile.GetFileFromApplicationUriAsync(
                     new Uri("ms-appx:///Templates/AwanaSparx/LeaderSign.svg"));
 

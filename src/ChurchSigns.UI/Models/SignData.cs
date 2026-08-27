@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-
+// SignData.cs just a simple class
 namespace ChurchSigns.UI.Models
 {
     public class SignData

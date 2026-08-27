@@ -30,19 +30,7 @@ namespace ChurchSigns.UI.Controls
                 nameof(SvgTemplate),
                 typeof(string),
                 typeof(SvgSignControl),
-                new PropertyMetadata(null, OnTemplatePropertyChanged));
-
-        private static void OnTemplatePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            if (d is SvgSignControl control)
-            {
-                if (control._dataPropertyChanged)
-                {
-                    _ = control.UpdateVisualAsync();
-                }
-                control._templatePropertyChanged = true;
-            }
-        }
+                new PropertyMetadata(null, OnRenderPropertyChanged));
 
         public string? SvgTemplate
         {
@@ -57,19 +45,8 @@ namespace ChurchSigns.UI.Controls
                 nameof(Data),
                 typeof(IDictionary<string, string>),
                 typeof(SvgSignControl),
-                new PropertyMetadata(null, OnDataPropertyChanged));
+                new PropertyMetadata(null, OnRenderPropertyChanged));
 
-        private static void OnDataPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            if (d is SvgSignControl control)
-            {
-                if (control._templatePropertyChanged)
-                {
-                    _ = control.UpdateVisualAsync();
-                }
-                control._dataPropertyChanged = true;
-            }
-        }
 
         public IDictionary<string, string>? Data
         {
@@ -120,23 +97,107 @@ namespace ChurchSigns.UI.Controls
                 _ = control.UpdateVisualAsync();
         }
 
-        private async Task UpdateVisualAsync()
+        private class SynchData
         {
-            if (!_templatePropertyChanged && !_dataPropertyChanged)
-                return;
+            private string? _template;
+            private IDictionary<string, string>? _data;
+            private int _width;
+            private int _height;
+            private object _dataLock = new object();
 
-
-            if (_image is null || string.IsNullOrWhiteSpace(SvgTemplate))
+            public SynchData()
             {
-                if (_image is not null)
-                    _image.Source = null;
-                return;
+                _template = null;
+                _data = null;
+                _width = 0;
+                _height = 0;
             }
 
+            //public SynchData(SynchData props)
+            //{
+            //    _template = props.Template;
+            //    _data = props.Data;
+            //    _width = props.Width;
+            //    _height = props.Height;
+            //}
+
+            public SynchData(string? template, IDictionary<string, string>? data, int width, int height)
+            {
+                _template = template;
+                _data = data;
+                _width = width;
+                _height = height;
+            }
+
+            public void CopyFrom(SynchData other)
+            {
+                if (other == null)
+                    throw new ArgumentNullException(nameof(other));
+
+                _template = other._template;
+                _data = other._data;
+                _width = other._width;
+                _height = other._height;
+            }
+
+            public string? Template { get => _template; }
+            public IDictionary<string,string>? Data { get => _data; }
+            public int Width { get => _width; }
+            public int Height { get => _height; }
+
+            public bool Equals(SynchData other)
+            {
+                if (other is null) return false;
+                if(ReferenceEquals(this, other)) return true;
+                if(_width != other._width) return false;
+                if(_height != other._height) return false;
+                if(_template != other._template) return false;
+                if (_data == null && other._data != null) return false;
+                if(_data != null && other._data == null) return false;
+                if(_data != null && other._data != null)
+                {
+                    if(_data.Count != other._data.Count) return false;
+                }
+                return ReferenceEquals(_data, other._data);
+            }
+        }
+        private SynchData _lastRenderProps = new SynchData();
+        private int _renderVersion = 0;
+
+
+        private async Task UpdateVisualAsync()
+        {
+            // test if PART_Image has been applied
+            if (_image is null)
+                return;
+
+            SynchData currentProps = new SynchData(SvgTemplate, Data, RenderWidth, RenderHeight);
+
+            if (currentProps.Template is null)
+                return;
+
+            //var template = SvgTemplate;
+            //if (template is null)
+            //    return;
+            //var data = Data;
+            //var width = RenderWidth;
+            //var height = RenderHeight;
+
+            if (currentProps.Equals(_lastRenderProps))
+                return;
+
+            var version = ++_renderVersion;
+
+
+            SKBitmap? bitmap = null;
             try
             {
-                var merged = Merge(SvgTemplate, Data);
-                var bitmap = RenderToBitmap(merged, RenderWidth, RenderHeight);
+                var merged = Merge(currentProps.Template, currentProps.Data);
+
+                if (version != _renderVersion)
+                    return; // superseded
+
+                bitmap = RenderToBitmap(merged, currentProps.Width, currentProps.Height);
 
                 if (bitmap is null)
                 {
@@ -144,14 +205,31 @@ namespace ChurchSigns.UI.Controls
                     return;
                 }
 
-                _image.Source = await ToImageSourceAsync(bitmap);
-                bitmap.Dispose();
+                var source = await ToImageSourceAsync(bitmap);
+
+                if (version != _renderVersion)
+                    return;
+
+                _image.Source = source;
+
+                _lastRenderProps.CopyFrom(currentProps);
+                
+                //_lastTemplate = template;
+                //_lastData = data;
+                //_lastWidth = width;
+                //_lastHeight = height;
+
             }
             catch
             {
                 // Optionally expose an Error state / logging
                 if (_image is not null)
                     _image.Source = null;
+            }
+            finally
+            {
+                bitmap?.Dispose();
+
             }
         }
 
@@ -162,7 +240,7 @@ namespace ChurchSigns.UI.Controls
             if (data is null || data.Count == 0)
                 return template;
 
-            return Regex.Replace(template, @"\{\{\s*(.+?)\s*\}\}", m =>
+            return FieldReplaceRegex().Replace(template, m =>
             {
                 var key = m.Groups[1].Value;
                 return data.TryGetValue(key, out var value) ? value : m.Value;
@@ -216,5 +294,7 @@ namespace ChurchSigns.UI.Controls
             return source;
         }
 
+        [GeneratedRegex(@"\{\{\s*(.+?)\s*\}\}")]
+        private static partial Regex FieldReplaceRegex();
     }
 }

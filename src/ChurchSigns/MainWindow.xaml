@@ -1,4 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
+    <!-- Sure, I'll share. Super simple app is just one window now, no pages no view models 
+    this is MainWindow.xaml
+    the App.xaml.cs constructs it and calls an async function in MainWindow to initialize the data 
+    so Signs are loaded before this window is activated -->
 <Window
     x:Class="ChurchSigns.MainWindow"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"

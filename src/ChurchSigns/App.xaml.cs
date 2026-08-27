@@ -44,7 +44,7 @@ namespace ChurchSigns
         protected override async void OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs args)
         {
             _window = new MainWindow();
-
+            
             await ((MainWindow)_window).InitializeTemplatesAsync();
 
             _window.Activate();
