@@ -15,11 +15,16 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\src\ChurchSigns.UI\ChurchSigns.UI.csproj" />
     <ProjectReference Include="..\..\src\SignLib\SignLib.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <Using Include="Xunit" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="BasicTests\" />
   </ItemGroup>
 
 </Project>

@@ -1,4 +1,5 @@
-﻿using Microsoft.UI.Xaml;
+﻿using ChurchSigns.UI.Models;
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media.Imaging;
 using SkiaSharp;
@@ -16,8 +17,7 @@ namespace ChurchSigns.UI.Controls
     public partial class SvgSignControl : Control
     {
         private Image? _image;
-        private bool _templatePropertyChanged = false;
-        private bool _dataPropertyChanged = false;
+
         public SvgSignControl()
         {
             DefaultStyleKey = typeof(SvgSignControl);
@@ -82,7 +82,7 @@ namespace ChurchSigns.UI.Controls
             set => SetValue(RenderHeightProperty, value);
         }
 
-        // ─── Template + lifecycle ──────────────────────────────────────
+        // ─── SvgSignTemplate + lifecycle ──────────────────────────────────────
 
         protected override void OnApplyTemplate()
         {
@@ -97,71 +97,8 @@ namespace ChurchSigns.UI.Controls
                 _ = control.UpdateVisualAsync();
         }
 
-        private class SynchData
-        {
-            private string? _template;
-            private IDictionary<string, string>? _data;
-            private int _width;
-            private int _height;
-            private object _dataLock = new object();
 
-            public SynchData()
-            {
-                _template = null;
-                _data = null;
-                _width = 0;
-                _height = 0;
-            }
-
-            //public SynchData(SynchData props)
-            //{
-            //    _template = props.Template;
-            //    _data = props.Data;
-            //    _width = props.Width;
-            //    _height = props.Height;
-            //}
-
-            public SynchData(string? template, IDictionary<string, string>? data, int width, int height)
-            {
-                _template = template;
-                _data = data;
-                _width = width;
-                _height = height;
-            }
-
-            public void CopyFrom(SynchData other)
-            {
-                if (other == null)
-                    throw new ArgumentNullException(nameof(other));
-
-                _template = other._template;
-                _data = other._data;
-                _width = other._width;
-                _height = other._height;
-            }
-
-            public string? Template { get => _template; }
-            public IDictionary<string,string>? Data { get => _data; }
-            public int Width { get => _width; }
-            public int Height { get => _height; }
-
-            public bool Equals(SynchData other)
-            {
-                if (other is null) return false;
-                if(ReferenceEquals(this, other)) return true;
-                if(_width != other._width) return false;
-                if(_height != other._height) return false;
-                if(_template != other._template) return false;
-                if (_data == null && other._data != null) return false;
-                if(_data != null && other._data == null) return false;
-                if(_data != null && other._data != null)
-                {
-                    if(_data.Count != other._data.Count) return false;
-                }
-                return ReferenceEquals(_data, other._data);
-            }
-        }
-        private SynchData _lastRenderProps = new SynchData();
+        private TemplatedImageSync _lastRenderProps = new TemplatedImageSync();
         private int _renderVersion = 0;
 
 
@@ -171,9 +108,11 @@ namespace ChurchSigns.UI.Controls
             if (_image is null)
                 return;
 
-            SynchData currentProps = new SynchData(SvgTemplate, Data, RenderWidth, RenderHeight);
+            TemplatedImageSync currentProps = new TemplatedImageSync(SvgTemplate, Data, RenderWidth, RenderHeight);
 
             if (currentProps.Template is null)
+                return;
+            if (currentProps.Template.Length == 0)
                 return;
 
             //var template = SvgTemplate;

@@ -14,7 +14,8 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
   <ItemGroup>
-    <None Remove="Templates\AwanaSparx\LeaderSign.svg" />
+    <None Remove="Templates\Awana\LeaderPortrait.svg" />
+    <None Remove="Templates\Awana\LeaderSign.svg" />
   </ItemGroup>
 
   <ItemGroup>
@@ -25,7 +26,10 @@
     <Content Include="Assets\Square44x44Logo.targetsize-24_altform-unplated.png" />
     <Content Include="Assets\StoreLogo.png" />
     <Content Include="Assets\Wide310x150Logo.scale-200.png" />
-    <Content Include="Templates\AwanaSparx\LeaderSign.svg">
+    <Content Include="Templates\Awana\LeaderPortrait.svg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Templates\Awana\LeaderSign.svg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
