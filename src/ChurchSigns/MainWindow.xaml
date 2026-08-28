@@ -45,7 +45,7 @@
             </Grid.RowDefinitions>
 
             <TextBlock Grid.Column="0" Grid.Row="0" Margin="8">Description stuff and File Open Dialog</TextBlock>
-            <ListView Grid.Column="0" Grid.Row="1" ItemsSource="{x:Bind TemplatesCVS.View, Mode=OneWay}">
+            <ListView x:Name="SignTemplatesListView" Grid.Column="0" Grid.Row="1" SelectionChanged="SignTemplatesListView_SelectionChanged" ItemsSource="{x:Bind TemplatesCVS.View, Mode=OneWay}">
                 <ListView.ItemsPanel>
                     <ItemsPanelTemplate>
                         <ItemsStackPanel AreStickyGroupHeadersEnabled="False"/>
