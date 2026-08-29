@@ -1,4 +1,5 @@
-﻿using System;
+﻿// grok, just wanted to update the thread with some of the existing classes
+using System;
 using System.Collections.Generic;
 using ChurchSigns.UI.Util;
 using System.Text;

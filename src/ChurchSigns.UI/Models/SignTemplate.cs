@@ -1,9 +1,5 @@
-﻿using ChurchSigns.UI.Interfaces;
-using ChurchSigns.UI.Util;
-using System;
-
+﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Xml;
 
 namespace ChurchSigns.UI.Models
@@ -11,6 +7,7 @@ namespace ChurchSigns.UI.Models
     public class SignTemplate
     {
         private bool _isvalid;
+        // not sure if this will be used yet
         private string _errorMessage;
         private List<SignData> _signList;
         private readonly TemplateStorageItem _templateStorageItem;
@@ -47,9 +44,9 @@ namespace ChurchSigns.UI.Models
             {
                 if( _templateStorageItem.IsProvided)
                 {
-                    return $"Provided {_templateStorageItem.SignCategory} Signs";
+                    return $"{_templateStorageItem.SignCategory} Signs";
                 }
-                return $"Custom {_templateStorageItem.SignCategory} Signs";
+                return $"Your {_templateStorageItem.SignCategory} Signs";
             } 
         }
 

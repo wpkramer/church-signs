@@ -1,4 +1,5 @@
-﻿using System;
+﻿
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,7 +10,7 @@ namespace ChurchSigns.UI.Util
     public static class StringExtensions
     {
         private static readonly Regex FieldRegex = new(
-        @"\{\{\s*([A-Za-z_][A-Za-z0-9_]*)\s*\}\}",
+        @"\{\{\s*([A-Za-z_][A-Za-z0-9_ ]*)\s*\}\}",
         RegexOptions.Compiled);
 
         /// <summary>

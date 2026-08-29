@@ -10,7 +10,8 @@
     xmlns:models="using:ChurchSigns.UI.Models"
     xmlns:util="using:ChurchSigns.UI.Util"
     mc:Ignorable="d"
-    Title="ChurchSigns">
+    Title="ChurchSigns"
+    >
 
 
     <Window.SystemBackdrop>
@@ -19,7 +20,7 @@
     
             
 
-    <Grid>
+    <Grid x:Name="MainGrid" KeyDown="MainGrid_KeyDown" RightTapped="MainGrid_RightTapped">
 
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto"/>
@@ -32,9 +33,15 @@
         </Grid.RowDefinitions>
         <!-- Display application title -->
         <TextBlock Grid.Column="0" Grid.ColumnSpan="3" Grid.Row="0" Text="Church Signs" Margin="36,0,32,32" Style="{ThemeResource TitleTextBlockStyle}" />
-
+        
         <!-- Display available templates -->
-        <Grid x:Name="TemplateGrid" Grid.Column="0" Grid.Row="1" BorderThickness="2" BorderBrush="{ThemeResource ControlElevationBorderBrush}" Background="{ThemeResource CardBackgroundFillColorSecondaryBrush}">
+        <Grid x:Name="TemplateGrid" Grid.Column="0" Grid.Row="1"
+              AllowDrop="True"
+              DragOver="TemplateGrid_DragOver"
+              Drop="TemplateGrid_Drop"
+              BorderThickness="2"
+              BorderBrush="{ThemeResource ControlElevationBorderBrush}"
+              Background="{ThemeResource CardBackgroundFillColorSecondaryBrush}">
             <Grid.Resources>
                 <CollectionViewSource x:Name="TemplatesCVS" IsSourceGrouped="True"/>
             </Grid.Resources>
@@ -44,6 +51,8 @@
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
 
+            
+                
             <TextBlock Grid.Column="0" Grid.Row="0" Margin="8">Description stuff and File Open Dialog</TextBlock>
             <ListView x:Name="SignTemplatesListView" Grid.Column="0" Grid.Row="1" SelectionChanged="SignTemplatesListView_SelectionChanged" ItemsSource="{x:Bind TemplatesCVS.View, Mode=OneWay}">
                 <ListView.ItemsPanel>
@@ -86,6 +95,7 @@
             
         </Grid>
         
+        
 
         <!-- Preview of Signs Here -->
         <GridView x:Name="SignGridView" Grid.Column="1" Grid.Row="1" 
@@ -113,17 +123,36 @@
                             Width="190"
                             RenderHeight="130"
                             RenderWidth="190"/>
+                        
                         <TextBlock Grid.Row="1" Text="{x:Bind Title}"/>
                     </Grid>
                 </DataTemplate>
             </GridView.ItemTemplate>
         </GridView>
 
-        <!-- Display Field Data-->
-        <Border Grid.Column="2" Grid.Row="1" BorderThickness="2" BorderBrush="{ThemeResource ControlElevationBorderBrush}" Background="{ThemeResource CardBackgroundFillColorSecondaryBrush}">
-            <TextBlock >Show Field Data Here</TextBlock>
-        </Border>
+        <!-- Field Mapping area -->
 
+        <Grid x:Name="TemplateMappingGrid" Grid.Column="2" Grid.Row="1"
+                              BorderThickness="2" 
+
+                AllowFocusWhenDisabled="True"
+              BorderBrush="{ThemeResource ControlElevationBorderBrush}"
+              Background="{ThemeResource SolidBackgroundFillColorBaseAltBrush}"
+               >
+            <Grid.RowDefinitions>
+                <!-- The fields of the template mapped to the column headers of pasted data -->
+                <RowDefinition Height="Auto"/>
+                <!-- The pasted data -->
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <!-- fairly complex so this is in code -->
+            <Grid x:Name="FieldMapGrid" Grid.Row="0">
+            </Grid>
+
+
+            <Grid x:Name="FieldDataGrid" Grid.Row="1" />
+            
+        </Grid>
 
     </Grid>        
 

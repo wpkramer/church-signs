@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg width="100%" height="100%" viewBox="0 0 3300 2550" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:1.5;">
+    <rect id="Artboard1" x="0" y="0" width="3300" height="2550" style="fill:none;"/>
+    <clipPath id="_clip1">
+        <rect id="Artboard11" serif:id="Artboard1" x="0" y="0" width="3300" height="2550"/>
+    </clipPath>
+    <g clip-path="url(#_clip1)">
+        <g transform="matrix(0.9834,0,0,1.015643,-9.962939,-51.375127)">
+            <path d="M3225,439.187L3225,2164.286C3225,2310.764 3102.179,2429.685 2950.898,2429.685L431.867,2429.685C280.586,2429.685 157.765,2310.764 157.765,2164.286L157.765,439.187C157.765,292.709 280.586,173.788 431.867,173.788L2950.898,173.788C3102.179,173.788 3225,292.709 3225,439.187Z" style="fill:none;stroke:rgb(35,31,32);stroke-width:123.38px;"/>
+        </g>
+        <g transform="matrix(377.920543,0,0,377.920543,1339.648747,862.25426)">
+        </g>
+        <text x="331.553px" y="862.254px" style="font-family:'ArialMT', 'Arial', sans-serif;font-size:377.921px;fill:rgb(35,31,32);">Room</text>
+        <g transform="matrix(631.384635,0,0,631.384635,4279.629751,866.683016)">
+        </g>
+        <text x="1751.933px" y="866.683px" style="font-family:'ArialMT', 'Arial', sans-serif;font-size:631.385px;fill:rgb(35,31,32);">{{Room}}</text>
+        <g transform="matrix(1,0,0,1,-93.577982,0)">
+            <text x="818.364px" y="1428.064px" style="font-family:'ArialMT', 'Arial', sans-serif;font-size:300px;fill:rgb(35,31,32);">{{First Name}}</text>
+            <g transform="matrix(300,0,0,300,2677.836865,1773.034972)">
+            </g>
+            <text x="826.421px" y="1773.035px" style="font-family:'ArialMT', 'Arial', sans-serif;font-size:300px;fill:rgb(35,31,32);">{{Last Name}}</text>
+        </g>
+    </g>
+</svg>
