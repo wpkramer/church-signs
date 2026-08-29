@@ -249,7 +249,7 @@ namespace ChurchSigns
             }
 
 
-            SignTemplateDataMap dataMap = new SignTemplateDataMap(signTemplate, pastedData);
+            _signTemplateDataMap = new SignTemplateDataMap(signTemplate, pastedData);
             columnCount = pastedData.ColumnHeaderNames.Count;
             
             for (int i = 0; i < columnCount; ++i)
@@ -282,11 +282,11 @@ namespace ChurchSigns
 
 
                 
-                foreach(string fieldName in dataMap.DropdownFieldNames)
+                foreach(string fieldName in _signTemplateDataMap.DropdownFieldNames)
                 {
                     combo.Items.Add(fieldName);
                 }
-                combo.SelectedIndex = dataMap.GetDropdownIndexForColumn(pastedColIndex);
+                combo.SelectedIndex = _signTemplateDataMap.GetDropdownIndexForColumn(pastedColIndex);
                 combo.Tag = pastedColIndex;
                 // watch for any changes to the default;
                 combo.SelectionChanged += (s, e) =>
@@ -296,12 +296,26 @@ namespace ChurchSigns
                     {
                         if (comboBox.Tag is int columnIndex)
                         {
-                            int affectedComboIndex = dataMap.SetDropdownIndexForColumn(columnIndex, comboBox.SelectedIndex);
+                            int affectedComboIndex = _signTemplateDataMap.SetDropdownIndexForColumn(columnIndex, comboBox.SelectedIndex);
+                            bool showSigns = true;
                             if (affectedComboIndex >= 0 && affectedComboIndex < _fieldSelectionBoxes.Count)
                             {
                                 _fieldSelectionBoxes[affectedComboIndex].SelectedIndex = 0;
+                                showSigns = false; // we'll show them on the next event handler
+                            }
+                            if(showSigns)
+                            {
+                                Signs.Clear();
+                                foreach(var fields in _signTemplateDataMap.CreateMappedRecords())
+                                {
+                                    SignData data = new SignData(_signTemplateDataMap.Template);
+                                    data.Fields = fields;
+                                    Signs.Add(data);
+                                }
+
                             }
                         }
+                        
                     }
                 };
 
@@ -331,10 +345,20 @@ namespace ChurchSigns
                 }
             }
 
-            
-            
+
+            Signs.Clear();
+            foreach (var fields in _signTemplateDataMap.CreateMappedRecords())
+            {
+
+
+                SignData data = new SignData(_signTemplateDataMap.Template);
+                data.Fields = fields;
+                Signs.Add(data);
+            }
+
         }
         private List<ComboBox> _fieldSelectionBoxes = new List<ComboBox>();
+        private SignTemplateDataMap? _signTemplateDataMap = null;
 
         private void AddControl(int col, int row, FrameworkElement ctrlToAdd)
         {

@@ -39,6 +39,8 @@ namespace ChurchSigns.UI.Models
             Array.Fill(_columnToFieldMap, -1);
         }
 
+        public SignTemplate Template { get { return _template; } }
+
         /// <summary>
         /// Dropdown labels: "(None)" then each template field name.
         /// </summary>

@@ -21,7 +21,7 @@ namespace ChurchSigns.UI.Models
 
         }
 
-        // TODO: logic to synch up fieldName from the values pasted in to the template field names
+      
 
         public bool AddFieldValue(string fieldName, string fieldValue)
         {
