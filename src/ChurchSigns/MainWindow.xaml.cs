@@ -167,8 +167,9 @@ namespace ChurchSigns
 
 
         // reload template map into grid
-        private void LoadTemplateMappingGrid(SignTemplate signTemplate, PastedRecordData? pastedRecord = null)
+        private void LoadTemplateMappingGrid(SignTemplate signTemplate, PastedRecordData? pastedData = null)
         {
+
 
 
 
@@ -180,26 +181,30 @@ namespace ChurchSigns
             TemplateMappingGrid.RowDefinitions.Add(new RowDefinition() { Height = new GridLength(1, GridUnitType.Auto) });
             TemplateMappingGrid.RowDefinitions.Add(new RowDefinition() { Height = new GridLength(1, GridUnitType.Auto) });
             // data rows
-            if (pastedRecord != null)
+            if (pastedData != null)
             {
-                for (int i = 0; i < pastedRecord.Records.Count; i++)
+                for (int i = 0; i < pastedData.Records.Count; i++)
                 {
                     TemplateMappingGrid.RowDefinitions.Add(new RowDefinition() { Height = new GridLength(1, GridUnitType.Auto) });
                 }
             }
+
             int columnCount = signTemplate.FieldNames.Count;
             columnCount = Math.Max(1, columnCount);
-            if(pastedRecord != null)
+
+            if(pastedData != null)
             {
-                columnCount = Math.Max(columnCount, pastedRecord.ColumnHeaderNames.Count);
+                columnCount = Math.Max(1, pastedData.ColumnHeaderNames.Count);
             }
+
+
             for (int i = 0; i < columnCount; i++)
             {
                 TemplateMappingGrid.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength (1, GridUnitType.Star) });
             }
 
-            // add title to the first row
-            {
+            
+            {   // add title to the first row
                 TextBlock hdrTextBlock = new TextBlock
                 {
                     Text = "Pasted Sign Data",
@@ -218,17 +223,44 @@ namespace ChurchSigns
 
             Thickness columnSeperation = new Thickness(2d);
             object objColHdrStyle = Application.Current.Resources["BodyStrongTextBlockStyle"];
+
+            // if no pasted data we are just goint to show
+            // our field names
+            if (pastedData == null)
+            {
+                for (int i = 0; i < columnCount; ++i)
+                {
+                    if (i == signTemplate.FieldNames.Count)
+                        break;
+
+                    TextBlock textBlock = new TextBlock
+                    {
+                        Text = signTemplate.FieldNames[i],
+                        Margin = columnSeperation
+                    };
+                    if (objColHdrStyle is Style style)
+                    {
+                        textBlock.Style = style;
+                    }
+                    // add control the column head row
+                    AddControl(i, 1, textBlock);
+                }
+                return; // we're done
+            }
+
+
+            SignTemplateDataMap dataMap = new SignTemplateDataMap(signTemplate, pastedData);
+            columnCount = pastedData.ColumnHeaderNames.Count;
+            
             for (int i = 0; i < columnCount; ++i)
             {
-                if (i == signTemplate.FieldNames.Count)
-                    break;
 
                 TextBlock textBlock = new TextBlock
                 {
-                    Text = signTemplate.FieldNames[i],
+                    Text = pastedData.ColumnHeaderNames[i],
                     Margin = columnSeperation
                 };
-                if(objColHdrStyle is Style style)
+                if (objColHdrStyle is Style style)
                 {
                     textBlock.Style = style;
                 }
@@ -236,28 +268,73 @@ namespace ChurchSigns
                 AddControl(i, 1, textBlock);
             }
 
-            if(pastedRecord != null)
+            _fieldSelectionBoxes.Clear();
+
+            for (int pastedColIndex = 0; pastedColIndex < columnCount; ++pastedColIndex)
             {
-                for (int i = 0; i < columnCount; ++i)
+                // ComboBox of Field Names for each pasted column
+                ComboBox combo = new ComboBox
                 {
-                    if (i == pastedRecord.ColumnHeaderNames.Count)
-                        break;
+                    Margin = columnSeperation,
+                };
+
+                _fieldSelectionBoxes.Add(combo);
+
+
+                
+                foreach(string fieldName in dataMap.DropdownFieldNames)
+                {
+                    combo.Items.Add(fieldName);
+                }
+                combo.SelectedIndex = dataMap.GetDropdownIndexForColumn(pastedColIndex);
+                combo.Tag = pastedColIndex;
+                // watch for any changes to the default;
+                combo.SelectionChanged += (s, e) =>
+                {
+                    
+                    if (s is ComboBox comboBox)
+                    {
+                        if (comboBox.Tag is int columnIndex)
+                        {
+                            int affectedComboIndex = dataMap.SetDropdownIndexForColumn(columnIndex, comboBox.SelectedIndex);
+                            if (affectedComboIndex >= 0 && affectedComboIndex < _fieldSelectionBoxes.Count)
+                            {
+                                _fieldSelectionBoxes[affectedComboIndex].SelectedIndex = 0;
+                            }
+                        }
+                    }
+                };
+
+                AddControl(pastedColIndex, 2, combo);
+            }
+
+            int rowNumber = 2;
+            // Paste in the data rows
+            foreach(var rowData in pastedData.Records)
+            {
+                rowNumber += 1;
+                int colNumber = 0;
+                foreach(string columnData in rowData)
+                {
 
                     TextBlock textBlock = new TextBlock
                     {
-                        Text = pastedRecord.ColumnHeaderNames[i],
-                        //  Margin = columnSeperation
+                        Text = columnData,
+                        Margin = columnSeperation
                     };
                     if (objColHdrStyle is Style style)
                     {
                         textBlock.Style = style;
                     }
                     // add control the column head row
-                    AddControl(i, 2, textBlock);
+                    AddControl(colNumber++, rowNumber, textBlock);
                 }
             }
+
+            
             
         }
+        private List<ComboBox> _fieldSelectionBoxes = new List<ComboBox>();
 
         private void AddControl(int col, int row, FrameworkElement ctrlToAdd)
         {
@@ -331,15 +408,15 @@ namespace ChurchSigns
             //        { "Name", "Smith" }
             //    }
             //});
-            //for (int i = 0; i < 100; ++i)
+            //for (int pastedColIndex = 0; pastedColIndex < 100; ++pastedColIndex)
             //{
             //    Signs.Add(new SignData
             //    {
-            //        Title = $"Jones #{i}",
+            //        Title = $"Jones #{pastedColIndex}",
             //        SvgSignTemplate = templateStorageItem.SvgSignTemplate,
             //        Fields = new Dictionary<string, string>
             //        {
-            //            { "Name", $"Jones{i}" }
+            //            { "Name", $"Jones{pastedColIndex}" }
             //        }
             //    });
             //}
