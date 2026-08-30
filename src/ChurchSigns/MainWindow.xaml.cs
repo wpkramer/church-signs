@@ -25,7 +25,15 @@ namespace ChurchSigns
             InitializeComponent();
             ViewModel.MappingUpdated += (_, _) => RebuildMappingGrid();
             ViewModel.MappingReset += (_, _) => RebuildMappingGrid();
+            Clipboard.ContentChanged += Clipboard_ContentChanged;
+            HasPasteData = Clipboard.GetContent().Contains(StandardDataFormats.Text);
         }
+
+        private void Clipboard_ContentChanged(object? sender, object e)
+        {
+            HasPasteData = Clipboard.GetContent().Contains(StandardDataFormats.Text);
+        }
+
         // One more CsWinRT1030 that I can't seem to code around, some help please.
         // caused by TemplatesCVS.Source = ViewModel.GroupedTemplates;
         public async Task InitializeTemplatesAsync()
@@ -112,6 +120,8 @@ namespace ChurchSigns
             menuFlyout.ShowAt(sender as FrameworkElement, e.GetPosition(sender as FrameworkElement));
         }
 
+        public bool HasPasteData { get; private set; } = false;
+
         private async Task ShowMessageAsync(string message)
         {
             var dialog = new ContentDialog
@@ -152,6 +162,22 @@ namespace ChurchSigns
             {
                e.AcceptedOperation = DataPackageOperation.Copy;
             }      
+        }
+
+        private async void PasteButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (HasPasteData)
+            {
+                try
+                {
+                    await ViewModel.PasteAsync();
+                }
+                catch(Exception ex)
+                {
+                    await ShowMessageAsync($"{ex.GetType().Name}: {ex.Message}");
+                }
+
+            }
         }
 
         #region Dynamic MappingGrid
@@ -216,22 +242,6 @@ namespace ChurchSigns
             }
 
 
-            {   // add title to the first row
-                TextBlock hdrTextBlock = new()
-                {
-                    Text = "Pasted Sign Data",
-                    HorizontalAlignment = HorizontalAlignment.Center,
-                };
-                object objHeaderStyle = Application.Current.Resources["SubtitleTextBlockStyle"];
-                if (objHeaderStyle is Style style)
-                {
-                    hdrTextBlock.Style = style;
-                }
-                // default to column 0, row 0,
-                Grid.SetColumnSpan(hdrTextBlock, columnCount);
-                TemplateMappingGrid.Children.Add(hdrTextBlock);
-            }
-
 
             Thickness columnSeperation = new Thickness(2d);
             object objColHdrStyle = Application.Current.Resources["BodyStrongTextBlockStyle"];
@@ -255,7 +265,7 @@ namespace ChurchSigns
                         textBlock.Style = style;
                     }
                     // add control the column head row
-                    AddControl(i, 1, textBlock);
+                    AddControl(i, 0, textBlock);
                 }
                 return; // we're done
             }
@@ -277,9 +287,8 @@ namespace ChurchSigns
                     textBlock.Style = style;
                 }
                 // add control the column head row
-                AddControl(i, 1, textBlock);
+                AddControl(i, 0, textBlock);
             }
-
             _fieldSelectionBoxes.Clear();
 
             for (int pastedColIndex = 0; pastedColIndex < columnCount; ++pastedColIndex)
@@ -331,10 +340,10 @@ namespace ChurchSigns
                     }
                 };
 
-                AddControl(pastedColIndex, 2, combo);
+                AddControl(pastedColIndex, 1, combo);
             }
 
-            int rowNumber = 2;
+            int rowNumber = 1;
             // Paste in the data rows
             foreach (var rowData in ViewModel.LastPaste.Records)
             {
@@ -370,7 +379,9 @@ namespace ChurchSigns
 
         }
 
- 
+
         #endregion
+
+
     }
 }

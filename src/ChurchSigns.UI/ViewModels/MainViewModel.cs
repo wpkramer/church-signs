@@ -113,7 +113,10 @@ namespace ChurchSigns.UI.ViewModels
 
             foreach (var fields in _dataMap.CreateMappedRecords())
             {
-                var data = new SignData(_dataMap.Template) { Fields = fields };
+                var data = new SignData(_dataMap.Template)
+                {
+                    Fields = fields 
+                };
                 Signs.Add(data);
             }
         }

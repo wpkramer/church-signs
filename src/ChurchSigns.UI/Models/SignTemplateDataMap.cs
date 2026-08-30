@@ -148,16 +148,25 @@ namespace ChurchSigns.UI.Models
             foreach (var row in _data.Records)
             {
                 var dict = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-
+                List<string> unusedFieldNames = new List<string>(_template.FieldNames);
                 for (int col = 0; col < _columnToFieldMap.Length; col++)
-                {
+                {                    
                     var fieldIndex = _columnToFieldMap[col];
                     if (fieldIndex < 0)
                         continue;
 
                     var fieldName = _template.FieldNames[fieldIndex];
+                    unusedFieldNames[fieldIndex] = string.Empty;
                     var value = col < row.Count ? row[col] : string.Empty;
                     dict[fieldName] = value;
+                }
+
+                // nothing was mapped, remove the field marker
+                foreach(string fieldName in unusedFieldNames)
+                {
+                    if (string.IsNullOrEmpty(fieldName))
+                        continue;
+                    dict[fieldName] = string.Empty;
                 }
 
                 yield return dict;

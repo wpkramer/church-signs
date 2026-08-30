@@ -135,26 +135,40 @@
 
         <!-- Field Mapping area -->
 
-        <Grid x:Name="TemplateMappingGrid" Grid.Column="2" Grid.Row="1"
-                              BorderThickness="2" 
-
-                AllowFocusWhenDisabled="True"
+        <Grid Grid.Column="2" Grid.Row="1"              BorderThickness="2" 
+              AllowFocusWhenDisabled="True"
               BorderBrush="{ThemeResource ControlElevationBorderBrush}"
               Background="{ThemeResource SolidBackgroundFillColorBaseAltBrush}"
-               >
+              >
             <Grid.RowDefinitions>
-                <!-- The fields of the template mapped to the column headers of pasted data -->
                 <RowDefinition Height="Auto"/>
-                <!-- The pasted data -->
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
-            <!-- fairly complex so this is in code -->
-            <Grid x:Name="FieldMapGrid" Grid.Row="0">
-            </Grid>
+
+            <StackPanel Grid.Column="0" Grid.Row="0" Orientation="Horizontal">
+                <Button x:Name="PasteButton" Content="Paste" Margin="8"
+                        Click="PasteButton_Click"
+                        IsEnabled="{x:Bind HasPasteData, Mode=OneWay}"/>
+                <TextBlock Margin="8" Style="{ThemeResource BodyTextBlockStyle}">Spreadsheet with these header names:</TextBlock>
+            </StackPanel>
+
+            <Grid x:Name="TemplateMappingGrid" 
+                  Grid.Column="0" Grid.Row="1"
+                   >
+                <Grid.RowDefinitions>
+                    <!-- The fields of the template mapped to the column headers of pasted data -->
+                    <RowDefinition Height="Auto"/>
+                    <!-- The pasted data -->
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <!-- fairly complex so this is in code -->
+                <Grid x:Name="FieldMapGrid" Grid.Row="0">
+                </Grid>
 
 
-            <Grid x:Name="FieldDataGrid" Grid.Row="1" />
+                <Grid x:Name="FieldDataGrid" Grid.Row="1" />
             
+            </Grid>
         </Grid>
 
     </Grid>        
