@@ -54,7 +54,9 @@
             
                 
             <TextBlock Grid.Column="0" Grid.Row="0" Margin="8">Description stuff and File Open Dialog</TextBlock>
-            <ListView x:Name="SignTemplatesListView" Grid.Column="0" Grid.Row="1" SelectionChanged="SignTemplatesListView_SelectionChanged" ItemsSource="{x:Bind TemplatesCVS.View, Mode=OneWay}">
+            <ListView x:Name="SignTemplatesListView" Grid.Column="0" Grid.Row="1" 
+                      SelectionChanged="SignTemplatesListView_SelectionChanged"
+                      ItemsSource="{x:Bind TemplatesCVS.View, Mode=OneWay}">
                 <ListView.ItemsPanel>
                     <ItemsPanelTemplate>
                         <ItemsStackPanel AreStickyGroupHeadersEnabled="False"/>
@@ -63,7 +65,7 @@
                 <ListView.GroupStyle>
                     <GroupStyle>
                         <GroupStyle.HeaderTemplate>
-                            <DataTemplate x:DataType="util:GroupInfoList">
+                            <DataTemplate x:DataType="models:GroupInfoList">
                                 <Border AutomationProperties.AccessibilityView="Raw">
                                     <TextBlock Text="{x:Bind Key}" AutomationProperties.AccessibilityView="Raw" Style="{ThemeResource SubtitleTextBlockStyle}"/>
                                 </Border>
@@ -81,6 +83,7 @@
                             <controls:SvgSignControl
                                 Grid.Column="0"
                                 SvgTemplate="{x:Bind SvgSignTemplate, Mode=OneTime}"
+                                Data="{x:Bind EmptyFields, Mode=OneTime}"
                                 Height="65"
                                 Width="85"
                                 RenderHeight="65"
@@ -99,7 +102,7 @@
 
         <!-- Preview of Signs Here -->
         <GridView x:Name="SignGridView" Grid.Column="1" Grid.Row="1" 
-                  ItemsSource="{x:Bind Signs}"
+                  ItemsSource="{x:Bind ViewModel.Signs}"
                   BorderBrush="{ThemeResource ControlElevationBorderBrush}" 
                   BorderThickness="2" VerticalAlignment="Top">
             

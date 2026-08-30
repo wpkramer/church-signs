@@ -122,22 +122,22 @@ namespace ChurchSigns.UI.Util
 
         public static bool operator <(MatchConfidence left, MatchConfidence right)
         {
-            return ReferenceEquals(left, null) ? !ReferenceEquals(right, null) : left.CompareTo(right) < 0;
+            return left is null ? right is not null : left.CompareTo(right) < 0;
         }
 
         public static bool operator <=(MatchConfidence left, MatchConfidence right)
         {
-            return ReferenceEquals(left, null) || left.CompareTo(right) <= 0;
+            return left is null || left.CompareTo(right) <= 0;
         }
 
         public static bool operator >(MatchConfidence left, MatchConfidence right)
         {
-            return !ReferenceEquals(left, null) && left.CompareTo(right) > 0;
+            return left is not null && left.CompareTo(right) > 0;
         }
 
         public static bool operator >=(MatchConfidence left, MatchConfidence right)
         {
-            return ReferenceEquals(left, null) ? ReferenceEquals(right, null) : left.CompareTo(right) >= 0;
+            return left is null ? right is null : left.CompareTo(right) >= 0;
         }
 
         public int CompareTo(object obj)

@@ -6,10 +6,10 @@ namespace ChurchSigns.UI.Models
 {
     public class SignTemplate
     {
-        private bool _isvalid;
+        private readonly bool _isvalid;
         // not sure if this will be used yet
-        private string _errorMessage;
-        private List<SignData> _signList;
+        private readonly string _errorMessage;
+        private readonly List<SignData> _signList;
         private readonly TemplateStorageItem _templateStorageItem;
         public SignTemplate(TemplateStorageItem templateStorageItem)
         {
@@ -19,10 +19,10 @@ namespace ChurchSigns.UI.Models
 
                 _templateStorageItem = templateStorageItem;
                 _errorMessage = string.Empty;
-                _signList = new List<SignData>();
+                _signList = [];
                 _isvalid = false;
 
-                XmlDocument xmlDocument = new XmlDocument();
+                XmlDocument xmlDocument = new();
                 xmlDocument.LoadXml(templateStorageItem.Content);
 
                 if (xmlDocument.DocumentElement != null)
@@ -50,9 +50,20 @@ namespace ChurchSigns.UI.Models
             } 
         }
 
-        public IList<SignData> SignList { get { return _signList; } }
-
         public IReadOnlyList<string> FieldNames { get { return _templateStorageItem.FieldNames; } }
+
+        public Dictionary<string, string> EmptyFields
+        {
+            get
+            {
+                Dictionary<string, string> result = new Dictionary<string, string>();
+                foreach (string fieldname in _templateStorageItem.FieldNames)
+                {
+                    result.TryAdd(fieldname, "");
+                }
+                return result;
+            }
+        }
 
         public bool IsValid { get { return _isvalid; } }
 

@@ -44,13 +44,20 @@ namespace ChurchSigns.UI.Models
         /// <summary>
         /// Dropdown labels: "(None)" then each template field name.
         /// </summary>
-        public IReadOnlyList<string> DropdownFieldNames
+        
+        // grok, im getting CsWinRT1030 messages on the return of
+        // this function. Is there a coding alternative to the
+        // <AllowUnsafeBlocks>true</AllowUnsafeBlocks> setting?
+        public string[] DropdownFieldNames
         {
             get
             {
-                var list = new List<string>(_template.FieldNames.Count + 1) { "(None)" };
-                list.AddRange(_template.FieldNames);
-                return list;
+                var names = _template.FieldNames;
+                var result = new string[names.Count + 1];
+                result[0] = "(None)";
+                for (int i = 0; i < names.Count; i++)
+                    result[i + 1] = names[i];
+                return result;
             }
         }
 
@@ -193,13 +200,13 @@ namespace ChurchSigns.UI.Models
 
         private ColumnMatch BestHeaderForField(string fieldName, int fieldIndex)
         {
-            MatchConfidence? best = null;
+            MatchConfidence best = new();
             int bestColumn = -1;
 
             for (int col = 0; col < _data.ColumnHeaderNames.Count; col++)
             {
                 var candidate = new MatchConfidence(fieldName, _data.ColumnHeaderNames[col]);
-                if (best is null || candidate > best)
+                if (candidate > best)
                 {
                     best = candidate;
                     bestColumn = col;
