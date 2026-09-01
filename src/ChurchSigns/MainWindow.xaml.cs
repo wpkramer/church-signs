@@ -1,14 +1,18 @@
 using ChurchSigns.UI.Models;
 using ChurchSigns.UI.ViewModels;
+using Microsoft.UI;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
+using Windows.Storage.Pickers;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using Windows.ApplicationModel.DataTransfer;
 using Windows.Storage;
+using WinRT.Interop;
+using ChurchSigns.UI.Services;
 
 namespace ChurchSigns
 {
@@ -49,12 +53,14 @@ namespace ChurchSigns
 
         private void SignTemplatesListView_SelectionChanged(object sender, Microsoft.UI.Xaml.Controls.SelectionChangedEventArgs e)
         {
-            if (SignTemplatesListView.SelectedItem == null)
-                return;
-            if (SignTemplatesListView.SelectedItem is SignTemplate signTemplate)
+            if (SignTemplatesListView.SelectedItem != null)
             {
-                ViewModel.SelectedTemplate = signTemplate;
+                if (SignTemplatesListView.SelectedItem is SignTemplate signTemplate)
+                {
+                    ViewModel.SelectedTemplate = signTemplate;
+                }
             }
+            
         }
 
 
@@ -380,7 +386,151 @@ namespace ChurchSigns
         }
 
 
+
         #endregion
+
+
+
+        private async void RemoveTemplateButton_Click(object sender, RoutedEventArgs e)
+        {
+           if(  ViewModel.SelectedTemplate != null )
+            {
+                if(!ViewModel.SelectedTemplate.IsProvided)
+                {
+                    bool removeConfirmed = await ConfirmActionAsync($"Please confirm you want to remove {ViewModel.SelectedTemplate.Title}?");
+                    if (removeConfirmed)
+                    {
+                        await TemplateStorageService.Instance.DeleteLocalAsync(ViewModel.SelectedTemplate.Category, ViewModel.SelectedTemplate.Filename);
+                        // update so the template shows in the list
+                        ViewModel.Templates.Remove(ViewModel.SelectedTemplate);
+                        ViewModel.RebuildGroupedTemplates();
+                        TemplatesCVS.Source = ViewModel.GroupedTemplates;
+                    }
+                }
+            }
+        }
+
+
+        private async void AddTemplateButton_Click(object sender, RoutedEventArgs e)
+        {
+            var item = await ImportSignTemplateAsync();
+            if(item is null)
+            {
+                return;
+            }
+
+
+
+            var template = ViewModel.AddLocalTemplate(item);
+            if (template is null)
+            {
+                await ShowMessageAsync("Could not use that SVG as a template.");
+                return;
+            }
+
+          
+
+            // update so the template shows in the list
+            TemplatesCVS.Source = ViewModel.GroupedTemplates;
+            // select template so it shows in the sign list and the field mapping
+            SignTemplatesListView.SelectedItem = template;
+        }
+
+        private async Task<bool> ConfirmActionAsync(string message)
+        {
+            var dialog = new ContentDialog
+            {
+                Content = message,
+                Title = "Confirm",
+                PrimaryButtonText = "Yes",
+                CloseButtonText = "No",
+                XamlRoot = this.Content.XamlRoot
+            };
+            var dialogResult = await dialog.ShowAsync();
+            return dialogResult == ContentDialogResult.Primary;
+        }
+
+        private async Task<string> ShowSignTemplateOptionsAsync(string filename)
+        {
+            var dialog = new ContentDialog
+            {
+                Title = "Template Category",
+                PrimaryButtonText = "OK",
+                CloseButtonText = "Cancel",
+                XamlRoot = this.Content.XamlRoot
+            };
+            
+            ComboBox comboBox = new ComboBox();
+
+
+            foreach (SignCategory category in Enum.GetValues<SignCategory>())
+            {
+                comboBox.Items.Add(category.ToString());
+            }
+            comboBox.SelectedIndex = 0;
+            dialog.Content = comboBox;
+
+            var dialogResult = await dialog.ShowAsync();
+
+            if(dialogResult == ContentDialogResult.Primary)
+            {
+                return comboBox.SelectedValue.ToString() ?? string.Empty;
+            }
+
+            return string.Empty;
+        }
+
+        private async Task<TemplateStorageItem?> ImportSignTemplateAsync()
+        {
+            var picker = new FileOpenPicker
+            {
+                SuggestedStartLocation = PickerLocationId.DocumentsLibrary,
+                ViewMode = PickerViewMode.List
+            };
+            picker.FileTypeFilter.Add(".svg");
+
+            InitializeWithWindow(picker);
+
+            var file = await picker.PickSingleFileAsync();
+            if (file == null)
+            {
+                Trace.WriteLine("Manual load canceled by user.");
+                return null;
+            }
+
+            string category = await ShowSignTemplateOptionsAsync(System.IO.Path.GetFileName(file.Path));
+            if (string.IsNullOrEmpty(category))
+            {
+                return null;
+            }
+            SignCategory signCategory;
+            if (SignCategory.TryParse(category, out signCategory))
+            {
+                TemplateStorageItem storageItem = new TemplateStorageItem
+                {
+                    Content = await FileIO.ReadTextAsync(file),
+                    IsProvided = false,
+                    SignCategory = signCategory,
+                    Filename = file.Name,
+                };
+
+                await TemplateStorageService.Instance.SaveLocalAsync(storageItem, true);
+
+                return storageItem;
+            }
+
+
+            return null;
+
+        }
+
+        private void InitializeWithWindow(object picker)
+        {
+            var hwnd = Win32Interop.GetWindowFromWindowId(AppWindow.Id);
+            Trace.WriteLine($"Initializing picker with HWND: {hwnd}");
+            WinRT.Interop.InitializeWithWindow.Initialize(picker, hwnd);
+        }
+
 
 
     }

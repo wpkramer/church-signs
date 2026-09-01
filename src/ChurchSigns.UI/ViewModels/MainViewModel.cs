@@ -48,7 +48,21 @@ namespace ChurchSigns.UI.ViewModels
 
                 OnPropertyChanged();
                 OnPropertyChanged(nameof(DataMap));
+                OnPropertyChanged(nameof(IsCustomSelected));
                 MappingReset?.Invoke(this, EventArgs.Empty);
+            }
+        }
+
+        public bool IsCustomSelected
+        {
+            get
+            {
+                if (_selectedTemplate != null)
+                {
+
+                        return !_selectedTemplate.IsProvided;
+                }
+                return false;
             }
         }
 
@@ -75,6 +89,31 @@ namespace ChurchSigns.UI.ViewModels
             if (Templates.Count > 0)
                 SelectedTemplate = Templates[0];
         }
+
+        public SignTemplate? AddLocalTemplate(TemplateStorageItem item)
+        {
+            var template = new SignTemplate(item);
+            if (!template.IsValid)
+                return null;
+
+            Templates.Add(template);
+            RebuildGroupedTemplates();
+            return template;
+        }
+
+        public void RebuildGroupedTemplates()
+        {
+            GroupedTemplates = new ObservableCollection<GroupInfoList>(
+                from t in Templates
+                group t by t.Group into g
+                orderby g.Key
+                select new GroupInfoList(g.Key, g));
+
+            OnPropertyChanged(nameof(GroupedTemplates));
+            GroupedTemplatesChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+        public event EventHandler? GroupedTemplatesChanged;
 
         public async Task PasteAsync()
         {

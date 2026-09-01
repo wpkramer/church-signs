@@ -23,14 +23,20 @@
     <Grid x:Name="MainGrid" KeyDown="MainGrid_KeyDown" RightTapped="MainGrid_RightTapped">
 
         <Grid.ColumnDefinitions>
+            <!-- Template definitions are in the left Column -->
             <ColumnDefinition Width="Auto"/>
+            <!-- Middle column displays the template mapped to data -->
             <ColumnDefinition Width="*"/>
+            <!-- The right column displays the mapping of template fields to pasted data -->
             <ColumnDefinition Width="Auto"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
+            <!-- first row for a title area -->
             <RowDefinition Height="Auto"/>
+            <!-- second row takes up the rest of the screen realestate -->
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
+        
         <!-- Display application title -->
         <TextBlock Grid.Column="0" Grid.ColumnSpan="3" Grid.Row="0" Text="Church Signs" Margin="36,0,32,32" Style="{ThemeResource TitleTextBlockStyle}" />
         
@@ -48,13 +54,18 @@
             
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
 
-            
+            <TextBlock Grid.Row="0" Text="Templates" Style="{ThemeResource SubtitleTextBlockStyle}"/>
+
+            <StackPanel Grid.Column="0" Grid.Row="1" Orientation="Horizontal">
+                <Button x:Name="AddTemplateButton" Margin="8" Content="Add Template" Click="AddTemplateButton_Click"/>
+                <Button x:Name="RemoveTemplateButton" Content="Remove" Margin="8" Click="RemoveTemplateButton_Click" IsEnabled="{x:Bind ViewModel.IsCustomSelected,Mode=OneWay}"/>
+            </StackPanel>
                 
-            <TextBlock Grid.Column="0" Grid.Row="0" Margin="8">Description stuff and File Open Dialog</TextBlock>
-            <ListView x:Name="SignTemplatesListView" Grid.Column="0" Grid.Row="1" 
+            <ListView x:Name="SignTemplatesListView" Grid.Column="0" Grid.Row="2" 
                       SelectionChanged="SignTemplatesListView_SelectionChanged"
                       ItemsSource="{x:Bind TemplatesCVS.View, Mode=OneWay}">
                 <ListView.ItemsPanel>
@@ -82,8 +93,8 @@
                             </Grid.ColumnDefinitions>
                             <controls:SvgSignControl
                                 Grid.Column="0"
-                                SvgTemplate="{x:Bind SvgSignTemplate, Mode=OneTime}"
-                                Data="{x:Bind EmptyFields, Mode=OneTime}"
+                                SvgTemplate="{x:Bind SvgSignTemplate, Mode=OneWay}"
+                                Data="{x:Bind EmptyFields, Mode=OneWay}"
                                 Height="65"
                                 Width="85"
                                 RenderHeight="65"
@@ -149,7 +160,7 @@
                 <Button x:Name="PasteButton" Content="Paste" Margin="8"
                         Click="PasteButton_Click"
                         IsEnabled="{x:Bind HasPasteData, Mode=OneWay}"/>
-                <TextBlock Margin="8" Style="{ThemeResource BodyTextBlockStyle}">Spreadsheet with these header names:</TextBlock>
+                <TextBlock Margin="8" Style="{ThemeResource BodyTextBlockStyle}">Spreadsheet with header name(s)</TextBlock>
             </StackPanel>
 
             <Grid x:Name="TemplateMappingGrid" 

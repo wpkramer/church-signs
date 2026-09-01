@@ -50,6 +50,11 @@ namespace ChurchSigns.UI.Models
             } 
         }
 
+        public SignCategory Category { get => _templateStorageItem.SignCategory; }
+        public string Filename { get => _templateStorageItem.Filename; }
+
+        public bool IsProvided { get { return _templateStorageItem.IsProvided; } }
+
         public IReadOnlyList<string> FieldNames { get { return _templateStorageItem.FieldNames; } }
 
         public Dictionary<string, string> EmptyFields
