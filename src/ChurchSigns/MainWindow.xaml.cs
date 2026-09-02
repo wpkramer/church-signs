@@ -13,6 +13,7 @@ using Windows.ApplicationModel.DataTransfer;
 using Windows.Storage;
 using WinRT.Interop;
 using ChurchSigns.UI.Services;
+using ChurchSigns.Dialogs;
 
 namespace ChurchSigns
 {
@@ -531,7 +532,24 @@ namespace ChurchSigns
             WinRT.Interop.InitializeWithWindow.Initialize(picker, hwnd);
         }
 
+        private async void EditTemplateButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is Button button && button.DataContext is SignTemplate template)
+            {
+                var dialog = new SignTemplateDialog(template);
+                dialog.XamlRoot = this.Content.XamlRoot;
+                var dialogResult = await dialog.ShowAsync();
+                if(dialogResult == ContentDialogResult.Primary)
+                {
+                    dialog.ViewModel.UpdateTemplate();
+                    // Save the changes to the template
+                    await TemplateStorageService.Instance.SaveLocalAsync(template.ToStorageItem(), true);
+                    // Update the ViewModel to reflect the changes
+                    ViewModel.RebuildGroupedTemplates();
+                    TemplatesCVS.Source = ViewModel.GroupedTemplates;
+                }
 
-
+            }
+        }
     }
 }

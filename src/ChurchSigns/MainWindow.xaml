@@ -53,9 +53,9 @@
             </Grid.Resources>
             
             <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/> <!-- Header -->
+                <RowDefinition Height="Auto"/> <!-- Commands -->
+                <RowDefinition Height="*"/>    <!-- List of templates -->
             </Grid.RowDefinitions>
 
             <TextBlock Grid.Row="0" Text="Templates" Style="{ThemeResource SubtitleTextBlockStyle}"/>
@@ -94,13 +94,16 @@
                             <controls:SvgSignControl
                                 Grid.Column="0"
                                 SvgTemplate="{x:Bind SvgSignTemplate, Mode=OneWay}"
-                                Data="{x:Bind EmptyFields, Mode=OneWay}"
+                                Data="{x:Bind PreviewFields, Mode=OneWay}"
                                 Height="65"
                                 Width="85"
                                 RenderHeight="65"
                                 RenderWidth="85"
                                 />
-                            <TextBlock Grid.Column="1" Text="{x:Bind Title}" Style="{ThemeResource BodyLargeTextBlockStyle}"/>
+                            <StackPanel Grid.Column="1" Orientation="Horizontal">
+                                <TextBlock Text="{x:Bind Title}" Style="{ThemeResource SubtitleTextBlockStyle}"/>
+                                <Button x:Name="EditTemplateButton" Content="Edit" Margin="8" Click="EditTemplateButton_Click" IsEnabled="{x:Bind IsCustom, Mode=OneWay}"/>
+                            </StackPanel>
                         </Grid>
                        
                     </DataTemplate>

@@ -12,6 +12,7 @@ namespace ChurchSigns.UI.Models
         public SignCategory SignCategory { get; set; }
         public string Filename { get; set; } = "";
         public string Content { get; set; } = "";
+        public SignTemplateProperties PreviewFields { get; set; } = new SignTemplateProperties();
 
         // Optional helpers for UI
         public string DisplayName => System.IO.Path.GetFileNameWithoutExtension(Filename);

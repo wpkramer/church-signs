@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
+using System.Text.Json;
 
 namespace ChurchSigns.UI.Services
 {
+    using ChurchSigns.UI.Helpers;
     using ChurchSigns.UI.Models;
+    using System.IO;
     using System.Threading.Tasks;
     using Windows.Storage;
 
@@ -58,14 +60,31 @@ namespace ChurchSigns.UI.Services
                 {
                     if (!file.Name.EndsWith(".svg", StringComparison.OrdinalIgnoreCase))
                         continue;
-
-                    results.Add(new TemplateStorageItem
+                    var storageItem =new TemplateStorageItem
                     {
                         IsProvided = true,
                         SignCategory = category,
                         Filename = file.Name,
                         Content = await FileIO.ReadTextAsync(file)
-                    });
+                    };
+
+                    string sidecarName = Path.ChangeExtension(file.Name, ".json");
+                    var sidecarFile = await categoryFolder.TryGetItemAsync(sidecarName) as StorageFile;
+                    if(sidecarFile != null)
+                    {
+                        try
+                        {
+                            var properties = await LoadAsync(sidecarFile);
+                            storageItem.PreviewFields = properties;
+                        }
+                        catch
+                        {
+                            // Ignore sidecar load errors, just use default preview fields
+                        }
+                    }
+
+                    results.Add(storageItem);
+                    
                 }
             }
 
@@ -87,13 +106,31 @@ namespace ChurchSigns.UI.Services
                     if (!file.Name.EndsWith(".svg", StringComparison.OrdinalIgnoreCase))
                         continue;
 
-                    results.Add(new TemplateStorageItem
+                    var storageItem = new TemplateStorageItem
                     {
                         IsProvided = false,
                         SignCategory = category,
                         Filename = file.Name,
                         Content = await FileIO.ReadTextAsync(file)
-                    });
+                    };
+
+
+                    string sidecarName = Path.ChangeExtension(file.Name, ".json");
+                    var sidecarFile = await categoryFolder.TryGetItemAsync(sidecarName) as StorageFile;
+                    if (sidecarFile != null)
+                    {
+                        try
+                        {
+                            var properties = await LoadAsync(sidecarFile);
+                            storageItem.PreviewFields = properties;
+                        }
+                        catch
+                        {
+                            // Ignore sidecar load errors, just use default preview fields
+                        }
+                    }
+
+                    results.Add(storageItem);
                 }
             }
 
@@ -113,9 +150,14 @@ namespace ChurchSigns.UI.Services
 
             try
             {
-                var file = await categoryFolder.CreateFileAsync(item.Filename, collision);
-                await FileIO.WriteTextAsync(file, item.Content ?? string.Empty);
+                var file = await categoryFolder.CreateFileAsync(item.Filename, collision); 
                 item.IsProvided = false;
+
+                await FileIO.WriteTextAsync(file, item.Content ?? string.Empty);
+
+                string sidecarFileName = Path.ChangeExtension(item.Filename, ".json");
+                var sidecarFile = await categoryFolder.CreateFileAsync(sidecarFileName, CreationCollisionOption.ReplaceExisting);
+                await SaveAsync(sidecarFile, item.PreviewFields);
             }
             catch (Exception) when (!overwrite)
             {
@@ -130,6 +172,25 @@ namespace ChurchSigns.UI.Services
             var categoryFolder = await root.GetFolderAsync(category.ToString());
             var file = await categoryFolder.GetFileAsync(filename);
             await file.DeleteAsync();
+            var sidecarFileName = Path.ChangeExtension(filename, ".json");
+            var sidecarFile = await categoryFolder.TryGetItemAsync(sidecarFileName) as StorageFile;
+            if (sidecarFile != null)
+            {
+                await sidecarFile.DeleteAsync();
+            }
+        }
+
+
+        private static async Task<SignTemplateProperties> LoadAsync(StorageFile file)
+        {
+            var json = await FileIO.ReadTextAsync(file);
+            return JsonSerializer.Deserialize<SignTemplateProperties>(json, (System.Text.Json.Serialization.Metadata.JsonTypeInfo<SignTemplateProperties>)SignJsonContext.WithOptions.SignTemplateProperties);
+        }
+
+        private static async Task SaveAsync(StorageFile file, SignTemplateProperties values)
+        {
+            var json = JsonSerializer.Serialize(values, (System.Text.Json.Serialization.Metadata.JsonTypeInfo<SignTemplateProperties>)SignJsonContext.WithOptions.SignTemplateProperties);
+            await FileIO.WriteTextAsync(file, json);
         }
 
         /// <summary>

@@ -6,6 +6,7 @@ namespace ChurchSigns.UI.Models
 {
     public class SignTemplate
     {
+        private const string DefaultColor = "#000000";
         private readonly bool _isvalid;
         // not sure if this will be used yet
         private readonly string _errorMessage;
@@ -54,17 +55,33 @@ namespace ChurchSigns.UI.Models
         public string Filename { get => _templateStorageItem.Filename; }
 
         public bool IsProvided { get { return _templateStorageItem.IsProvided; } }
+        public bool IsCustom { get { return !_templateStorageItem.IsProvided; } }
 
         public IReadOnlyList<string> FieldNames { get { return _templateStorageItem.FieldNames; } }
 
-        public Dictionary<string, string> EmptyFields
+        public Dictionary<string, string> PreviewFields
         {
             get
             {
                 Dictionary<string, string> result = new Dictionary<string, string>();
                 foreach (string fieldname in _templateStorageItem.FieldNames)
                 {
-                    result.TryAdd(fieldname, "");
+                    if(_templateStorageItem.PreviewFields.Fields.TryGetValue(fieldname, out string value))
+                    {
+                        result.TryAdd(fieldname, value);
+                    }
+                    else if (fieldname.Contains("color", StringComparison.OrdinalIgnoreCase))
+                    {
+                        result.TryAdd(fieldname, DefaultColor);
+                    }
+                    else if(fieldname.Contains("colour", StringComparison.OrdinalIgnoreCase))
+                    {
+                        result.TryAdd(fieldname, DefaultColor);
+                    }
+                    else
+                    {
+                        result.TryAdd(fieldname, string.Empty);
+                    }
                 }
                 return result;
             }
@@ -90,5 +107,18 @@ namespace ChurchSigns.UI.Models
             }
         }
 
+        public TemplateStorageItem ToStorageItem()
+        {
+            return _templateStorageItem;
+        }
+
+        internal void UpdatePreviewFields(SignTemplateProperty[] signTemplateProperties)
+        {
+            _templateStorageItem.PreviewFields.Fields.Clear();
+            foreach (var signTemplateProperty in signTemplateProperties)
+            {
+                _templateStorageItem.PreviewFields.Fields[signTemplateProperty.Name] = signTemplateProperty.Value;
+            }
+        }
     }
 }
