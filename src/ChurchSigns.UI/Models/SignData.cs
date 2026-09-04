@@ -32,7 +32,7 @@ namespace ChurchSigns.UI.Models
         }
 
         public string Title { get {  return _template.Title; } }
-        public string Template { get { return _template.SvgSignTemplate; } }
+        public string SvgTemplate { get { return _template.SvgSignTemplate; } }
         public bool HasChanged { get { return _hasChanged; } }
 
         public void TemplateWasUpated()

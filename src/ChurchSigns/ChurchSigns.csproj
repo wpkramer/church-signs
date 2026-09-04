@@ -16,6 +16,10 @@
   </PropertyGroup>
   <ItemGroup>
     <None Remove="Dialogs\SignTemplateDialog.xaml" />
+    <None Remove="Templates\Awana\2LeaderBucket.json" />
+    <None Remove="Templates\Awana\2LeaderBucket.svg" />
+    <None Remove="Templates\Awana\BucketLabel.json" />
+    <None Remove="Templates\Awana\BucketLabel.svg" />
   </ItemGroup>
 
   <ItemGroup>
@@ -26,6 +30,18 @@
     <Content Include="Assets\Square44x44Logo.targetsize-24_altform-unplated.png" />
     <Content Include="Assets\StoreLogo.png" />
     <Content Include="Assets\Wide310x150Logo.scale-200.png" />
+    <Content Include="Templates\Awana\2LeaderBucket.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Templates\Awana\2LeaderBucket.svg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Templates\Awana\BucketLabel.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Templates\Awana\BucketLabel.svg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
   <ItemGroup>
@@ -48,7 +64,6 @@
     <ProjectReference Include="..\ChurchSigns.UI\ChurchSigns.UI.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Templates\Awana\" />
     <Folder Include="Templates\Miscellaneous\" />
   </ItemGroup>
   <ItemGroup>

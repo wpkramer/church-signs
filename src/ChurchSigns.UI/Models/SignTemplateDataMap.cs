@@ -14,6 +14,7 @@ namespace ChurchSigns.UI.Models
     public class SignTemplateDataMap
     {
         private const double AutoMatchMinimumScore = 70;
+        private const string DefaultColor = "#000000";
 
         private readonly SignTemplate _template;
         private readonly PastedRecordData _data;
@@ -66,7 +67,7 @@ namespace ChurchSigns.UI.Models
         public IReadOnlyList<string> TemplateFieldNames => _template.FieldNames;
 
         /// <summary>
-        /// Template field index for a pasted column, or -1 if none.
+        /// SvgTemplate field index for a pasted column, or -1 if none.
         /// Triggers auto-match on first read if the user has not assigned manually.
         /// </summary>
         public int FieldIndexForDataColumn(int columnIndex)
@@ -161,12 +162,27 @@ namespace ChurchSigns.UI.Models
                     dict[fieldName] = value;
                 }
 
-                // nothing was mapped, remove the field marker
-                foreach(string fieldName in unusedFieldNames)
+                // nothing was mapped, remove the field marker show empty
+                // unless it is a color field, in which case we want to show the default color
+                foreach (string fieldName in unusedFieldNames)
                 {
                     if (string.IsNullOrEmpty(fieldName))
                         continue;
-                    dict[fieldName] = string.Empty;
+                    if (fieldName.Contains("Color", StringComparison.OrdinalIgnoreCase))
+                    {
+                        if (Template.PreviewFields.ContainsKey(fieldName))
+                        {
+                            dict[fieldName] = Template.PreviewFields[fieldName];
+                        }
+                        else
+                        {
+                            dict[fieldName] = DefaultColor;
+                        }
+                    }
+                    else
+                    {
+                        dict[fieldName] = string.Empty;
+                    }
                 }
 
                 yield return dict;

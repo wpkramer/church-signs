@@ -15,6 +15,7 @@ using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using WinRT.Interop;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -44,7 +45,19 @@ namespace ChurchSigns
         protected override async void OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs args)
         {
             _window = new MainWindow();
-            
+
+            //// Ensure WinRT/WinUI window is associated with a native HWND for WinRT interop APIs
+            //try
+            //{
+            //    var hwnd = WindowNative.GetWindowHandle(_window);
+            //    InitializeWithWindow.Initialize(_window, hwnd);
+            //}
+            //catch (Exception ex)
+            //{
+            //    // Log but continue; downstream calls will check for invalid hwnd
+            //    System.Diagnostics.Trace.WriteLine($"InitializeWithWindow failed: {ex.GetType().Name} {ex.Message}");
+            //}
+
             await ((MainWindow)_window).InitializeTemplatesAsync();
 
             _window.Activate();

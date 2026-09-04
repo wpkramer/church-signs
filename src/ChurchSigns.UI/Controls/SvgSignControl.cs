@@ -91,6 +91,8 @@ namespace ChurchSigns.UI.Controls
             _ = UpdateVisualAsync();
         }
 
+        public Image? GetImage() { return _image; }
+
         private static void OnRenderPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             if (d is SvgSignControl control)

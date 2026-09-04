@@ -3,6 +3,7 @@ using ChurchSigns.UI.Interfaces;
 using ChurchSigns.UI.Models;
 using ChurchSigns.UI.Services;
 using ChurchSigns.UI.Util;
+using Microsoft.UI.Xaml;
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -43,13 +44,54 @@ namespace ChurchSigns.UI.ViewModels
                 _dataMap = null;
                 Signs.Clear();
 
+                //SignData sd = new SignData(_selectedTemplate);
+                
                 // One placeholder sign so the preview shows the template
-                Signs.Add(new SignData(_selectedTemplate));
+                SignData sd = _selectedTemplate.CreatePlaceholderSign();
+
+                Signs.Add(sd);
 
                 OnPropertyChanged();
+         //       OnPropertyChanged(nameof(Signs));
                 OnPropertyChanged(nameof(DataMap));
                 OnPropertyChanged(nameof(IsCustomSelected));
                 MappingReset?.Invoke(this, EventArgs.Empty);
+                IsShowingPlaceholder = true;
+            }
+        }
+
+        private bool _isShowingPlaceholder;
+        public bool IsShowingPlaceholder
+        {
+            get
+            {
+                return _isShowingPlaceholder;
+            }
+            private set
+            {
+                if(_isShowingPlaceholder != value)
+                {
+                    _isShowingPlaceholder = value;
+                    OnPropertyChanged();
+                    OnPropertyChanged(nameof(NewSignTemplateVisiblity));
+                    OnPropertyChanged(nameof(SignsWithDataVisiblility));
+                }
+            }
+        }
+
+        public Visibility NewSignTemplateVisiblity
+        {
+            get
+            {
+                return IsShowingPlaceholder ? Visibility.Visible : Visibility.Collapsed;
+            }
+        }
+
+        public Visibility SignsWithDataVisiblility
+        {
+            get
+            {
+                return IsShowingPlaceholder ? Visibility.Collapsed : Visibility.Visible;
             }
         }
 
@@ -158,6 +200,7 @@ namespace ChurchSigns.UI.ViewModels
                 };
                 Signs.Add(data);
             }
+            IsShowingPlaceholder = false;
         }
 
         private void TryAddTemplate(TemplateStorageItem item)

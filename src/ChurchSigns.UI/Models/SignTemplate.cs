@@ -112,6 +112,33 @@ namespace ChurchSigns.UI.Models
             return _templateStorageItem;
         }
 
+        public SignData CreatePlaceholderSign()
+        {
+
+            SignData signData = new SignData(this);
+            foreach (string fieldName in _templateStorageItem.FieldNames)
+            {
+
+                if (_templateStorageItem.PreviewFields.Fields.TryGetValue(fieldName, out string value))
+                {
+                    signData.Fields.TryAdd(fieldName, value);
+                }
+                else if (fieldName.Contains("color", StringComparison.OrdinalIgnoreCase))
+                {
+                    signData.Fields.TryAdd(fieldName, DefaultColor);
+                }
+                else if (fieldName.Contains("colour", StringComparison.OrdinalIgnoreCase))
+                {
+                    signData.Fields.TryAdd(fieldName, DefaultColor);
+                }
+                else
+                {
+                    signData.Fields.TryAdd(fieldName, string.Empty);
+                }
+            }
+            return signData;
+        }
+
         internal void UpdatePreviewFields(SignTemplateProperty[] signTemplateProperties)
         {
             _templateStorageItem.PreviewFields.Fields.Clear();

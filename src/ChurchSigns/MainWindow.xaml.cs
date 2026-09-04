@@ -14,6 +14,13 @@ using Windows.Storage;
 using WinRT.Interop;
 using ChurchSigns.UI.Services;
 using ChurchSigns.Dialogs;
+using System.ComponentModel;
+using Windows.Graphics.Printing;
+using Microsoft.UI.Xaml.Printing;
+using Microsoft.UI.Dispatching;
+using System.Linq;
+using ChurchSigns.UI.Controls;
+using Microsoft.UI.Xaml.Media;
 
 namespace ChurchSigns
 {
@@ -31,6 +38,13 @@ namespace ChurchSigns
             ViewModel.MappingUpdated += (_, _) => RebuildMappingGrid();
             ViewModel.MappingReset += (_, _) => RebuildMappingGrid();
             Clipboard.ContentChanged += Clipboard_ContentChanged;
+            HasPasteData = Clipboard.GetContent().Contains(StandardDataFormats.Text);
+            this.Activated += MainWindow_Activated;
+        }
+
+
+        private void MainWindow_Activated(object sender, WindowActivatedEventArgs args)
+        {
             HasPasteData = Clipboard.GetContent().Contains(StandardDataFormats.Text);
         }
 
@@ -551,5 +565,413 @@ namespace ChurchSigns
 
             }
         }
+
+
+
+        private void AllSignsCheckBox_Checked(object sender, RoutedEventArgs e)
+        {
+            foreach (var item in SignGridView.Items)
+            {
+                if (SignGridView.ContainerFromItem(item) is GridViewItem gridViewItem)
+                {
+                    gridViewItem.IsSelected = true;
+                }
+            }
+        }
+
+        private void AllSignsCheckBox_Unchecked(object sender, RoutedEventArgs e)
+        {
+            foreach (var item in SignGridView.Items)
+            {
+                if (SignGridView.ContainerFromItem(item) is GridViewItem gridViewItem)
+                {
+                    gridViewItem.IsSelected = false;
+                }
+            }
+        }
+
+        private void SignGridView_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            AllSignsCheckBox.Checked -= AllSignsCheckBox_Checked;
+            AllSignsCheckBox.Unchecked -= AllSignsCheckBox_Unchecked;
+
+            if ( SignGridView.SelectedItems.Count == SignGridView.Items.Count)
+            {
+                AllSignsCheckBox.IsChecked = true;
+            }
+            else if(SignGridView.SelectedItems.Count == 0)
+            {
+                AllSignsCheckBox.IsChecked = false;
+            }
+            else
+            {
+                AllSignsCheckBox.IsChecked = null;
+            }
+            AllSignsCheckBox.Checked += AllSignsCheckBox_Checked;
+            AllSignsCheckBox.Unchecked += AllSignsCheckBox_Unchecked;
+        }
+
+
+
+        #region printing
+
+
+
+        private IntPtr MyHandle { get { return WindowNative.GetWindowHandle((Window)this); } }
+
+        private async void PrintButton_Click(object sender, RoutedEventArgs e)
+        {
+
+            if (PrintManager.IsSupported())
+            {
+                try
+                {
+                    _printPreviewImages.Clear();
+                    RegisterForPrinting();
+
+                    var hWnd = MyHandle;
+                    System.Diagnostics.Trace.WriteLine($"Print: hWnd = 0x{hWnd.ToInt64():X}");
+                    if (hWnd == IntPtr.Zero)
+                    {
+                        System.Diagnostics.Trace.WriteLine("Invalid HWND (zero) - aborting print.");
+                        return;
+                    }
+                    await PrintManagerInterop.ShowPrintUIForWindowAsync(hWnd);
+                }
+                catch (Exception ex)
+                {
+                    Trace.WriteLine(ex?.GetType().Name + " " + ex?.Message);
+
+                }
+                return;
+
+            }
+            else
+            {
+                Trace.WriteLine("Printing is not supported on this device.");
+            }
+
+        }
+
+        private PrintDocument? _printDocument = null;
+        private IPrintDocumentSource? _printDocumentSource = null;
+
+
+        private void UnRegisterForPrinting()
+        {
+            string message = "UnRegisterForPrinting";
+
+            try
+            {
+                var hWnd = MyHandle;
+
+                PrintManager printManager = PrintManagerInterop.GetForWindow(hWnd);
+                printManager.PrintTaskRequested -= PrintTask_Requested;
+                _printPreviewImages.Clear();
+                Trace.WriteLine("UnRegisterForPrinting PrintTaskRequested");
+            }
+            catch (Exception ex)
+            {
+                message = ex.GetType().Name + " " + ex.Message;
+                Trace.WriteLine(message);
+            }
+            finally
+            {
+                _printDocument = null;
+                _printDocumentSource = null;
+            }
+        }
+
+        private void RegisterForPrinting()
+        {
+            try
+            {
+                var hWnd = MyHandle;
+                PrintManager printManager = PrintManagerInterop.GetForWindow(hWnd);
+                printManager.PrintTaskRequested -= PrintTask_Requested;
+                printManager.PrintTaskRequested += PrintTask_Requested;
+
+
+                _printDocument = new PrintDocument();
+                _printDocumentSource = _printDocument.DocumentSource;
+                _printDocument.Paginate += PrintDocument_Paginate;
+                _printDocument.GetPreviewPage += PrintDocument_GetPreviewPage;
+                _printDocument.AddPages += PrintDocument_AddPages;
+            }
+            catch (Exception ex)
+            {
+                Trace.WriteLine(ex.GetType().Name + " " + ex.Message);
+            }
+
+        }
+
+        private void PrintTask_Requested(PrintManager sender, PrintTaskRequestedEventArgs args)
+        {
+            // Create the PrintTask.
+            // Defines the title and delegate for PrintTaskSourceRequested.
+            try
+            {
+
+                PrintTask printTask = args.Request.CreatePrintTask("Application Print", PrintTaskSourceRequested);
+
+                // Handle PrintTask.Completed to catch failed print jobs.
+
+                printTask.Completed += PrintTask_Completed;
+
+                DispatcherQueue.TryEnqueue(DispatcherQueuePriority.Normal, () =>
+                {
+                    PrintButton.IsEnabled = false;
+                });
+            }
+            catch (Exception ex)
+            {
+
+                Trace.WriteLine(ex.GetType().Name + " " + ex.Message);
+            }
+
+        }
+
+        private void PrintTaskSourceRequested(PrintTaskSourceRequestedArgs args)
+        {
+            // Set the document source.
+            try
+            {
+                args.SetSource(_printDocumentSource);
+            }
+            catch (Exception ex)
+            {
+                Trace.WriteLine(ex.GetType().Name + " " + ex.Message);
+                // Notify the user if the print operation fails.
+                // StatusBlock.Text = "Failed to print.";
+                // TODO: on the page show failed print status
+            }
+        }
+
+        private void PrintTask_Completed(PrintTask sender, PrintTaskCompletedEventArgs args)
+        {
+            string statusBlockText = string.Empty;
+            // TODO: on the page show print status
+            try
+            {
+                // Notify the user if the print operation fails.
+                if (args.Completion == PrintTaskCompletion.Failed)
+                {
+                    statusBlockText = "Failed to print.";
+                }
+                else if (args.Completion == PrintTaskCompletion.Canceled)
+                {
+                    statusBlockText = "Printing canceled.";
+                }
+                else if (args.Completion == PrintTaskCompletion.Abandoned)
+                {
+                    statusBlockText = "Printing abandoned.";
+                }
+                else
+                {
+                    statusBlockText = "Printing completed.";
+                }
+                Trace.WriteLine(statusBlockText);
+            }
+            catch (Exception ex)
+            {
+                Trace.WriteLine(ex.GetType().Name + " " + ex.Message);
+                statusBlockText = "Failed to print.";
+            }
+
+            try
+            {
+                if (DispatcherQueue == null)
+                {
+                    // If the DispatcherQueue is not available, update the UI directly.
+                    // StatusBlock.Text = statusBlockText;
+                    PrintButton.IsEnabled = true;
+                    return;
+                }
+                bool queued = DispatcherQueue.TryEnqueue(DispatcherQueuePriority.Normal, () =>
+                {
+                    //  StatusBlock.Text = statusBlockText;
+                    PrintButton.IsEnabled = true;
+                });
+
+                if (!queued)
+                {
+                    // If the DispatcherQueue is not available, update the UI directly.
+                    // StatusBlock.Text = statusBlockText;
+                    PrintButton.IsEnabled = true;
+                }
+
+            }
+            catch (Exception ex)
+            {
+                Trace.WriteLine(ex.GetType().Name + " " + ex.Message);
+
+                // If the DispatcherQueue is not available, update the UI directly.
+                // StatusBlock.Text = statusBlockText;
+                PrintButton.IsEnabled = true;
+            }
+            finally
+            {
+                UnRegisterForPrinting();
+            }
+        }
+
+        private void PrintDocument_AddPages(object sender, AddPagesEventArgs e)
+        {
+            try
+            {
+                lock (_previewLock)
+                {
+                    if (_printPreviewImages.Count == 0)
+                    {
+                        LoadPreviewImages();
+                    }
+                }
+                PrintDocument printDocument = (PrintDocument)sender;
+
+                // Loop over all of the preview pages and add each one to be printed.
+                for (int i = 0; i < _printPreviewImages.Count; i++)
+                {
+                    
+                    printDocument.AddPage(_printPreviewImages[i].Result);
+                }
+
+
+                // Indicate that all of the print pages have been provided.
+                printDocument.AddPagesComplete();
+            }
+            catch (Exception ex)
+            {
+                Trace.WriteLine(ex.GetType().Name + " " + ex.Message);
+                // TODO: Notify the user if the print operation fails.
+                // StatusBlock.Text = "Failed to print.";
+            }
+        }
+
+        private void PrintDocument_GetPreviewPage(object sender, GetPreviewPageEventArgs e)
+        {
+            try
+            {
+                // Get the preview page for the requested page number.
+                if (e.PageNumber > 0 && e.PageNumber <= _printPreviewImages.Count)
+                {
+                    // Set the preview page.
+                    PrintDocument printDocument = (PrintDocument)sender;
+
+                    //  SvgSignControl ctrl = (SvgSignControl)_printPreviewPages[e.PageNumber - 1];
+                    lock (_previewLock)
+                    {
+                        if (_printPreviewImages.Count == 0)
+                        {
+                            LoadPreviewImages();
+                        }
+                    }
+
+
+                    if (e.PageNumber > _printPreviewImages.Count)
+                        return;
+                    
+                    printDocument.SetPreviewPage(e.PageNumber, _printPreviewImages[e.PageNumber - 1].Result);
+                }
+            }
+            catch (Exception ex)
+            {
+                Trace.WriteLine(ex.GetType().Name + " " + ex.Message);
+                // TODO: Notify the user if the print operation fails.
+                // StatusBlock.Text = "Failed to print.";
+            }
+        }
+        private object _previewLock = new object();
+        private void LoadPreviewImages()
+        {
+            // Get the page description to determine the size of the print page.
+            PrintPageDescription pageDescription = _printTaskOptions.GetPageDescription(0);
+
+            double pageWidthDips = pageDescription.PageSize.Width;
+            double pageHeightDips = pageDescription.PageSize.Height;
+
+            const double printDpi = 300.0;
+            int pixelWidth = Math.Max(1, (int)(pageWidthDips * printDpi / 96.0));
+            int pixelHeight = Math.Max(1, (int)(pageHeightDips * printDpi / 96.0));
+
+            // Loop through the items in the SignGridView and create a preview page for each sign that is selected for printing.
+            foreach (var item in SignGridView.SelectedItems)
+            {
+                //_printPreviewPages.Add(new Border
+                //{
+                //    Width = pageWidthDips,
+                //    Height = pageHeightDips,
+                //    Background = new SolidColorBrush(Colors.LightBlue)
+                //});
+
+                if (item is not SignData signData)
+                    continue;
+                try
+                {
+                    //// Render the sign to a UIElement for printing
+                    //SvgSignControl signControl = new SvgSignControl();
+                    //signControl.SvgTemplate = signData.SvgTemplate;
+                    //signControl.Data = signData.Fields;
+                    //signControl.Height = pixelWidth;
+                    //signControl.Width = pixelHeight;
+                    //signControl.RenderHeight = pixelWidth;
+                    //signControl.RenderWidth = pixelHeight;
+
+                    //_printPreviewPages.Add(signControl);
+
+                    var signImageTask = SignRenderService.RenderToImageAsync(
+                        signData.SvgTemplate
+                        , signData.Fields
+                        , pixelWidth
+                        , pixelHeight
+                        , pageWidthDips
+                        , pageHeightDips);
+
+                    if (signImageTask == null)
+                        continue;
+                    signImageTask.RunSynchronously();
+                    _printPreviewImages.Add(signImageTask);
+
+                    //var image = new Image
+                    //{
+                    //    Source = source,
+                    //    Width = pageWidthDips,
+                    //    Height = pageHeightDips,
+                    //    Stretch = Stretch.Uniform
+                    //};
+
+                    //_printPreviewPages.Add(image);
+
+                }
+                catch (Exception ex)
+                {
+                    continue;
+                }
+
+            }
+
+        }
+
+
+        private PrintTaskOptions _printTaskOptions;
+
+        //    private readonly List<UIElement> _printPreviewPages = new List<UIElement>();
+        private List< Task<Image> > _printPreviewImages = new List<Task<Image>>();
+        private void PrintDocument_Paginate(object sender, PaginateEventArgs e)
+        {
+            try
+            {
+                _printTaskOptions = e.PrintTaskOptions;
+                PrintDocument printDocument = (PrintDocument)sender;
+
+                printDocument.SetPreviewPageCount(SignGridView.SelectedItems.Count, PreviewPageCountType.Final);
+                Debug.Print("set the page count");
+            }
+            catch (Exception ex)
+            {
+                Trace.WriteLine(ex.GetType().Name + " " + ex.Message);
+            }
+        }
+        #endregion
+
     }
 }
