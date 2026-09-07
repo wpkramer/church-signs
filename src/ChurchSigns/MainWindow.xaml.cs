@@ -665,28 +665,21 @@ namespace ChurchSigns
                         if (skBitmap == null)
                             continue;
 
-                        // XAML uses DIPs: 96 per inch — NOT PDF points (72 per inch)
 
-                        // TODO: Create serveral classes based on Size or SizeF
-                        // 
-                        // SizeInches, SizePDFPrint, SizeXAMLThumbnail, SizeXAMLDisplay, SizeXAMLPrint 
-
-                        double widthDips = churchSign.PrintSize.PageWidthInches * 96.0;
-                        double heightDips = churchSign.PrintSize.PageHeightInches * 96.0;
                         BitmapImage? bitmapImage = await skBitmap.ToBitmapImageAsync();
                         if (bitmapImage == null)
                             continue;
 
                         var page = new Border
                         {
-                            Width = widthDips,
-                            Height = heightDips,
+                            Width = churchSign.PrintSize.PageWidthDips,
+                            Height = churchSign.PrintSize.PageHeightDips,
                             Background = new SolidColorBrush(Colors.White),
                             Child = new Image
                             {
                                 Source = bitmapImage,
-                                Width = widthDips,
-                                Height = heightDips,
+                                Width = churchSign.PrintSize.PageWidthDips,
+                                Height = churchSign.PrintSize.PageHeightDips,
                                 Stretch = Stretch.Uniform
                             }
                         };

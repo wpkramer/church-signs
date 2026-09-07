@@ -27,13 +27,6 @@ namespace ChurchSigns.UI.Models
         //private TemplateMediaSize _mediaSize;
 
 
-        private static PrintMediaSize ToWindowsMediaSize(TemplateMediaSize size) => size switch
-        {
-            TemplateMediaSize.Letter => PrintMediaSize.NorthAmericaLetter,
-            TemplateMediaSize.Legal => PrintMediaSize.NorthAmericaLegal,
-            TemplateMediaSize.Tabloid => PrintMediaSize.NorthAmericaTabloid, // verify exact name in SDK
-            _ => PrintMediaSize.NorthAmericaLetter
-        };
 
         // Inches in Portrait orientation
         private static (float WidthIn, float HeightIn) ToInches(TemplateMediaSize size) => size switch
@@ -51,7 +44,7 @@ namespace ChurchSigns.UI.Models
             _templateStorageItem = templateStorageItem;
             _errorMessage = string.Empty;
             _isValid = false;
-            
+            PrintSize = new PrintContentSize(8.5f, 11f);
             try
             {
                 
@@ -76,7 +69,9 @@ namespace ChurchSigns.UI.Models
             {
                 _errorMessage = $"{ex.GetType().Name}: {ex.Message}";
                 _isValid = false;
+
                 SignOrientation = PrintOrientation.Portrait; // ensures PrintSize stays consistent
+
             }
         }
 
@@ -106,7 +101,7 @@ namespace ChurchSigns.UI.Models
             return new PrintContentSize(sizeInches.HeightIn, sizeInches.WidthIn) ;
         }
 
-        public PrintContentSize PrintSize { get; private set; } = new PrintContentSize(8.5f, 11f);
+        public PrintContentSize PrintSize { get; private set; } 
 
         public Size ThumbnailSize
         {
