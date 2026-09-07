@@ -3,14 +3,9 @@ using ChurchSigns.UI.Util;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using SkiaSharp;
-using Svg.Skia;
-using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-#nullable enable
+
 namespace ChurchSigns.UI.Controls
 {
     public partial class SvgSignControl : Control
@@ -81,7 +76,6 @@ namespace ChurchSigns.UI.Controls
             set => SetValue(RenderHeightProperty, value);
         }
 
-        // ─── SvgSignTemplate + lifecycle ──────────────────────────────────────
 
         protected override void OnApplyTemplate()
         {
@@ -116,12 +110,6 @@ namespace ChurchSigns.UI.Controls
             if (currentProps.Template.Length == 0)
                 return;
 
-            //var template = SvgTemplate;
-            //if (template is null)
-            //    return;
-            //var data = Data;
-            //var width = RenderWidth;
-            //var height = RenderHeight;
 
             if (currentProps.Equals(_lastRenderProps))
                 return;
@@ -132,33 +120,30 @@ namespace ChurchSigns.UI.Controls
 
             try
             {
-                var merged = Merge(currentProps.Template, currentProps.Data);
+                var merged = currentProps.Template.MergeTemplateWithData(currentProps.Data);
 
                 if (version != _renderVersion)
                     return; // superseded
 
-                using (SKBitmap? bitmap = merged.RenderToSKBitmap(currentProps.Width, currentProps.Height))
+                using (SKBitmap? skBitmap = merged.RenderToSKBitmap(currentProps.Width, currentProps.Height))
                 {
 
-                    if (bitmap is null)
+                    if (skBitmap is null)
                     {
                         _image.Source = null;
                         return;
                     }
 
-                    var source = await bitmap.ToImageSourceAsync();
+                    var bitmapImage = await skBitmap.ToBitmapImageAsync();
 
                     if (version != _renderVersion)
                         return;
 
-                    _image.Source = source;
+                    _image.Source = bitmapImage;
 
                     _lastRenderProps.CopyFrom(currentProps);
                 }
-                //_lastTemplate = template;
-                //_lastData = data;
-                //_lastWidth = width;
-                //_lastHeight = height;
+
 
             }
             catch
@@ -170,68 +155,5 @@ namespace ChurchSigns.UI.Controls
 
         }
 
-        // ─── Merge {{Field}} placeholders ──────────────────────────────
-        // TODO: move Merge logic to a string extension
-        private static string Merge(string template, IDictionary<string, string>? data)
-        {
-            if (data is null || data.Count == 0)
-                return template;
-
-            return FieldReplaceRegex().Replace(template, m =>
-            {
-                var key = m.Groups[1].Value;
-                return data.TryGetValue(key, out var value) ? value : m.Value;
-            });
-        }
-
-        // ─── SkiaSharp + Svg.Skia render ───────────────────────────────
-
-        //private static SKBitmap? RenderPrintSizeBitmap(string svgContent, int width, int height)
-        //{
-        //    using var stream = new MemoryStream(Encoding.UTF8.GetBytes(svgContent));
-        //    var svg = new SKSvg();
-
-        //    if (svg.Load(stream) is null || svg.Picture is null)
-        //        return null;
-
-        //    var bitmap = new SKBitmap(width, height);
-        //    using var canvas = new SKCanvas(bitmap);
-        //    canvas.Clear(SKColors.White);
-
-        //    var bounds = svg.Picture.CullRect;
-        //    if (bounds.Width <= 0 || bounds.Height <= 0)
-        //        return bitmap;
-
-        //    float scale = Math.Min(width / bounds.Width, height / bounds.Height);
-        //    float offsetX = (width - bounds.Width * scale) / 2f;
-        //    float offsetY = (height - bounds.Height * scale) / 2f;
-
-        //    canvas.Translate(offsetX, offsetY);
-        //    canvas.Scale(scale);
-        //    canvas.DrawPicture(svg.Picture);
-
-        //    return bitmap;
-        //}
-
-        // ─── SKBitmap → WinUI ImageSource ──────────────────────────────
-
-        //private static async Task<SoftwareBitmapSource> ToImageSourceAsync(SKBitmap skBitmap)
-        //{
-        //    using var image = SKImage.FromBitmap(skBitmap);
-        //    using var data = image.Encode(SKEncodedImageFormat.Png, 100);
-        //    using var stream = data.AsStream();
-
-        //    var decoder = await BitmapDecoder.CreateAsync(stream.AsRandomAccessStream());
-        //    var softwareBitmap = await decoder.GetSoftwareBitmapAsync(
-        //        BitmapPixelFormat.Bgra8,
-        //        BitmapAlphaMode.Premultiplied);
-
-        //    var source = new SoftwareBitmapSource();
-        //    await source.SetBitmapAsync(softwareBitmap);
-        //    return source;
-        //}
-
-        [GeneratedRegex(@"\{\{\s*(.+?)\s*\}\}")]
-        private static partial Regex FieldReplaceRegex();
     }
 }

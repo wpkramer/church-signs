@@ -44,7 +44,7 @@ public class ChurchSign
 
 
     // so given the PrintContentSize is created correctly, can you review this function
-    public SKBitmap RenderPrintSizeBitmap()
+    public SKBitmap? RenderPrintSizeBitmap()
     {
         var merged = SvgTemplate.MergeTemplateWithData(Fields);
         return merged.RenderToSKBitmap(PrintSize);

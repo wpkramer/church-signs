@@ -661,8 +661,8 @@ namespace ChurchSigns
                     foreach (ChurchSign churchSign in SignGridView.SelectedItems.OfType<ChurchSign>())
                     {
 
-                        using var bitmap = churchSign.RenderPrintSizeBitmap();
-                        if (bitmap == null)
+                        using var skBitmap = churchSign.RenderPrintSizeBitmap();
+                        if (skBitmap == null)
                             continue;
 
                         // XAML uses DIPs: 96 per inch — NOT PDF points (72 per inch)
@@ -673,8 +673,10 @@ namespace ChurchSigns
 
                         double widthDips = churchSign.PrintSize.PageWidthInches * 96.0;
                         double heightDips = churchSign.PrintSize.PageHeightInches * 96.0;
+                        BitmapImage? bitmapImage = await skBitmap.ToBitmapImageAsync();
+                        if (bitmapImage == null)
+                            continue;
 
-                        var source = await bitmap.ToBitmapImageAsync();
                         var page = new Border
                         {
                             Width = widthDips,
@@ -682,7 +684,7 @@ namespace ChurchSigns
                             Background = new SolidColorBrush(Colors.White),
                             Child = new Image
                             {
-                                Source = source,
+                                Source = bitmapImage,
                                 Width = widthDips,
                                 Height = heightDips,
                                 Stretch = Stretch.Uniform

@@ -7,32 +7,30 @@ using System.IO;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text;
 using System.Threading.Tasks;
-using Windows.Graphics.Imaging;
 using Windows.Storage.Streams;
 
 namespace ChurchSigns.UI.Util
 {
     public static class SKExtensions
     {
-        // Make this extension public so callers can use SKBitmap.ToImageSourceAsync()
-        public static async Task<SoftwareBitmapSource> ToImageSourceAsync(this SKBitmap skBitmap)
+        public static async Task<BitmapImage?> ToBitmapImageAsync(this SKBitmap? skBitmap)
         {
-            if (skBitmap == null)
+            if (skBitmap is null)
                 return null;
 
             using var image = SKImage.FromBitmap(skBitmap);
             using var data = image.Encode(SKEncodedImageFormat.Png, 100);
-            using var stream = data.AsStream();
+            if (data is null)
+                return null;
 
-            var decoder = await BitmapDecoder.CreateAsync(stream.AsRandomAccessStream());
-            var softwareBitmap = await decoder.GetSoftwareBitmapAsync(
-                BitmapPixelFormat.Bgra8,
-                BitmapAlphaMode.Premultiplied);
-
-            var source = new SoftwareBitmapSource();
-            await source.SetBitmapAsync(softwareBitmap);
-            return source;
+            var bitmapImage = new BitmapImage();
+            using var raStream = new InMemoryRandomAccessStream();
+            await raStream.WriteAsync(data.ToArray().AsBuffer());
+            raStream.Seek(0);
+            await bitmapImage.SetSourceAsync(raStream);
+            return bitmapImage;
         }
+
 
         public static SKBitmap? RenderToSKBitmap(this string svgContent, int width, int height)
         {
@@ -72,20 +70,6 @@ namespace ChurchSigns.UI.Util
             return svgContent.RenderToSKBitmap(printSize.PixelWidth, printSize.PixelHeight);
         }
 
-        public static async Task<BitmapImage> ToBitmapImageAsync(this SKBitmap skBitmap)
-        {
-            using var image = SKImage.FromBitmap(skBitmap);
-            using var data = image.Encode(SKEncodedImageFormat.Png, 100);
 
-            var bitmapImage = new BitmapImage();
-            using (var raStream = new InMemoryRandomAccessStream())
-            {
-                var bytes = data.ToArray();
-                await raStream.WriteAsync(bytes.AsBuffer());
-                raStream.Seek(0);
-                await bitmapImage.SetSourceAsync(raStream);
-            }
-            return bitmapImage;
-        }
     }
 }
