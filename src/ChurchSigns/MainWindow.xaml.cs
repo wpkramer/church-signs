@@ -18,6 +18,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Drawing;
 using System.Linq;
 using System.Threading.Tasks;
 using Windows.ApplicationModel.DataTransfer;
@@ -638,8 +639,6 @@ namespace ChurchSigns
 
         #region printing
 
-        // grok, this gives me 6 light blue pages
-
         private async void PrintButton_Click(object sender, RoutedEventArgs e)
         {
 
@@ -648,8 +647,17 @@ namespace ChurchSigns
                 try
                 {
                     PrintButton.IsEnabled = false;
+                    
                     _printPreviewPages.Clear();
                     PrintCanvas.Children.Clear();
+
+                    if (SignTemplatesListView.SelectedItem is SignTemplate signTemplate)
+                    {
+                        _printDefaultOrientation = signTemplate.SignOrientation;
+                    }
+                    // TODO: get this from template
+                    _printDefaultMediaSize = PrintMediaSize.NorthAmericaLetter;
+
                     foreach (ChurchSign churchSign in SignGridView.SelectedItems.OfType<ChurchSign>())
                     {
 
@@ -658,6 +666,11 @@ namespace ChurchSigns
                             continue;
 
                         // XAML uses DIPs: 96 per inch — NOT PDF points (72 per inch)
+
+                        // TODO: Create serveral classes based on Size or SizeF
+                        // 
+                        // SizeInches, SizePDFPrint, SizeXAMLThumbnail, SizeXAMLDisplay, SizeXAMLPrint 
+
                         double widthDips = churchSign.PrintSize.PageWidthInches * 96.0;
                         double heightDips = churchSign.PrintSize.PageHeightInches * 96.0;
 
@@ -675,12 +688,6 @@ namespace ChurchSigns
                                 Stretch = Stretch.Uniform
                             }
                         };
-                        //var page = new Border
-                        //{
-                        //    Width = 816,
-                        //    Height = 1056,
-                        //    Background = new SolidColorBrush(Colors.LightBlue)
-                        //};
 
 
                         PrintCanvas.Children.Add(page);
@@ -717,7 +724,8 @@ namespace ChurchSigns
         }
 
 
-
+        private PrintMediaSize _printDefaultMediaSize = PrintMediaSize.NorthAmericaLetter;
+        private PrintOrientation _printDefaultOrientation = PrintOrientation.Portrait;
         private PrintDocument? _printDocument = null;
         private IPrintDocumentSource? _printDocumentSource = null;
         private readonly List<UIElement> _printPreviewPages = [];
@@ -813,6 +821,25 @@ namespace ChurchSigns
                 {
                     PrintButton.IsEnabled = false;
                 });
+
+                // Customize options displayed in print preview UI.
+                // Get the list of displayed options.
+                IList<string> displayedOptions = printTask.Options.DisplayedOptions;
+
+                // Choose the printer options to be shown.
+                // The order in which the options are appended determines
+                // the order in which they appear in the UI.
+                displayedOptions.Clear();
+                displayedOptions.Add(StandardPrintTaskOptions.Copies);
+                displayedOptions.Add(StandardPrintTaskOptions.Orientation);
+                displayedOptions.Add(StandardPrintTaskOptions.ColorMode);
+                //displayedOptions.Add(StandardPrintTaskOptions.Collation);
+                //displayedOptions.Add(StandardPrintTaskOptions.Duplex);
+
+                // Preset the default value of the print media size option.
+                //  Maybe future adjust generated image to fit media size
+                //  printTask.Options.MediaSize = _printDefaultMediaSize;
+                printTask.Options.Orientation = _printDefaultOrientation;
             }
             catch (Exception ex)
             {

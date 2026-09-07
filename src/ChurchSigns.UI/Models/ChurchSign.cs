@@ -41,8 +41,7 @@ public class ChurchSign
     public string SvgTemplate => _template.SvgSignTemplate;
     public string SvgSign => SvgTemplate.MergeTemplateWithData(Fields);
     public PrintContentSize PrintSize => _template.PrintSize;
-    public SignTemplate.PrintOrientation SignOrientation => _template.SignOrientation;
-    public SignTemplate Template => _template; // useful for PDF/orientation
+
 
     // so given the PrintContentSize is created correctly, can you review this function
     public SKBitmap RenderPrintSizeBitmap()

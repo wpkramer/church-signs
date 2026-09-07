@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Xml;
+using Windows.Graphics.Printing;
 
 namespace ChurchSigns.UI.Models
 {
@@ -11,11 +12,7 @@ namespace ChurchSigns.UI.Models
     /// </summary>
     public class SignTemplate
     {
-        public enum PrintOrientation
-        {
-            Portrait,
-            Landscape
-        }
+
 
         private const string DefaultColor = "#000000";
         private const float LandscapeAspectThreshold = 1.02f;
@@ -25,6 +22,7 @@ namespace ChurchSigns.UI.Models
         private readonly string _errorMessage;
 
         private PrintOrientation _signOrientation;
+        private PrintMediaSize _mediaSize;
 
         public SignTemplate(TemplateStorageItem templateStorageItem)
         {
@@ -36,6 +34,9 @@ namespace ChurchSigns.UI.Models
 
             // Safe defaults before parsing
             _signOrientation = PrintOrientation.Portrait;
+            _mediaSize = PrintMediaSize.NorthAmericaLetter;
+
+            // TODO: Create from media size
             PrintSize = new PrintContentSize(8.5f, 11f);
 
             try
