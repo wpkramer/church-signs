@@ -102,6 +102,10 @@ namespace ChurchSigns.UI.Controls
             // test if PART_Image has been applied
             if (_image is null)
                 return;
+            if (SvgTemplate is null)
+                return;
+            if(Data is null )
+                return;
 
             TemplatedImageSync currentProps = new TemplatedImageSync(SvgTemplate, Data, RenderWidth, RenderHeight);
 

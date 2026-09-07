@@ -8,7 +8,7 @@ using ChurchSigns.UI.Models;
 
 namespace ChurchSigns.UI.ViewModels
 {
-    public partial class SignTemplateViewModel : INotifyPropertyChanged
+    public partial class SignTemplateViewModel // : INotifyPropertyChanged
     {
         private readonly SignTemplate _signTemplate;
 
@@ -26,18 +26,14 @@ namespace ChurchSigns.UI.ViewModels
 
 
         // INotifyPropertyChanged implementation
-        public event PropertyChangedEventHandler PropertyChanged;
+        //public event PropertyChangedEventHandler PropertyChanged;
 
         public void UpdateTemplate()
         {
-            _signTemplate.UpdatePreviewFields(PreviewFields.ToArray());
+           // load preview fields and other options here
 
         }
 
-        //protected void OnPropertyChanged(string propertyName)
-        //{
-        //    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        //}
 
 
     }

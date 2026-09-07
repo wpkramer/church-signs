@@ -103,14 +103,14 @@
                                 Margin="4"
                                 SvgTemplate="{x:Bind SvgSignTemplate, Mode=OneWay}"
                                 Data="{x:Bind PreviewFields, Mode=OneWay}"
-                                Height="65"
-                                Width="85"
-                                RenderHeight="65"
-                                RenderWidth="85"
+                                Height="{x:Bind ThumbnailSize.Height}"
+                                Width="{x:Bind ThumbnailSize.Width}"
+                                RenderHeight="{x:Bind ThumbnailSize.Height}"
+                                RenderWidth="{x:Bind ThumbnailSize.Height}"
                                 />
                             <StackPanel Grid.Column="1" Orientation="Horizontal">
                                 <TextBlock Text="{x:Bind Title}" Style="{ThemeResource SubtitleTextBlockStyle}"/>
-                                <Button x:Name="EditTemplateButton" Content="Edit" Margin="8" Click="EditTemplateButton_Click" IsEnabled="{x:Bind IsCustom, Mode=OneWay}"/>
+                                <!--<Button x:Name="EditTemplateButton" Content="Edit" Margin="8" Click="EditTemplateButton_Click" IsEnabled="{x:Bind IsCustom, Mode=OneWay}"/>-->
                             </StackPanel>
                         </Grid>
                        
@@ -180,21 +180,21 @@
                 <DataTemplate x:DataType="models:ChurchSign">
                     <Grid>
                         <Grid.RowDefinitions>
-                            <RowDefinition Height="216"/>
+                            <RowDefinition Height="Auto"/>
                             <!--<RowDefinition Height="Auto"/>-->
                         </Grid.RowDefinitions>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="316"/>
-                            </Grid.ColumnDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
                         <controls:SvgSignControl
                             SvgTemplate="{x:Bind SvgTemplate, Mode=OneWay}"
                             Data="{x:Bind Fields, Mode=OneWay}"
-                            Height="200"
-                            Width="300"
-                            RenderHeight="200"
-                            RenderWidth="300"/>
+                            Height="{x:Bind PreviewSize.Height}"
+                            Width="{x:Bind PreviewSize.Width}"
+                            RenderHeight="{x:Bind PreviewSize.Height}"
+                            RenderWidth="{x:Bind PreviewSize.Height}"/>
                         
-                        <!--<TextBlock Grid.Row="1" Text="{x:Bind Title, Mode=OneWay}"/>-->
+                        <!-- remove the render attributes and make it the same in the control -->
                     </Grid>
                 </DataTemplate>
             </GridView.ItemTemplate>

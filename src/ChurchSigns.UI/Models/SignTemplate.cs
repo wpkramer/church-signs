@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Globalization;
+using System.Runtime.CompilerServices;
 using System.Xml;
 using Windows.Graphics.Printing;
 
@@ -21,8 +23,26 @@ namespace ChurchSigns.UI.Models
         private readonly bool _isValid;
         private readonly string _errorMessage;
 
-        private PrintOrientation _signOrientation;
-        private PrintMediaSize _mediaSize;
+        //private PrintOrientation _signOrientation;
+        //private TemplateMediaSize _mediaSize;
+
+
+        private static PrintMediaSize ToWindowsMediaSize(TemplateMediaSize size) => size switch
+        {
+            TemplateMediaSize.Letter => PrintMediaSize.NorthAmericaLetter,
+            TemplateMediaSize.Legal => PrintMediaSize.NorthAmericaLegal,
+            TemplateMediaSize.Tabloid => PrintMediaSize.NorthAmericaTabloid, // verify exact name in SDK
+            _ => PrintMediaSize.NorthAmericaLetter
+        };
+
+        // Inches in Portrait orientation
+        private static (float WidthIn, float HeightIn) ToInches(TemplateMediaSize size) => size switch
+        {
+            TemplateMediaSize.Letter => (8.5f, 11f),
+            TemplateMediaSize.Legal => (8.5f, 14f),
+            TemplateMediaSize.Tabloid => (11f, 17f),
+            _ => (8.5f, 11f)
+        };
 
         public SignTemplate(TemplateStorageItem templateStorageItem)
         {
@@ -31,16 +51,11 @@ namespace ChurchSigns.UI.Models
             _templateStorageItem = templateStorageItem;
             _errorMessage = string.Empty;
             _isValid = false;
-
-            // Safe defaults before parsing
-            _signOrientation = PrintOrientation.Portrait;
-            _mediaSize = PrintMediaSize.NorthAmericaLetter;
-
-            // TODO: Create from media size
-            PrintSize = new PrintContentSize(8.5f, 11f);
-
+            
             try
             {
+                
+
                 var xmlDocument = new XmlDocument();
                 xmlDocument.LoadXml(templateStorageItem.Content);
 
@@ -54,6 +69,8 @@ namespace ChurchSigns.UI.Models
 
                 if (TryGetAspectRatio(root, out float aspect) && aspect > LandscapeAspectThreshold)
                     SignOrientation = PrintOrientation.Landscape;
+
+                PrintSize = CalcPrintSize();
             }
             catch (Exception ex)
             {
@@ -71,17 +88,69 @@ namespace ChurchSigns.UI.Models
         /// </summary>
         public PrintOrientation SignOrientation
         {
-            get => _signOrientation;
+            get => _templateStorageItem.SideCar.PrintOrientation;
             private set
             {
-                _signOrientation = value;
-                PrintSize = value == PrintOrientation.Portrait
-                    ? new PrintContentSize(8.5f, 11f)
-                    : new PrintContentSize(11f, 8.5f);
+                _templateStorageItem.SideCar.PrintOrientation = value;
+                PrintSize = CalcPrintSize();
             }
         }
 
-        public PrintContentSize PrintSize { get; private set; }
+        private PrintContentSize CalcPrintSize()
+        {
+            var sizeInches = ToInches(_templateStorageItem.SideCar.TemplateMediaSize);
+            if (_templateStorageItem.SideCar.PrintOrientation == PrintOrientation.Portrait)
+            {
+                return new PrintContentSize(sizeInches.WidthIn, sizeInches.HeightIn);
+            }
+            return new PrintContentSize(sizeInches.HeightIn, sizeInches.WidthIn) ;
+        }
+
+        public PrintContentSize PrintSize { get; private set; } = new PrintContentSize(8.5f, 11f);
+
+        public Size ThumbnailSize
+        {
+            get
+            {
+                double widthDips = PrintSize.PageWidthInches * 96.0 / 10;
+                double heightDips = PrintSize.PageHeightInches * 96.0 / 10;
+
+                return new Size((int)widthDips, (int)heightDips);
+            }
+        }
+
+        public Size PreviewSize
+        {
+            get
+            {
+                double widthDips = PrintSize.PageWidthInches * 96.0 / 4;
+                double heightDips = PrintSize.PageHeightInches * 96.0 / 4;
+
+                return new Size((int)widthDips, (int)heightDips);
+            }
+        }
+
+        public PrintMediaSize MediaSize
+        {
+            get
+            {
+                switch (_templateStorageItem.SideCar.TemplateMediaSize)
+                {
+                    case TemplateMediaSize.Letter:
+                        return PrintMediaSize.NorthAmericaLetter;
+
+                    case TemplateMediaSize.Legal:
+                        return PrintMediaSize.NorthAmericaLegal;
+                    case TemplateMediaSize.Tabloid:
+                        return PrintMediaSize.NorthAmericaTabloid;
+
+
+                }
+                return PrintMediaSize.NorthAmericaLetter;
+
+            }
+        }
+
 
         // ─── Identity / classification ───────────────────────────────
 
@@ -128,18 +197,12 @@ namespace ChurchSigns.UI.Models
             return signData;
         }
 
-        internal void UpdatePreviewFields(SignTemplateProperty[] properties)
-        {
-            _templateStorageItem.PreviewFields.Fields.Clear();
-            foreach (var property in properties)
-                _templateStorageItem.PreviewFields.Fields[property.Name] = property.Value;
-        }
 
         public TemplateStorageItem ToStorageItem() => _templateStorageItem;
 
         private string GetPreviewValue(string fieldName)
         {
-            if (_templateStorageItem.PreviewFields.Fields.TryGetValue(fieldName, out var value))
+            if (_templateStorageItem.SideCar.Fields.TryGetValue(fieldName, out var value))
                 return value;
 
             if (IsColorFieldName(fieldName))

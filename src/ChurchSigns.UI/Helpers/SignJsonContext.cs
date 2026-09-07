@@ -7,16 +7,12 @@ using System.Text.Json.Serialization;
 
 namespace ChurchSigns.UI.Helpers
 {
-    [JsonSerializable(typeof(SignTemplateProperties))]
+    [JsonSerializable(typeof(TemplateSidecar))]
+    [JsonSourceGenerationOptions(
+        WriteIndented = true,
+        UseStringEnumConverter = true,
+        PropertyNamingPolicy = JsonKnownNamingPolicy.CamelCase)]
     public partial class SignJsonContext : JsonSerializerContext
     {
-        public static SignJsonContext WithOptions { get; } = new SignJsonContext(new JsonSerializerOptions
-        {
-            // Configure the serializer options as needed
-            // Converters = { new JsonStringEnumConverter() },
-            // PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-            // PropertyNameCaseInsensitive = true,
-            WriteIndented = true
-        });
     }
 }

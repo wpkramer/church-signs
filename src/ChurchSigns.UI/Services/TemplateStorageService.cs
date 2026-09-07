@@ -14,6 +14,10 @@ namespace ChurchSigns.UI.Services
     {
         public static TemplateStorageService Instance { get; } = new();
 
+        static string SidecarName(string svgFileName) =>
+            Path.ChangeExtension(svgFileName, ".json"); // LeaderSign.svg → LeaderSign.json
+       
+
         private const string TemplatesRoot = "Templates";
         private TemplateStorageService() { }
 
@@ -49,7 +53,7 @@ namespace ChurchSigns.UI.Services
 
             foreach (SignCategory category in Enum.GetValues<SignCategory>())
             {
-                StorageFolder categoryFolder = null;
+                StorageFolder? categoryFolder = null;
                 try
                 {
                     categoryFolder = await templatesRoot.GetFolderAsync(category.ToString());
@@ -60,7 +64,7 @@ namespace ChurchSigns.UI.Services
                 {
                     if (!file.Name.EndsWith(".svg", StringComparison.OrdinalIgnoreCase))
                         continue;
-                    var storageItem =new TemplateStorageItem
+                    var storageItem = new TemplateStorageItem
                     {
                         IsProvided = true,
                         SignCategory = category,
@@ -68,14 +72,18 @@ namespace ChurchSigns.UI.Services
                         Content = await FileIO.ReadTextAsync(file)
                     };
 
-                    string sidecarName = Path.ChangeExtension(file.Name, ".json");
+                    string sidecarName = SidecarName(file.Name);
                     var sidecarFile = await categoryFolder.TryGetItemAsync(sidecarName) as StorageFile;
                     if(sidecarFile != null)
                     {
                         try
                         {
-                            var properties = await LoadAsync(sidecarFile);
-                            storageItem.PreviewFields = properties;
+                            var sideCar = await LoadSidecarAsync(sidecarFile);
+                            if(sideCar != null)
+                            {
+                                storageItem.SideCar = sideCar;
+                            }
+
                         }
                         catch
                         {
@@ -115,14 +123,14 @@ namespace ChurchSigns.UI.Services
                     };
 
 
-                    string sidecarName = Path.ChangeExtension(file.Name, ".json");
+                    string sidecarName = SidecarName(file.Name);
                     var sidecarFile = await categoryFolder.TryGetItemAsync(sidecarName) as StorageFile;
                     if (sidecarFile != null)
                     {
                         try
                         {
-                            var properties = await LoadAsync(sidecarFile);
-                            storageItem.PreviewFields = properties;
+                            var sideCar = await LoadSidecarAsync(sidecarFile);
+                            storageItem.SideCar = sideCar;
                         }
                         catch
                         {
@@ -157,7 +165,7 @@ namespace ChurchSigns.UI.Services
 
                 string sidecarFileName = Path.ChangeExtension(item.Filename, ".json");
                 var sidecarFile = await categoryFolder.CreateFileAsync(sidecarFileName, CreationCollisionOption.ReplaceExisting);
-                await SaveAsync(sidecarFile, item.PreviewFields);
+                await SaveSidecarAsync(sidecarFile, item.SideCar);
             }
             catch (Exception) when (!overwrite)
             {
@@ -181,22 +189,19 @@ namespace ChurchSigns.UI.Services
         }
 
 
-        private static async Task<SignTemplateProperties> LoadAsync(StorageFile file)
+        private static async Task<TemplateSidecar> LoadSidecarAsync(StorageFile file)
         {
             var json = await FileIO.ReadTextAsync(file);
-            return JsonSerializer.Deserialize<SignTemplateProperties>(json, (System.Text.Json.Serialization.Metadata.JsonTypeInfo<SignTemplateProperties>)SignJsonContext.WithOptions.SignTemplateProperties);
+            return JsonSerializer.Deserialize<TemplateSidecar>(json, SignJsonContext.Default.TemplateSidecar)
+                ?? new TemplateSidecar();
         }
 
-        private static async Task SaveAsync(StorageFile file, SignTemplateProperties values)
+        private static async Task SaveSidecarAsync(StorageFile file, TemplateSidecar values)
         {
-            var json = JsonSerializer.Serialize(values, (System.Text.Json.Serialization.Metadata.JsonTypeInfo<SignTemplateProperties>)SignJsonContext.WithOptions.SignTemplateProperties);
+            var json = JsonSerializer.Serialize(values,SignJsonContext.Default.TemplateSidecar);
             await FileIO.WriteTextAsync(file, json);
         }
 
-        /// <summary>
-        /// Package URI helper if you still prefer ms-appx paths for known content files.
-        /// </summary>
-        //public static Uri GetContentUri(SignCategory category, string filename) =>
-        //    new($"ms-appx:///{TemplatesRoot}/{category}/{filename}");
+
     }
 }

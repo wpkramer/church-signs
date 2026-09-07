@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using ChurchSigns.UI.Util;
 using System.Text;
+using Windows.Graphics.Printing;
 
 namespace ChurchSigns.UI.Models
 {
@@ -12,7 +13,9 @@ namespace ChurchSigns.UI.Models
         public SignCategory SignCategory { get; set; }
         public string Filename { get; set; } = "";
         public string Content { get; set; } = "";
-        public SignTemplateProperties PreviewFields { get; set; } = new SignTemplateProperties();
+
+        
+        public TemplateSidecar SideCar { get; set; } = new TemplateSidecar();
 
         // Optional helpers for UI
         public string DisplayName => System.IO.Path.GetFileNameWithoutExtension(Filename);

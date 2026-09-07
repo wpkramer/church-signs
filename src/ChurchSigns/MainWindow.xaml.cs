@@ -654,9 +654,9 @@ namespace ChurchSigns
                     if (SignTemplatesListView.SelectedItem is SignTemplate signTemplate)
                     {
                         _printDefaultOrientation = signTemplate.SignOrientation;
+                        _printDefaultMediaSize = signTemplate.MediaSize;
                     }
-                    // TODO: get this from template
-                    _printDefaultMediaSize = PrintMediaSize.NorthAmericaLetter;
+                    
 
                     foreach (ChurchSign churchSign in SignGridView.SelectedItems.OfType<ChurchSign>())
                     {
@@ -842,6 +842,7 @@ namespace ChurchSigns
                 //  Maybe future adjust generated image to fit media size
                 //  printTask.Options.MediaSize = _printDefaultMediaSize;
                 printTask.Options.Orientation = _printDefaultOrientation;
+                printTask.Options.MediaSize = _printDefaultMediaSize;
             }
             catch (Exception ex)
             {
