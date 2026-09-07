@@ -1,26 +1,31 @@
+using ChurchSigns.Dialogs;
+using ChurchSigns.UI.Controls;
 using ChurchSigns.UI.Models;
+using ChurchSigns.UI.Services;
+using ChurchSigns.UI.Util;
 using ChurchSigns.UI.ViewModels;
 using Microsoft.UI;
+using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
-using Windows.Storage.Pickers;
+using Microsoft.UI.Xaml.Media;
+using Microsoft.UI.Xaml.Media.Imaging;
+using Microsoft.UI.Xaml.Printing;
+using ShimSkiaSharp;
+using SkiaSharp;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
+using System.Linq;
 using System.Threading.Tasks;
 using Windows.ApplicationModel.DataTransfer;
-using Windows.Storage;
-using WinRT.Interop;
-using ChurchSigns.UI.Services;
-using ChurchSigns.Dialogs;
-using System.ComponentModel;
 using Windows.Graphics.Printing;
-using Microsoft.UI.Xaml.Printing;
-using Microsoft.UI.Dispatching;
-using System.Linq;
-using ChurchSigns.UI.Controls;
-using Microsoft.UI.Xaml.Media;
+using Windows.Storage;
+using Windows.Storage.Pickers;
+using Windows.Storage.Streams;
+using WinRT.Interop;
 
 namespace ChurchSigns
 {
@@ -53,13 +58,14 @@ namespace ChurchSigns
             HasPasteData = Clipboard.GetContent().Contains(StandardDataFormats.Text);
         }
 
-        // One more CsWinRT1030 that I can't seem to code around, some help please.
-        // caused by TemplatesCVS.Source = ViewModel.GroupedTemplates;
-        public async Task InitializeTemplatesAsync()
+
+        public async Task PrepareWindowAsync()
         {
             await ViewModel.InitializeAsync();
             TemplatesCVS.Source = ViewModel.GroupedTemplates;
 
+            // called from app once, so while we are here
+            RegisterForPrinting();
         }
 
 
@@ -350,7 +356,7 @@ namespace ChurchSigns
                                 ViewModel.Signs.Clear();
                                 foreach (var fields in _signTemplateDataMap.CreateMappedRecords())
                                 {
-                                    SignData data = new SignData(_signTemplateDataMap.Template);
+                                    ChurchSign data = new ChurchSign(_signTemplateDataMap.Template);
                                     data.Fields = fields;
                                     ViewModel.Signs.Add(data);
                                 }
@@ -393,7 +399,7 @@ namespace ChurchSigns
             {
 
 
-                SignData data = new SignData(_signTemplateDataMap.Template);
+                ChurchSign data = new ChurchSign(_signTemplateDataMap.Template);
                 data.Fields = fields;
                 ViewModel.Signs.Add(data);
             }
@@ -611,13 +617,28 @@ namespace ChurchSigns
             AllSignsCheckBox.Unchecked += AllSignsCheckBox_Unchecked;
         }
 
+        private async void PdfExportButton_Click(object sender, RoutedEventArgs e)
+        {
+            IReadOnlyList<ChurchSign> signs = SignGridView.SelectedItems.OfType<ChurchSign>().ToList();
+            var picker = new FileSavePicker
+            {
+                SuggestedStartLocation = PickerLocationId.DocumentsLibrary,
+                SuggestedFileName = "ChurchSigns"
+            };
+            picker.FileTypeChoices.Add("PDF", [".pdf"]);
+            InitializeWithWindow(picker);
+
+
+            StorageFile file = await picker.PickSaveFileAsync();
+
+            await SignPdfService.ExportSelectedSignsAsync(signs, file);
+        }
+
 
 
         #region printing
 
-
-
-        private IntPtr MyHandle { get { return WindowNative.GetWindowHandle((Window)this); } }
+        // grok, this gives me 6 light blue pages
 
         private async void PrintButton_Click(object sender, RoutedEventArgs e)
         {
@@ -626,23 +647,65 @@ namespace ChurchSigns
             {
                 try
                 {
-                    _printPreviewImages.Clear();
-                    RegisterForPrinting();
-
-                    var hWnd = MyHandle;
-                    System.Diagnostics.Trace.WriteLine($"Print: hWnd = 0x{hWnd.ToInt64():X}");
-                    if (hWnd == IntPtr.Zero)
+                    PrintButton.IsEnabled = false;
+                    _printPreviewPages.Clear();
+                    PrintCanvas.Children.Clear();
+                    foreach (ChurchSign churchSign in SignGridView.SelectedItems.OfType<ChurchSign>())
                     {
-                        System.Diagnostics.Trace.WriteLine("Invalid HWND (zero) - aborting print.");
-                        return;
+
+                        using var bitmap = churchSign.RenderPrintSizeBitmap();
+                        if (bitmap == null)
+                            continue;
+
+                        // XAML uses DIPs: 96 per inch — NOT PDF points (72 per inch)
+                        double widthDips = churchSign.PrintSize.PageWidthInches * 96.0;
+                        double heightDips = churchSign.PrintSize.PageHeightInches * 96.0;
+
+                        var source = await bitmap.ToBitmapImageAsync();
+                        var page = new Border
+                        {
+                            Width = widthDips,
+                            Height = heightDips,
+                            Background = new SolidColorBrush(Colors.White),
+                            Child = new Image
+                            {
+                                Source = source,
+                                Width = widthDips,
+                                Height = heightDips,
+                                Stretch = Stretch.Uniform
+                            }
+                        };
+                        //var page = new Border
+                        //{
+                        //    Width = 816,
+                        //    Height = 1056,
+                        //    Background = new SolidColorBrush(Colors.LightBlue)
+                        //};
+
+
+                        PrintCanvas.Children.Add(page);
+                        page.InvalidateMeasure();
+                        page.UpdateLayout();
+
+                        _printPreviewPages.Add(page);
+
+
                     }
+
+                    
+                    Debug.WriteLine($"added {_printPreviewPages.Count} image pages");
+
+                    var hWnd = WinRT.Interop.WindowNative.GetWindowHandle(this);
                     await PrintManagerInterop.ShowPrintUIForWindowAsync(hWnd);
+
+
                 }
                 catch (Exception ex)
                 {
-                    Trace.WriteLine(ex?.GetType().Name + " " + ex?.Message);
-
+                    Trace.WriteLine(ex.GetType().Name + " " + ex.Message);
+                    PrintButton.IsEnabled = true;
                 }
+
                 return;
 
             }
@@ -653,40 +716,68 @@ namespace ChurchSigns
 
         }
 
+
+
         private PrintDocument? _printDocument = null;
         private IPrintDocumentSource? _printDocumentSource = null;
+        private readonly List<UIElement> _printPreviewPages = [];
 
 
         private void UnRegisterForPrinting()
         {
             string message = "UnRegisterForPrinting";
+            if (_printDocument == null)
+            {
+                message = "UnRegisterForPrinting _printDocument is null";
+            }
+            else
+            {
+                try
+                {
+                    if (_printDocument.DocumentSource == null)
+                    {
+                        message = "UnRegisterForPrinting _printDocument.DocumentSource is null";
+                        return;
+                    }
+                    message = "UnRegisterForPrinting Paginate";
+                    _printDocument.Paginate -= PrintDocument_Paginate;
+                    message = "UnRegisterForPrinting GetPreviewPage";
+                    _printDocument.GetPreviewPage -= PrintDocument_GetPreviewPage;
+                    message = "UnRegisterForPrinting AddPages";
+                    _printDocument.AddPages -= PrintDocument_AddPages;
+                    message = "UnRegisterForPrinting GetWindowHandle";
+                    var hWnd = WinRT.Interop.WindowNative.GetWindowHandle(this);
+                    message = "UnRegisterForPrinting PrintManagerInterop.GetForWindow";
+                    PrintManager printManager = PrintManagerInterop.GetForWindow(hWnd);
+                    message = "UnRegisterForPrinting PrintTaskRequested";
+                    printManager.PrintTaskRequested -= PrintTask_Requested;
+                    message = "UnRegisterForPrinting PrintTask_Completed";
+                }
+                catch (Exception ex)
+                {
+                    message = ex.GetType().Name + " " + ex.Message;
+                }
+                finally
+                {
+                    _printDocument = null;
+                    _printDocumentSource = null;
+                    _printPreviewPages.Clear();
 
-            try
-            {
-                var hWnd = MyHandle;
+                }
 
-                PrintManager printManager = PrintManagerInterop.GetForWindow(hWnd);
-                printManager.PrintTaskRequested -= PrintTask_Requested;
-                _printPreviewImages.Clear();
-                Trace.WriteLine("UnRegisterForPrinting PrintTaskRequested");
             }
-            catch (Exception ex)
-            {
-                message = ex.GetType().Name + " " + ex.Message;
-                Trace.WriteLine(message);
-            }
-            finally
-            {
-                _printDocument = null;
-                _printDocumentSource = null;
-            }
+            Trace.WriteLine(message);
         }
 
+        /// <summary>
+        /// Run once after window is constructed
+        /// </summary>
         private void RegisterForPrinting()
         {
+
             try
             {
-                var hWnd = MyHandle;
+                var hWnd = WinRT.Interop.WindowNative.GetWindowHandle(this);
                 PrintManager printManager = PrintManagerInterop.GetForWindow(hWnd);
                 printManager.PrintTaskRequested -= PrintTask_Requested;
                 printManager.PrintTaskRequested += PrintTask_Requested;
@@ -711,7 +802,7 @@ namespace ChurchSigns
             // Defines the title and delegate for PrintTaskSourceRequested.
             try
             {
-
+                Debug.WriteLine("PrintTask Requested");
                 PrintTask printTask = args.Request.CreatePrintTask("Application Print", PrintTaskSourceRequested);
 
                 // Handle PrintTask.Completed to catch failed print jobs.
@@ -736,6 +827,7 @@ namespace ChurchSigns
             // Set the document source.
             try
             {
+                Debug.WriteLine("PrintTaskSourceRequested");
                 args.SetSource(_printDocumentSource);
             }
             catch (Exception ex)
@@ -811,7 +903,8 @@ namespace ChurchSigns
             }
             finally
             {
-                UnRegisterForPrinting();
+                // we only register once, and keep it registered
+        //        UnRegisterForPrinting();
             }
         }
 
@@ -819,20 +912,13 @@ namespace ChurchSigns
         {
             try
             {
-                lock (_previewLock)
-                {
-                    if (_printPreviewImages.Count == 0)
-                    {
-                        LoadPreviewImages();
-                    }
-                }
+                Debug.Print("Adding all print previewpages to document");
                 PrintDocument printDocument = (PrintDocument)sender;
 
                 // Loop over all of the preview pages and add each one to be printed.
-                for (int i = 0; i < _printPreviewImages.Count; i++)
+                for (int i = 0; i < _printPreviewPages.Count; i++)
                 {
-                    
-                    printDocument.AddPage(_printPreviewImages[i].Result);
+                    printDocument.AddPage(_printPreviewPages[i]);
                 }
 
 
@@ -851,26 +937,13 @@ namespace ChurchSigns
         {
             try
             {
+                Debug.WriteLine("GetPreviewPage " + e.PageNumber);
                 // Get the preview page for the requested page number.
-                if (e.PageNumber > 0 && e.PageNumber <= _printPreviewImages.Count)
+                if (e.PageNumber > 0 && e.PageNumber <= _printPreviewPages.Count)
                 {
                     // Set the preview page.
                     PrintDocument printDocument = (PrintDocument)sender;
-
-                    //  SvgSignControl ctrl = (SvgSignControl)_printPreviewPages[e.PageNumber - 1];
-                    lock (_previewLock)
-                    {
-                        if (_printPreviewImages.Count == 0)
-                        {
-                            LoadPreviewImages();
-                        }
-                    }
-
-
-                    if (e.PageNumber > _printPreviewImages.Count)
-                        return;
-                    
-                    printDocument.SetPreviewPage(e.PageNumber, _printPreviewImages[e.PageNumber - 1].Result);
+                    printDocument.SetPreviewPage(e.PageNumber, _printPreviewPages[e.PageNumber - 1]);
                 }
             }
             catch (Exception ex)
@@ -880,91 +953,25 @@ namespace ChurchSigns
                 // StatusBlock.Text = "Failed to print.";
             }
         }
-        private object _previewLock = new object();
-        private void LoadPreviewImages()
-        {
-            // Get the page description to determine the size of the print page.
-            PrintPageDescription pageDescription = _printTaskOptions.GetPageDescription(0);
 
-            double pageWidthDips = pageDescription.PageSize.Width;
-            double pageHeightDips = pageDescription.PageSize.Height;
-
-            const double printDpi = 300.0;
-            int pixelWidth = Math.Max(1, (int)(pageWidthDips * printDpi / 96.0));
-            int pixelHeight = Math.Max(1, (int)(pageHeightDips * printDpi / 96.0));
-
-            // Loop through the items in the SignGridView and create a preview page for each sign that is selected for printing.
-            foreach (var item in SignGridView.SelectedItems)
-            {
-                //_printPreviewPages.Add(new Border
-                //{
-                //    Width = pageWidthDips,
-                //    Height = pageHeightDips,
-                //    Background = new SolidColorBrush(Colors.LightBlue)
-                //});
-
-                if (item is not SignData signData)
-                    continue;
-                try
-                {
-                    //// Render the sign to a UIElement for printing
-                    //SvgSignControl signControl = new SvgSignControl();
-                    //signControl.SvgTemplate = signData.SvgTemplate;
-                    //signControl.Data = signData.Fields;
-                    //signControl.Height = pixelWidth;
-                    //signControl.Width = pixelHeight;
-                    //signControl.RenderHeight = pixelWidth;
-                    //signControl.RenderWidth = pixelHeight;
-
-                    //_printPreviewPages.Add(signControl);
-
-                    var signImageTask = SignRenderService.RenderToImageAsync(
-                        signData.SvgTemplate
-                        , signData.Fields
-                        , pixelWidth
-                        , pixelHeight
-                        , pageWidthDips
-                        , pageHeightDips);
-
-                    if (signImageTask == null)
-                        continue;
-                    signImageTask.RunSynchronously();
-                    _printPreviewImages.Add(signImageTask);
-
-                    //var image = new Image
-                    //{
-                    //    Source = source,
-                    //    Width = pageWidthDips,
-                    //    Height = pageHeightDips,
-                    //    Stretch = Stretch.Uniform
-                    //};
-
-                    //_printPreviewPages.Add(image);
-
-                }
-                catch (Exception ex)
-                {
-                    continue;
-                }
-
-            }
-
-        }
-
-
-        private PrintTaskOptions _printTaskOptions;
-
-        //    private readonly List<UIElement> _printPreviewPages = new List<UIElement>();
-        private List< Task<Image> > _printPreviewImages = new List<Task<Image>>();
         private void PrintDocument_Paginate(object sender, PaginateEventArgs e)
         {
             try
             {
-                _printTaskOptions = e.PrintTaskOptions;
-                PrintDocument printDocument = (PrintDocument)sender;
 
-                printDocument.SetPreviewPageCount(SignGridView.SelectedItems.Count, PreviewPageCountType.Final);
-                Debug.Print("set the page count");
+                //// Get the PrintTaskOptions.
+                //PrintTaskOptions printingOptions = ((PrintTaskOptions)e.PrintTaskOptions);
+
+                //// Get the page description to determine the size of the print page.
+                //// might need to add this to our future object construction
+                //PrintPageDescription pageDescription = printingOptions.GetPageDescription(0);
+                //double pageWidthDips = pageDescription.PageSize.Width;
+                //double pageHeightDips = pageDescription.PageSize.Height;
+
+
+                PrintDocument printDocument = (PrintDocument)sender;
+                printDocument.SetPreviewPageCount(_printPreviewPages.Count, PreviewPageCountType.Final);
+                Debug.WriteLine($"Print Preview Count set to {_printPreviewPages.Count}");
             }
             catch (Exception ex)
             {
@@ -972,6 +979,9 @@ namespace ChurchSigns
             }
         }
         #endregion
+
+
+
 
     }
 }

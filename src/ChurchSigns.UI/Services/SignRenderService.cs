@@ -1,4 +1,6 @@
-﻿using ChurchSigns.UI.Util;
+﻿using ChurchSigns.UI.Interfaces;
+using ChurchSigns.UI.Models;
+using ChurchSigns.UI.Util;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Imaging;
@@ -15,35 +17,37 @@ using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace ChurchSigns.UI.Services
 {
+
     public static class SignRenderService
     {
 
-        private static SKBitmap? RenderToBitmap(string svgContent, int width, int height)
-        {
-            using var stream = new MemoryStream(Encoding.UTF8.GetBytes(svgContent));
-            var svg = new SKSvg();
+        //public static SKBitmap RenderPrintSizeBitmap(ChurchSign sign)
+        //{
 
-            if (svg.Load(stream) is null || svg.Picture is null)
-                return null;
+        //    using var stream = new MemoryStream(Encoding.UTF8.GetBytes(sign.SvgTemplate.MergeTemplateWithData(sign.Fields)));
+        //    var svg = new SKSvg();
 
-            var bitmap = new SKBitmap(width, height);
-            using var canvas = new SKCanvas(bitmap);
-            canvas.Clear(SKColors.White);
+        //    if (svg.Load(stream) is null || svg.Picture is null)
+        //        return null;
 
-            var bounds = svg.Picture.CullRect;
-            if (bounds.Width <= 0 || bounds.Height <= 0)
-                return bitmap;
+        //    var bitmap = new SKBitmap((int)sign.PrintSize.ContentWidthPt, (int)sign.PrintSize.ContentHeightPt);
+        //    using var canvas = new SKCanvas(bitmap);
+        //    canvas.Clear(SKColors.White);
 
-            float scale = Math.Min(width / bounds.Width, height / bounds.Height);
-            float offsetX = (width - bounds.Width * scale) / 2f;
-            float offsetY = (height - bounds.Height * scale) / 2f;
+        //    var bounds = svg.Picture.CullRect;
+        //    if (bounds.Width <= 0 || bounds.Height <= 0)
+        //        return bitmap;
 
-            canvas.Translate(offsetX, offsetY);
-            canvas.Scale(scale);
-            canvas.DrawPicture(svg.Picture);
+        //    float scale = Math.Min(sign.PrintSize.ContentWidthPt / bounds.Width, sign.PrintSize.ContentHeightPt / bounds.Height);
+        //    float offsetX = (sign.PrintSize.ContentWidthPt - bounds.Width * scale) / 2f;
+        //    float offsetY = (sign.PrintSize.ContentHeightPt - bounds.Height * scale) / 2f;
 
-            return bitmap;
-        }
+        //    canvas.Translate(offsetX, offsetY);
+        //    canvas.Scale(scale);
+        //    canvas.DrawPicture(svg.Picture);
+
+        //    return bitmap;
+        //}
 
         private static async Task<SoftwareBitmapSource> ToImageSourceAsync(SKBitmap skBitmap)
         {
@@ -60,68 +64,72 @@ namespace ChurchSigns.UI.Services
             await source.SetBitmapAsync(softwareBitmap);
             return source;
         }
-
-        public static async Task<ImageSource> RenderToImageSourceAsync(string svgTemplate, Dictionary<string, string> fields, int pixelWidth, int pixelHeight)
-        {
-            ImageSource source = null;
-            try
-            {
-
-                var merged = svgTemplate.MergeTemplateWithData(fields);
-
-                using (SKBitmap bitmap = RenderToBitmap(merged, pixelWidth, pixelHeight))
-                {
-                    if (bitmap is null)
-                    {
-                        return null;
-                    }
-
-                    source = await ToImageSourceAsync(bitmap);
-                }
-            }
-            catch (Exception ex)
-            {
-                // Log the exception or handle it as needed
-                System.Diagnostics.Trace.WriteLine($"Error rendering sign: {ex.Message}");
-                return null;
-
-            }
-            return source;
-        }
-
-        public static async Task<Image> RenderToImageAsync(string svgTemplate, Dictionary<string, string> fields, int pixelWidth, int pixelHeight, double pageWidthDips, double pageHeightDips)
-        {
-            try
-            {
-
-                var merged = svgTemplate.MergeTemplateWithData(fields);
-
-                using (SKBitmap bitmap = RenderToBitmap(merged, pixelWidth, pixelHeight))
-                {
-                    if (bitmap is null)
-                    {
-                        return null;
-                    }
-
-                    var source = await ToImageSourceAsync(bitmap);
-                    var image = new Image
-                    {
-                        Source = source,
-                        Width = pageWidthDips,
-                        Height = pageHeightDips,
-                        Stretch = Microsoft.UI.Xaml.Media.Stretch.Uniform
-                    };
-                    return image;
-                }
-            }
-            catch (Exception ex)
-            {
-                // Log the exception or handle it as needed
-                System.Diagnostics.Trace.WriteLine($"Error rendering sign: {ex.Message}");
-                return null;
-
-            }
-
-        }
     }
 }
+
+// might bring back for direct printing, keep in comments just for future reference
+
+
+//public static async Task<ImageSource> RenderToImageSourceAsync(string svgTemplate, Dictionary<string, string> fields, int pixelWidth, int pixelHeight)
+//{
+//    ImageSource source = null;
+//    try
+//    {
+
+//        var merged = svgTemplate.MergeTemplateWithData(fields);
+
+//        using (SKBitmap bitmap = RenderPrintSizeBitmap(merged, pixelWidth, pixelHeight))
+//        {
+//            if (bitmap is null)
+//            {
+//                return null;
+//            }
+
+//            source = await ToImageSourceAsync(bitmap);
+//        }
+//    }
+//    catch (Exception ex)
+//    {
+//        // Log the exception or handle it as needed
+//        System.Diagnostics.Trace.WriteLine($"Error rendering sign: {ex.Message}");
+//        return null;
+
+//    }
+//    return source;
+//}
+
+//public static async Task<Image> RenderToImageAsync(string svgTemplate, Dictionary<string, string> fields, int pixelWidth, int pixelHeight, double pageWidthDips, double pageHeightDips)
+//{
+//    try
+//    {
+
+//        var merged = svgTemplate.MergeTemplateWithData(fields);
+
+//        using (SKBitmap bitmap = RenderPrintSizeBitmap(merged, pixelWidth, pixelHeight))
+//        {
+//            if (bitmap is null)
+//            {
+//                return null;
+//            }
+
+//            var source = await ToImageSourceAsync(bitmap);
+//            var image = new Image
+//            {
+//                Source = source,
+//                Width = pageWidthDips,
+//                Height = pageHeightDips,
+//                Stretch = Microsoft.UI.Xaml.Media.Stretch.Uniform
+//            };
+//            return image;
+//        }
+//    }
+//    catch (Exception ex)
+//    {
+//        // Log the exception or handle it as needed
+//        System.Diagnostics.Trace.WriteLine($"Error rendering sign: {ex.Message}");
+//        return null;
+
+//    }
+
+
+

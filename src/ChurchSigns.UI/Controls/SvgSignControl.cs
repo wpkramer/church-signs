@@ -1,7 +1,7 @@
 ﻿using ChurchSigns.UI.Models;
+using ChurchSigns.UI.Util;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Media.Imaging;
 using SkiaSharp;
 using Svg.Skia;
 using System;
@@ -10,7 +10,6 @@ using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using Windows.Graphics.Imaging;
 #nullable enable
 namespace ChurchSigns.UI.Controls
 {
@@ -130,7 +129,7 @@ namespace ChurchSigns.UI.Controls
             var version = ++_renderVersion;
 
 
-            SKBitmap? bitmap = null;
+
             try
             {
                 var merged = Merge(currentProps.Template, currentProps.Data);
@@ -138,23 +137,24 @@ namespace ChurchSigns.UI.Controls
                 if (version != _renderVersion)
                     return; // superseded
 
-                bitmap = RenderToBitmap(merged, currentProps.Width, currentProps.Height);
-
-                if (bitmap is null)
+                using (SKBitmap? bitmap = merged.RenderToSKBitmap(currentProps.Width, currentProps.Height))
                 {
-                    _image.Source = null;
-                    return;
+
+                    if (bitmap is null)
+                    {
+                        _image.Source = null;
+                        return;
+                    }
+
+                    var source = await bitmap.ToImageSourceAsync();
+
+                    if (version != _renderVersion)
+                        return;
+
+                    _image.Source = source;
+
+                    _lastRenderProps.CopyFrom(currentProps);
                 }
-
-                var source = await ToImageSourceAsync(bitmap);
-
-                if (version != _renderVersion)
-                    return;
-
-                _image.Source = source;
-
-                _lastRenderProps.CopyFrom(currentProps);
-                
                 //_lastTemplate = template;
                 //_lastData = data;
                 //_lastWidth = width;
@@ -167,11 +167,7 @@ namespace ChurchSigns.UI.Controls
                 if (_image is not null)
                     _image.Source = null;
             }
-            finally
-            {
-                bitmap?.Dispose();
 
-            }
         }
 
         // ─── Merge {{Field}} placeholders ──────────────────────────────
@@ -190,50 +186,50 @@ namespace ChurchSigns.UI.Controls
 
         // ─── SkiaSharp + Svg.Skia render ───────────────────────────────
 
-        private static SKBitmap? RenderToBitmap(string svgContent, int width, int height)
-        {
-            using var stream = new MemoryStream(Encoding.UTF8.GetBytes(svgContent));
-            var svg = new SKSvg();
+        //private static SKBitmap? RenderPrintSizeBitmap(string svgContent, int width, int height)
+        //{
+        //    using var stream = new MemoryStream(Encoding.UTF8.GetBytes(svgContent));
+        //    var svg = new SKSvg();
 
-            if (svg.Load(stream) is null || svg.Picture is null)
-                return null;
+        //    if (svg.Load(stream) is null || svg.Picture is null)
+        //        return null;
 
-            var bitmap = new SKBitmap(width, height);
-            using var canvas = new SKCanvas(bitmap);
-            canvas.Clear(SKColors.White);
+        //    var bitmap = new SKBitmap(width, height);
+        //    using var canvas = new SKCanvas(bitmap);
+        //    canvas.Clear(SKColors.White);
 
-            var bounds = svg.Picture.CullRect;
-            if (bounds.Width <= 0 || bounds.Height <= 0)
-                return bitmap;
+        //    var bounds = svg.Picture.CullRect;
+        //    if (bounds.Width <= 0 || bounds.Height <= 0)
+        //        return bitmap;
 
-            float scale = Math.Min(width / bounds.Width, height / bounds.Height);
-            float offsetX = (width - bounds.Width * scale) / 2f;
-            float offsetY = (height - bounds.Height * scale) / 2f;
+        //    float scale = Math.Min(width / bounds.Width, height / bounds.Height);
+        //    float offsetX = (width - bounds.Width * scale) / 2f;
+        //    float offsetY = (height - bounds.Height * scale) / 2f;
 
-            canvas.Translate(offsetX, offsetY);
-            canvas.Scale(scale);
-            canvas.DrawPicture(svg.Picture);
+        //    canvas.Translate(offsetX, offsetY);
+        //    canvas.Scale(scale);
+        //    canvas.DrawPicture(svg.Picture);
 
-            return bitmap;
-        }
+        //    return bitmap;
+        //}
 
         // ─── SKBitmap → WinUI ImageSource ──────────────────────────────
 
-        private static async Task<SoftwareBitmapSource> ToImageSourceAsync(SKBitmap skBitmap)
-        {
-            using var image = SKImage.FromBitmap(skBitmap);
-            using var data = image.Encode(SKEncodedImageFormat.Png, 100);
-            using var stream = data.AsStream();
+        //private static async Task<SoftwareBitmapSource> ToImageSourceAsync(SKBitmap skBitmap)
+        //{
+        //    using var image = SKImage.FromBitmap(skBitmap);
+        //    using var data = image.Encode(SKEncodedImageFormat.Png, 100);
+        //    using var stream = data.AsStream();
 
-            var decoder = await BitmapDecoder.CreateAsync(stream.AsRandomAccessStream());
-            var softwareBitmap = await decoder.GetSoftwareBitmapAsync(
-                BitmapPixelFormat.Bgra8,
-                BitmapAlphaMode.Premultiplied);
+        //    var decoder = await BitmapDecoder.CreateAsync(stream.AsRandomAccessStream());
+        //    var softwareBitmap = await decoder.GetSoftwareBitmapAsync(
+        //        BitmapPixelFormat.Bgra8,
+        //        BitmapAlphaMode.Premultiplied);
 
-            var source = new SoftwareBitmapSource();
-            await source.SetBitmapAsync(softwareBitmap);
-            return source;
-        }
+        //    var source = new SoftwareBitmapSource();
+        //    await source.SetBitmapAsync(softwareBitmap);
+        //    return source;
+        //}
 
         [GeneratedRegex(@"\{\{\s*(.+?)\s*\}\}")]
         private static partial Regex FieldReplaceRegex();

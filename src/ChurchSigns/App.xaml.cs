@@ -58,7 +58,7 @@ namespace ChurchSigns
             //    System.Diagnostics.Trace.WriteLine($"InitializeWithWindow failed: {ex.GetType().Name} {ex.Message}");
             //}
 
-            await ((MainWindow)_window).InitializeTemplatesAsync();
+            await ((MainWindow)_window).PrepareWindowAsync();
 
             _window.Activate();
         }

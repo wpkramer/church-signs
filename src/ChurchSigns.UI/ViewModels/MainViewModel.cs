@@ -21,7 +21,7 @@ namespace ChurchSigns.UI.ViewModels
         private SignTemplateDataMap _dataMap;
 
         public ObservableCollection<SignTemplate> Templates { get; } = [];
-        public ObservableCollection<SignData> Signs { get; } = [];
+        public ObservableCollection<ChurchSign> Signs { get; } = [];
         public ObservableCollection<GroupInfoList> GroupedTemplates { get; private set; }
 
         public SignTemplateDataMap DataMap => _dataMap;
@@ -47,7 +47,7 @@ namespace ChurchSigns.UI.ViewModels
                 //SignData sd = new SignData(_selectedTemplate);
                 
                 // One placeholder sign so the preview shows the template
-                SignData sd = _selectedTemplate.CreatePlaceholderSign();
+                ChurchSign sd = _selectedTemplate.CreatePlaceholderSign();
 
                 Signs.Add(sd);
 
@@ -194,7 +194,7 @@ namespace ChurchSigns.UI.ViewModels
 
             foreach (var fields in _dataMap.CreateMappedRecords())
             {
-                var data = new SignData(_dataMap.Template)
+                var data = new ChurchSign(_dataMap.Template)
                 {
                     Fields = fields 
                 };

@@ -1,151 +1,204 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Xml;
 
 namespace ChurchSigns.UI.Models
 {
+    /// <summary>
+    /// Responsible for defining properties common to a
+    /// type or design of a sign.
+    /// </summary>
     public class SignTemplate
     {
+        public enum PrintOrientation
+        {
+            Portrait,
+            Landscape
+        }
+
         private const string DefaultColor = "#000000";
-        private readonly bool _isvalid;
-        // not sure if this will be used yet
-        private readonly string _errorMessage;
-        private readonly List<SignData> _signList;
+        private const float LandscapeAspectThreshold = 1.02f;
+
         private readonly TemplateStorageItem _templateStorageItem;
+        private readonly bool _isValid;
+        private readonly string _errorMessage;
+
+        private PrintOrientation _signOrientation;
+
         public SignTemplate(TemplateStorageItem templateStorageItem)
         {
+            ArgumentNullException.ThrowIfNull(templateStorageItem);
+
+            _templateStorageItem = templateStorageItem;
+            _errorMessage = string.Empty;
+            _isValid = false;
+
+            // Safe defaults before parsing
+            _signOrientation = PrintOrientation.Portrait;
+            PrintSize = new PrintContentSize(8.5f, 11f);
+
             try
-            { 
-                ArgumentNullException.ThrowIfNull(templateStorageItem);
-
-                _templateStorageItem = templateStorageItem;
-                _errorMessage = string.Empty;
-                _signList = [];
-                _isvalid = false;
-
-                XmlDocument xmlDocument = new();
+            {
+                var xmlDocument = new XmlDocument();
                 xmlDocument.LoadXml(templateStorageItem.Content);
 
-                if (xmlDocument.DocumentElement != null)
-                {
-                    _isvalid = xmlDocument.DocumentElement.Name == "svg";
-                }
+                var root = xmlDocument.DocumentElement;
+                if (root is null)
+                    return;
+
+                _isValid = string.Equals(root.LocalName, "svg", StringComparison.OrdinalIgnoreCase);
+                if (!_isValid)
+                    return;
+
+                if (TryGetAspectRatio(root, out float aspect) && aspect > LandscapeAspectThreshold)
+                    SignOrientation = PrintOrientation.Landscape;
             }
             catch (Exception ex)
             {
                 _errorMessage = $"{ex.GetType().Name}: {ex.Message}";
-                _isvalid = false;
+                _isValid = false;
+                SignOrientation = PrintOrientation.Portrait; // ensures PrintSize stays consistent
             }
-
         }
 
-        public string Group 
-        { 
-            get
+        // ─── Print size / orientation ────────────────────────────────
+
+        /// <summary>
+        /// Orientation for signs from this template (from SVG aspect ratio).
+        /// Future: user override and paper size (Letter, Legal, etc.).
+        /// </summary>
+        public PrintOrientation SignOrientation
+        {
+            get => _signOrientation;
+            private set
             {
-                if( _templateStorageItem.IsProvided)
-                {
-                    return $"{_templateStorageItem.SignCategory} Signs";
-                }
-                return $"Your {_templateStorageItem.SignCategory} Signs";
-            } 
+                _signOrientation = value;
+                PrintSize = value == PrintOrientation.Portrait
+                    ? new PrintContentSize(8.5f, 11f)
+                    : new PrintContentSize(11f, 8.5f);
+            }
         }
 
-        public SignCategory Category { get => _templateStorageItem.SignCategory; }
-        public string Filename { get => _templateStorageItem.Filename; }
+        public PrintContentSize PrintSize { get; private set; }
 
-        public bool IsProvided { get { return _templateStorageItem.IsProvided; } }
-        public bool IsCustom { get { return !_templateStorageItem.IsProvided; } }
+        // ─── Identity / classification ───────────────────────────────
 
-        public IReadOnlyList<string> FieldNames { get { return _templateStorageItem.FieldNames; } }
+        public string Title => _templateStorageItem.DisplayName;
+        public string Filename => _templateStorageItem.Filename;
+        public SignCategory Category => _templateStorageItem.SignCategory;
+
+        public bool IsProvided => _templateStorageItem.IsProvided;
+        public bool IsCustom => !_templateStorageItem.IsProvided;
+
+        public string Group => IsProvided
+            ? $"{Category} Signs"
+            : $"Your {Category} Signs";
+
+        // ─── Validity / content ──────────────────────────────────────
+
+        public bool IsValid => _isValid;
+
+        public string ErrorMessage => _errorMessage;
+
+        public string SvgSignTemplate =>
+            _isValid ? _templateStorageItem.Content : string.Empty;
+
+        public IReadOnlyList<string> FieldNames => _templateStorageItem.FieldNames;
+
+        // ─── Preview / placeholder data ──────────────────────────────
 
         public Dictionary<string, string> PreviewFields
         {
             get
             {
-                Dictionary<string, string> result = new Dictionary<string, string>();
-                foreach (string fieldname in _templateStorageItem.FieldNames)
-                {
-                    if(_templateStorageItem.PreviewFields.Fields.TryGetValue(fieldname, out string value))
-                    {
-                        result.TryAdd(fieldname, value);
-                    }
-                    else if (fieldname.Contains("color", StringComparison.OrdinalIgnoreCase))
-                    {
-                        result.TryAdd(fieldname, DefaultColor);
-                    }
-                    else if(fieldname.Contains("colour", StringComparison.OrdinalIgnoreCase))
-                    {
-                        result.TryAdd(fieldname, DefaultColor);
-                    }
-                    else
-                    {
-                        result.TryAdd(fieldname, string.Empty);
-                    }
-                }
+                var result = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+                foreach (var name in FieldNames)
+                    result[name] = GetPreviewValue(name);
                 return result;
             }
         }
 
-        public bool IsValid { get { return _isvalid; } }
-
-        public string SvgSignTemplate
+        public ChurchSign CreatePlaceholderSign()
         {
-            get
-            {
-                if (!_isvalid)
-                    return string.Empty;
-                return _templateStorageItem.Content;
-            }
-        }
-
-        public string Title 
-        {
-            get 
-            { 
-                return _templateStorageItem.DisplayName; 
-            }
-        }
-
-        public TemplateStorageItem ToStorageItem()
-        {
-            return _templateStorageItem;
-        }
-
-        public SignData CreatePlaceholderSign()
-        {
-
-            SignData signData = new SignData(this);
-            foreach (string fieldName in _templateStorageItem.FieldNames)
-            {
-
-                if (_templateStorageItem.PreviewFields.Fields.TryGetValue(fieldName, out string value))
-                {
-                    signData.Fields.TryAdd(fieldName, value);
-                }
-                else if (fieldName.Contains("color", StringComparison.OrdinalIgnoreCase))
-                {
-                    signData.Fields.TryAdd(fieldName, DefaultColor);
-                }
-                else if (fieldName.Contains("colour", StringComparison.OrdinalIgnoreCase))
-                {
-                    signData.Fields.TryAdd(fieldName, DefaultColor);
-                }
-                else
-                {
-                    signData.Fields.TryAdd(fieldName, string.Empty);
-                }
-            }
+            var signData = new ChurchSign(this);
+            foreach (var name in FieldNames)
+                signData.Fields[name] = GetPreviewValue(name);
             return signData;
         }
 
-        internal void UpdatePreviewFields(SignTemplateProperty[] signTemplateProperties)
+        internal void UpdatePreviewFields(SignTemplateProperty[] properties)
         {
             _templateStorageItem.PreviewFields.Fields.Clear();
-            foreach (var signTemplateProperty in signTemplateProperties)
+            foreach (var property in properties)
+                _templateStorageItem.PreviewFields.Fields[property.Name] = property.Value;
+        }
+
+        public TemplateStorageItem ToStorageItem() => _templateStorageItem;
+
+        private string GetPreviewValue(string fieldName)
+        {
+            if (_templateStorageItem.PreviewFields.Fields.TryGetValue(fieldName, out var value))
+                return value;
+
+            if (IsColorFieldName(fieldName))
+                return DefaultColor;
+
+            return string.Empty;
+        }
+
+        private static bool IsColorFieldName(string fieldName) =>
+            fieldName.Contains("color", StringComparison.OrdinalIgnoreCase)
+            || fieldName.Contains("colour", StringComparison.OrdinalIgnoreCase);
+
+        // ─── SVG geometry helpers ────────────────────────────────────
+
+        private static bool TryGetAspectRatio(XmlElement root, out float aspect)
+        {
+            aspect = 0;
+
+            var viewBox = root.GetAttribute("viewBox");
+            if (!string.IsNullOrWhiteSpace(viewBox))
             {
-                _templateStorageItem.PreviewFields.Fields[signTemplateProperty.Name] = signTemplateProperty.Value;
+                var parts = viewBox.Split([' ', ','], StringSplitOptions.RemoveEmptyEntries);
+                if (parts.Length == 4
+                    && float.TryParse(parts[2], NumberStyles.Float, CultureInfo.InvariantCulture, out var vbW)
+                    && float.TryParse(parts[3], NumberStyles.Float, CultureInfo.InvariantCulture, out var vbH)
+                    && vbW > 0 && vbH > 0)
+                {
+                    aspect = vbW / vbH;
+                    return true;
+                }
             }
+
+            if (TryParseSvgLength(root.GetAttribute("width"), out var w)
+                && TryParseSvgLength(root.GetAttribute("height"), out var h)
+                && w > 0 && h > 0)
+            {
+                aspect = w / h;
+                return true;
+            }
+
+            return false;
+        }
+
+        private static bool TryParseSvgLength(string? value, out float number)
+        {
+            number = 0;
+            if (string.IsNullOrWhiteSpace(value))
+                return false;
+
+            value = value.Trim();
+            if (value.EndsWith('%'))
+                return false;
+
+            var s = value.AsSpan();
+            var i = 0;
+            while (i < s.Length && (char.IsDigit(s[i]) || s[i] is '.' or '-' or '+'))
+                i++;
+
+            return i > 0
+                && float.TryParse(s[..i], NumberStyles.Float, CultureInfo.InvariantCulture, out number);
         }
     }
 }

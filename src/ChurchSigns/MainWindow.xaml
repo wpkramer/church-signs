@@ -36,7 +36,8 @@
             <!-- second row takes up the rest of the screen realestate -->
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        
+        <Canvas x:Name="PrintCanvas" Opacity="0" IsHitTestVisible="False"
+        Width="0" Height="0" />
         <!-- Display application title -->
         <TextBlock Grid.Column="0" Grid.ColumnSpan="3" Grid.Row="0" Text="Church Signs" Margin="36,0,32,32" Style="{ThemeResource TitleTextBlockStyle}" />
         
@@ -62,7 +63,7 @@
 
             <Border Grid.Row="0" BorderThickness="2" BorderBrush="Azure" >
                 <StackPanel  Orientation="Vertical" >
-                    <TextBlock Margin="8" Text="Sign Templates" Style="{ThemeResource SubtitleTextBlockStyle}"/>
+                    <TextBlock Margin="4" Text="Sign Templates" Style="{ThemeResource SubtitleTextBlockStyle}"/>
                     <StackPanel Orientation="Horizontal">
                         <Button x:Name="AddTemplateButton" Margin="8" Content="Add Template" Click="AddTemplateButton_Click"/>
                         <Button x:Name="RemoveTemplateButton" Content="Remove" Margin="8" Click="RemoveTemplateButton_Click" IsEnabled="{x:Bind ViewModel.IsCustomSelected,Mode=OneWay}"/>
@@ -131,17 +132,33 @@
                 <TextBlock Margin="8" Text="Paste data to see signs for printing." Width="276"  Style="{ThemeResource SubtitleTextBlockStyle}"/>
                 <Image  Source="/Assets/PasteArea.png" Width="100" Height="100" HorizontalAlignment="Center"/>
             </StackPanel>
-            <StackPanel Grid.Row="0" Orientation="Horizontal" Visibility="{x:Bind ViewModel.SignsWithDataVisiblility, Mode=OneWay}" BorderThickness="2" BorderBrush="Azure" Height="120" Width="400">
-                <TextBlock Margin="8" Text="Signs" Style="{ThemeResource SubtitleTextBlockStyle}"/>
-                <StackPanel Orientation="Horizontal">
-                    <CheckBox x:Name="AllSignsCheckBox" Content="All Signs"
-                              Checked="AllSignsCheckBox_Checked"
-                              Unchecked="AllSignsCheckBox_Unchecked"
-                              />
-                    <Button x:Name="PrintButton" Content="Print" Click="PrintButton_Click"/>
+            <Grid Grid.Row="0"  Visibility="{x:Bind ViewModel.SignsWithDataVisiblility, Mode=OneWay}" BorderThickness="2" BorderBrush="Azure" Height="120" Width="400">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                    <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Margin="4" Text="Signs" Style="{ThemeResource SubtitleTextBlockStyle}"/>
+                <StackPanel Grid.Row="2" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
+                    <TextBlock Text="All Signs" Margin="4" VerticalAlignment="Center"/>
+                    <CheckBox x:Name="AllSignsCheckBox"
+                              VerticalAlignment="Center"
+                            Checked="AllSignsCheckBox_Checked"
+                            Unchecked="AllSignsCheckBox_Unchecked"/>
+
                 </StackPanel>
+                          
+           
+                <Button Margin="4" Grid.Row="1" Grid.Column="0" x:Name="PrintButton" Content="Print" Click="PrintButton_Click"/>
+                <Button Margin="4" Grid.Row="2" Grid.Column="0" x:Name="PdfExportButton" Content="Export to PDF" Click="PdfExportButton_Click"/>
+            </Grid>
+
                 
-            </StackPanel>
+
 
 
             <GridView x:Name="SignGridView"
@@ -160,7 +177,7 @@
             </GridView.ItemsPanel>
            
             <GridView.ItemTemplate>
-                <DataTemplate x:DataType="models:SignData">
+                <DataTemplate x:DataType="models:ChurchSign">
                     <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="216"/>
