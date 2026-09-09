@@ -67,6 +67,7 @@
                     <StackPanel Orientation="Horizontal">
                         <Button x:Name="AddTemplateButton" Margin="8" Content="Add Template" Click="AddTemplateButton_Click"/>
                         <Button x:Name="RemoveTemplateButton" Content="Remove" Margin="8" Click="RemoveTemplateButton_Click" IsEnabled="{x:Bind ViewModel.IsCustomSelected,Mode=OneWay}"/>
+                        <Button x:Name="ExportTemplateButton" Content="Export" Margin="8" Click="ExportTemplateButton_Click"/>
                     </StackPanel>                
                 </StackPanel>
             </Border>

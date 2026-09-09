@@ -19,6 +19,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Windows.ApplicationModel.DataTransfer;
@@ -205,6 +206,27 @@ namespace ChurchSigns
                     await ShowMessageAsync($"{ex.GetType().Name}: {ex.Message}");
                 }
 
+            }
+        }
+
+        private async void ExportTemplateButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (SignTemplatesListView.SelectedItem is SignTemplate signTemplate)
+            {
+                var picker = new FileSavePicker
+                {
+                    SuggestedStartLocation = PickerLocationId.DocumentsLibrary,
+                    SuggestedFileName = Path.ChangeExtension(signTemplate.Filename, "zip")
+                };
+                picker.FileTypeChoices.Add("Zip", [".zip"]);
+                InitializeWithWindow(picker);
+
+
+                StorageFile? file = await picker.PickSaveFileAsync();
+                if (file != null)
+                {
+                    await TemplateStorageService.Instance.ExportSignTemplate(signTemplate.ToStorageItem(), file);
+                }
             }
         }
 
@@ -435,27 +457,8 @@ namespace ChurchSigns
 
         private async void AddTemplateButton_Click(object sender, RoutedEventArgs e)
         {
-            var item = await ImportSignTemplateAsync();
-            if(item is null)
-            {
-                return;
-            }
+            await ImportSignTemplateAsync();
 
-
-
-            var template = ViewModel.AddLocalTemplate(item);
-            if (template is null)
-            {
-                await ShowMessageAsync("Could not use that SVG as a template.");
-                return;
-            }
-
-          
-
-            // update so the template shows in the list
-            TemplatesCVS.Source = ViewModel.GroupedTemplates;
-            // select template so it shows in the sign list and the field mapping
-            SignTemplatesListView.SelectedItem = template;
         }
 
         private async Task<bool> ConfirmActionAsync(string message)
@@ -502,7 +505,7 @@ namespace ChurchSigns
             return string.Empty;
         }
 
-        private async Task<TemplateStorageItem?> ImportSignTemplateAsync()
+        private async Task ImportSignTemplateAsync()
         {
             var picker = new FileOpenPicker
             {
@@ -510,6 +513,7 @@ namespace ChurchSigns
                 ViewMode = PickerViewMode.List
             };
             picker.FileTypeFilter.Add(".svg");
+            picker.FileTypeFilter.Add(".zip");
 
             InitializeWithWindow(picker);
 
@@ -517,32 +521,36 @@ namespace ChurchSigns
             if (file == null)
             {
                 Trace.WriteLine("Manual load canceled by user.");
-                return null;
+                return;
             }
 
             string category = await ShowSignTemplateOptionsAsync(System.IO.Path.GetFileName(file.Path));
             if (string.IsNullOrEmpty(category))
             {
-                return null;
+                return;
             }
             SignCategory signCategory;
+
             if (SignCategory.TryParse(category, out signCategory))
             {
-                TemplateStorageItem storageItem = new TemplateStorageItem
+                var templateStorageItems = await TemplateStorageService.Instance.ImportSignTemplatesAsync(file);
+                var addedTemplates = new List<TemplateStorageItem>();
+                foreach (var storageItem in templateStorageItems)
                 {
-                    Content = await FileIO.ReadTextAsync(file),
-                    IsProvided = false,
-                    SignCategory = signCategory,
-                    Filename = file.Name,
-                };
+                    storageItem.SignCategory = signCategory;
+                    await TemplateStorageService.Instance.SaveLocalAsync(storageItem, overwrite: true);
+                    addedTemplates.Add(storageItem);
+                }
+                if (addedTemplates.Count > 0)
+                {
+                    var lastTemplateAdded = ViewModel.AddTemplates(addedTemplates);
+                    SignTemplatesListView.SelectedItem = lastTemplateAdded;
+                    TemplatesCVS.Source = ViewModel.GroupedTemplates;
+                }
+                
 
-                await TemplateStorageService.Instance.SaveLocalAsync(storageItem, true);
-
-                return storageItem;
             }
 
-
-            return null;
 
         }
 
@@ -1001,9 +1009,10 @@ namespace ChurchSigns
                 Trace.WriteLine(ex.GetType().Name + " " + ex.Message);
             }
         }
+
+
+
         #endregion
-
-
 
 
     }

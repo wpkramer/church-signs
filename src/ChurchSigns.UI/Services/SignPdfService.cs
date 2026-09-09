@@ -1,25 +1,14 @@
 ﻿using ChurchSigns.UI.Models;
-using ChurchSigns.UI.Services;
-using Microsoft.UI.Xaml;
 using SkiaSharp;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
 using Windows.Storage;
-using Windows.Storage.Pickers;
-using WinRT.Interop;
 namespace ChurchSigns.UI.Services;
 
 public static class SignPdfService
 {
-    // Letter size in PDF points (72 pt = 1 inch)
-    //private const float PageWidthPt = 8.5f * 72f;   // 612
-    //private const float PageHeightPt = 11f * 72f;  // 792
-    //private const float PrintDpi = 300f;
-    //private const float MarginPt = 36f;            // 0.5 inch
-
     public static async Task ExportSelectedSignsAsync(IReadOnlyList<ChurchSign> signs, StorageFile file)
     {
         ArgumentNullException.ThrowIfNull(signs);
@@ -38,9 +27,7 @@ public static class SignPdfService
             
         }
     }
-    // grok, bitmap.Width=756, bitmap.Height=576, MarginPt=18, ContentWidthPt=756, ContentHeightPt=576
-    // so yes, its in the hundreds
-    // also it appears that canvas.DrawBitmap is depricated...
+
     private static void WritePdf(IReadOnlyList<ChurchSign> signs, Stream output)
     {
         var metadata = new SKDocumentPdfMetadata

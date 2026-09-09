@@ -5,6 +5,8 @@ using ChurchSigns.UI.Services;
 using ChurchSigns.UI.Util;
 using Microsoft.UI.Xaml;
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
@@ -143,6 +145,50 @@ namespace ChurchSigns.UI.ViewModels
             return template;
         }
 
+        public SignTemplate? AddTemplates(IEnumerable<TemplateStorageItem> storageItems)
+        {
+            SignTemplate? lastAdded = null;
+            List<SignTemplate> templates = new List<SignTemplate>();
+            foreach(var storageItem in storageItems)
+            {
+                var template = new SignTemplate(storageItem);
+                if (!template.IsValid)
+                    continue;
+                // TODO: if template name and category already exists then replace
+                templates.Add(template);
+                lastAdded = template;
+            }
+            UpsertTemplates(templates);
+            return lastAdded;
+        }
+
+        private void UpsertTemplates(IEnumerable<SignTemplate> incoming)
+        {
+            // TODO: don't affect provided
+            foreach (var template in incoming.Where(t => t.IsValid))
+            {
+                var existingIndex = IndexOfTemplate(template.Category, template.Filename);
+                if (existingIndex >= 0)
+                    Templates[existingIndex] = template; // replace
+                else
+                    Templates.Add(template);
+            }
+
+            RebuildGroupedTemplates();
+        }
+
+        private int IndexOfTemplate(SignCategory category, string filename)
+        {
+            for (int i = 0; i < Templates.Count; i++)
+            {
+                var t = Templates[i];
+                if (!t.IsProvided && t.Category == category
+                    && string.Equals(t.Filename, filename, StringComparison.OrdinalIgnoreCase))
+                    return i;
+            }
+            return -1;
+        }
+
         public void RebuildGroupedTemplates()
         {
             GroupedTemplates = new ObservableCollection<GroupInfoList>(
@@ -152,8 +198,19 @@ namespace ChurchSigns.UI.ViewModels
                 select new GroupInfoList(g.Key, g));
 
             OnPropertyChanged(nameof(GroupedTemplates));
-            GroupedTemplatesChanged?.Invoke(this, EventArgs.Empty);
         }
+
+        //public void RebuildGroupedTemplates()
+        //{
+        //    GroupedTemplates = new ObservableCollection<GroupInfoList>(
+        //        from t in Templates
+        //        group t by t.Group into g
+        //        orderby g.Key
+        //        select new GroupInfoList(g.Key, g));
+
+        //    OnPropertyChanged(nameof(GroupedTemplates));
+        //    GroupedTemplatesChanged?.Invoke(this, EventArgs.Empty);
+        //}
 
         public event EventHandler? GroupedTemplatesChanged;
 
