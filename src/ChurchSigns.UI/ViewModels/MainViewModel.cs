@@ -15,23 +15,23 @@ using System.Threading.Tasks;
 
 namespace ChurchSigns.UI.ViewModels
 {
-    public partial class MainViewModel(IClipboardService clipboard = null) : INotifyPropertyChanged
+    public partial class MainViewModel(IClipboardService? clipboard = null) : INotifyPropertyChanged
     {
         private readonly IClipboardService _clipboard = clipboard ?? new WindowsClipboardService();
         private SignTemplate _selectedTemplate = CreateBlankTemplate();
-        private PastedRecordData _lastPaste;
-        private SignTemplateDataMap _dataMap;
+        private PastedRecordData? _lastPaste;
+        private SignTemplateDataMap? _dataMap;
 
         public ObservableCollection<SignTemplate> Templates { get; } = [];
         public ObservableCollection<ChurchSign> Signs { get; } = [];
-        public ObservableCollection<GroupInfoList> GroupedTemplates { get; private set; }
+        public ObservableCollection<GroupInfoList>? GroupedTemplates { get; private set; }
 
-        public SignTemplateDataMap DataMap => _dataMap;
-        public PastedRecordData LastPaste => _lastPaste;
+        public SignTemplateDataMap? DataMap => _dataMap;
+        public PastedRecordData? LastPaste => _lastPaste;
 
-        public event EventHandler MappingReset;
-        public event EventHandler MappingUpdated;
-        public event PropertyChangedEventHandler PropertyChanged;
+        public event EventHandler? MappingReset;
+        public event EventHandler? MappingUpdated;
+        public event PropertyChangedEventHandler? PropertyChanged;
 
         public SignTemplate SelectedTemplate
         {
@@ -80,6 +80,7 @@ namespace ChurchSigns.UI.ViewModels
                 }
             }
         }
+
 
         public Visibility NewSignTemplateVisiblity
         {

@@ -57,7 +57,6 @@ namespace ChurchSigns
             //    // Log but continue; downstream calls will check for invalid hwnd
             //    System.Diagnostics.Trace.WriteLine($"InitializeWithWindow failed: {ex.GetType().Name} {ex.Message}");
             //}
-
             await ((MainWindow)_window).PrepareWindowAsync();
 
             _window.Activate();

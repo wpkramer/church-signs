@@ -6,6 +6,7 @@ using ChurchSigns.UI.Util;
 using ChurchSigns.UI.ViewModels;
 using Microsoft.UI;
 using Microsoft.UI.Dispatching;
+using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
@@ -27,6 +28,7 @@ using Windows.Graphics.Printing;
 using Windows.Storage;
 using Windows.Storage.Pickers;
 using Windows.Storage.Streams;
+using WinRT;
 using WinRT.Interop;
 
 namespace ChurchSigns
@@ -46,6 +48,8 @@ namespace ChurchSigns
             ViewModel.MappingReset += (_, _) => RebuildMappingGrid();
             Clipboard.ContentChanged += Clipboard_ContentChanged;
             HasPasteData = Clipboard.GetContent().Contains(StandardDataFormats.Text);
+
+
             this.Activated += MainWindow_Activated;
         }
 
@@ -70,7 +74,13 @@ namespace ChurchSigns
             RegisterForPrinting();
         }
 
-
+        public bool HasSelectedSigns
+        {
+            get
+            {
+                return SignGridView.SelectedItems.Count > 0;
+            }
+        }
 
 
 
@@ -83,7 +93,9 @@ namespace ChurchSigns
                     ViewModel.SelectedTemplate = signTemplate;
                 }
             }
-            
+            SignGridView_SelectionChanged(sender, e);
+
+
         }
 
 
@@ -624,6 +636,16 @@ namespace ChurchSigns
             }
             AllSignsCheckBox.Checked += AllSignsCheckBox_Checked;
             AllSignsCheckBox.Unchecked += AllSignsCheckBox_Unchecked;
+            if(SignGridView.SelectedItems.Count > 0 )
+            {
+                PdfExportButton.IsEnabled = true;
+                PrintButton.IsEnabled = true;
+            }
+            else
+            {
+                PdfExportButton.IsEnabled = false;
+                PrintButton.IsEnabled = false;
+            }
         }
 
         private async void PdfExportButton_Click(object sender, RoutedEventArgs e)
