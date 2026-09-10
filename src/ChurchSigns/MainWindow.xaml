@@ -35,7 +35,9 @@
             <RowDefinition Height="Auto"/>
             <!-- second row takes up the rest of the screen realestate -->
             <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
+        <TextBlock x:Name="StatusTextBlock" Grid.Row="2" Grid.ColumnSpan="3"/>
         <Canvas x:Name="PrintCanvas" Opacity="0" IsHitTestVisible="False"
         Width="0" Height="0" />
         <!-- Display application title -->
@@ -106,8 +108,8 @@
                             <controls:SvgSignControl
                                 Grid.Column="0"
                                 Margin="4"
-                                SvgTemplate="{x:Bind SvgSignTemplate, Mode=OneWay}"
-                                Data="{x:Bind PreviewFields, Mode=OneWay}"
+                                SvgTemplate="{x:Bind SvgSignTemplate, Mode=OneTime}"
+                                Data="{x:Bind PreviewFields, Mode=OneTime}"
                                 Height="{x:Bind ThumbnailSize.Height}"
                                 Width="{x:Bind ThumbnailSize.Width}"
                                 RenderHeight="{x:Bind ThumbnailSize.Height}"
@@ -142,7 +144,6 @@
                         Checked="AllSignsCheckBox_Checked"
                         Unchecked="AllSignsCheckBox_Unchecked"/>
 
-                <!--<TextBlock Margin="8" Text="Paste data to see signs for printing." Width="276"  Style="{ThemeResource SubtitleTextBlockStyle}"/>-->
             </StackPanel>
             <Grid Grid.Row="0"  Visibility="{x:Bind ViewModel.SignsWithDataVisiblility, Mode=OneWay}" BorderThickness="2" BorderBrush="Azure" Height="120" Width="400">
                 <Grid.ColumnDefinitions>
@@ -187,8 +188,8 @@
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
                         <controls:SvgSignControl
-                            SvgTemplate="{x:Bind SvgTemplate, Mode=OneWay}"
-                            Data="{x:Bind Fields, Mode=OneWay}"
+                            SvgTemplate="{x:Bind SvgTemplate, Mode=OneTime}"
+                            Data="{x:Bind Fields, Mode=OneTime}"
                             Height="{x:Bind PreviewSize.Height}"
                             Width="{x:Bind PreviewSize.Width}"
                             RenderHeight="{x:Bind PreviewSize.Height}"
@@ -217,28 +218,16 @@
                 
                 <Button x:Name="PasteButton" Content="Paste" Margin="8"
                         Click="PasteButton_Click"
-                        IsEnabled="{x:Bind HasPasteData, Mode=OneWay}"/>
+                        />
                 <TextBlock x:Name="PasteHelpTextBlock" Margin="8" Width="200" Style="{ThemeResource SubtitleTextBlockStyle}">Paste spreadsheet columns with header names:</TextBlock>
                 
             </StackPanel>
 
-            <Grid x:Name="TemplateMappingGrid" 
-                  Grid.Column="0" Grid.Row="1"
-                   >
-                <Grid.RowDefinitions>
-                    <!-- The fields of the template mapped to the column headers of pasted data -->
-                    <RowDefinition Height="Auto"/>
-                    <!-- The pasted data -->
-                    <RowDefinition Height="*"/>
-                </Grid.RowDefinitions>
-                <!-- fairly complex so this is in code -->
-                <Grid x:Name="FieldMapGrid" Grid.Row="0">
+            <ScrollViewer VerticalScrollBarVisibility="Visible" Grid.Column="0" Grid.Row="1">
+                <Grid x:Name="TemplateMappingGrid">
+                    <!-- All children for this grid are generated in the code -->
                 </Grid>
-
-
-                <Grid x:Name="FieldDataGrid" Grid.Row="1" />
-            
-            </Grid>
+            </ScrollViewer>
         </Grid>
 
     </Grid>        

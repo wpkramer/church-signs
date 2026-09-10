@@ -599,10 +599,12 @@ namespace ChurchSigns
         {
             foreach (var item in SignGridView.Items)
             {
+                SignGridView.ScrollIntoView(item);
                 if (SignGridView.ContainerFromItem(item) is GridViewItem gridViewItem)
                 {
                     gridViewItem.IsSelected = true;
                 }
+
             }
         }
 
@@ -610,6 +612,8 @@ namespace ChurchSigns
         {
             foreach (var item in SignGridView.Items)
             {
+                SignGridView.ScrollIntoView(item);
+
                 if (SignGridView.ContainerFromItem(item) is GridViewItem gridViewItem)
                 {
                     gridViewItem.IsSelected = false;
