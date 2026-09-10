@@ -10,6 +10,7 @@ using Microsoft.UI.Dispatching;
 using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Data;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Imaging;
@@ -18,6 +19,7 @@ using ShimSkiaSharp;
 using SkiaSharp;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
@@ -46,6 +48,7 @@ namespace ChurchSigns
         public MainWindow()
         {
             InitializeComponent();
+
             ViewModel.MappingUpdated += (_, _) => RebuildMappingGrid();
             ViewModel.MappingReset += (_, _) => RebuildMappingGrid();
             Clipboard.ContentChanged += Clipboard_ContentChanged;
@@ -53,6 +56,7 @@ namespace ChurchSigns
 
 
             this.Activated += MainWindow_Activated;
+
         }
 
 
@@ -93,6 +97,7 @@ namespace ChurchSigns
                 if (SignTemplatesListView.SelectedItem is SignTemplate signTemplate)
                 {
                     ViewModel.SelectedTemplate = signTemplate;
+                    RemoveTemplateButton.IsEnabled = signTemplate.IsCustom && IsDesigner.IsChecked == true;
                 }
             }
             SignGridView_SelectionChanged(sender, e);
@@ -100,8 +105,19 @@ namespace ChurchSigns
 
         }
 
+        private void IsDesigner_Checked(object sender, RoutedEventArgs e)
+        {
+            AddTemplateButton.IsEnabled = true;
+            RemoveTemplateButton.IsEnabled = ViewModel.IsCustomSelected;
+            ExportTemplateButton.IsEnabled = true;
+        }
 
-
+        private void IsDesigner_Unchecked(object sender, RoutedEventArgs e)
+        {
+            AddTemplateButton.IsEnabled = false;
+            RemoveTemplateButton.IsEnabled = false;
+            ExportTemplateButton.IsEnabled = false;
+        }
 
 
 
@@ -114,7 +130,11 @@ namespace ChurchSigns
 
             if (isCtrlDown && e.Key == Windows.System.VirtualKey.V)
             {
-                try { await ViewModel.PasteAsync(); }
+                try 
+                {
+                    await ViewModel.PasteAsync();
+                    AllSignsCheckBox.IsChecked = true;
+                }
                 catch (Exception ex) { await ShowMessageAsync(ex.Message); }
                 e.Handled = true;
             }
@@ -122,46 +142,6 @@ namespace ChurchSigns
         }
 
 
-
-        private void MainGrid_RightTapped(object sender, RightTappedRoutedEventArgs e)
-        {
-            var menuFlyout = new MenuFlyout();
-
-            var addSignTemplateItem = new MenuFlyoutItem { Text = "Add New Sign" };
-            addSignTemplateItem.Click += async (s, args) =>
-            {
-                await ShowMessageAsync("add selected");
-            };
-
-            var pasteItem = new MenuFlyoutItem { Text = "Paste Sign Data" };
-            pasteItem.Click += async (s, args) =>
-            {
-                try
-                {
-                    await ViewModel.PasteAsync();
-                }
-                catch (Exception ex)
-                {
-                    Trace.WriteLine(ex);
-                }
-            };
-
-            var separator = new MenuFlyoutSeparator();
-
-            var item3 = new MenuFlyoutItem { Text = "Print Signs" };
-            item3.Click += async (s, args) => await ShowMessageAsync("print selected");
-
-            // Enable/disable Paste based on clipboard content
-            var dataView = Clipboard.GetContent();
-            pasteItem.IsEnabled = dataView.Contains(StandardDataFormats.Text);
-
-            menuFlyout.Items.Add(addSignTemplateItem);
-            menuFlyout.Items.Add(pasteItem);
-            menuFlyout.Items.Add(separator);
-            menuFlyout.Items.Add(item3);
-
-            menuFlyout.ShowAt(sender as FrameworkElement, e.GetPosition(sender as FrameworkElement));
-        }
 
         public bool HasPasteData { get; private set; } = false;
 
@@ -190,7 +170,11 @@ namespace ChurchSigns
                     {
                         if (file.Name.EndsWith(".svg", StringComparison.OrdinalIgnoreCase))
                         {
-                            await ShowMessageAsync( $"Accepted: {file.Name}");
+                            _ = await ImportTemplateFile(file);
+                        }
+                        else if(file.Name.EndsWith(".zip", StringComparison.OrdinalIgnoreCase))
+                        {
+                            _ = await ImportTemplateFile(file);
                         }
                         else
                         {
@@ -216,6 +200,9 @@ namespace ChurchSigns
                 try
                 {
                     await ViewModel.PasteAsync();
+
+                    AllSignsCheckBox.IsChecked = true;
+
                 }
                 catch(Exception ex)
                 {
@@ -540,10 +527,16 @@ namespace ChurchSigns
                 return;
             }
 
+            _ = await ImportTemplateFile(file);
+
+        }
+
+        private async Task<bool> ImportTemplateFile(StorageFile file)
+        {
             string category = await ShowSignTemplateOptionsAsync(System.IO.Path.GetFileName(file.Path));
             if (string.IsNullOrEmpty(category))
             {
-                return;
+                return false;
             }
             SignCategory signCategory;
 
@@ -563,11 +556,11 @@ namespace ChurchSigns
                     SignTemplatesListView.SelectedItem = lastTemplateAdded;
                     TemplatesCVS.Source = ViewModel.GroupedTemplates;
                 }
-                
+
 
             }
 
-
+            return true;
         }
 
         private void InitializeWithWindow(object picker)
@@ -1056,6 +1049,7 @@ namespace ChurchSigns
                 Trace.WriteLine(ex.GetType().Name + " " + ex.Message);
             }
         }
+
 
 
 

@@ -259,6 +259,7 @@ namespace ChurchSigns.UI.ViewModels
                 Signs.Add(data);
             }
             IsShowingPlaceholder = false;
+            
         }
 
         private void TryAddTemplate(TemplateStorageItem item)

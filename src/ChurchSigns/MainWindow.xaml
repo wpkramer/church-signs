@@ -20,7 +20,7 @@
     
             
 
-    <Grid x:Name="MainGrid" KeyDown="MainGrid_KeyDown" RightTapped="MainGrid_RightTapped">
+    <Grid x:Name="MainGrid" KeyDown="MainGrid_KeyDown">
 
         <Grid.ColumnDefinitions>
             <!-- Template definitions are in the left Column -->
@@ -66,15 +66,16 @@
             <Grid Grid.Row="0" BorderThickness="2" BorderBrush="Azure" >
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="120"/>
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
                     <Image Grid.Column="0"  Source="/Assets/TemplatesArea.png" Width="87" Height="100" Margin="8" />
-                    <TextBlock Grid.Column="1" Margin="16,8,4,0" Style="{ThemeResource CaptionTextBlockStyle}" Text="Template Designer:" HorizontalAlignment="Right"/>
+                
+                    <CheckBox x:Name="IsDesigner" IsChecked="False" Grid.Column="1" VerticalAlignment="Top" Margin="16,8,8,0" Checked="IsDesigner_Checked" Unchecked="IsDesigner_Unchecked" Content="Designer:"/>
                     <StackPanel Grid.Column="2" Orientation="Vertical" HorizontalAlignment="Right">
-                        <Button x:Name="AddTemplateButton" Margin="1" Content="Add" Click="AddTemplateButton_Click"/>
-                        <Button x:Name="RemoveTemplateButton" Content="Remove" Margin="1" Click="RemoveTemplateButton_Click" IsEnabled="{x:Bind ViewModel.IsCustomSelected,Mode=OneWay}"/>
-                        <Button x:Name="ExportTemplateButton" Content="Export" Margin="1" Click="ExportTemplateButton_Click"/>
+                        <Button x:Name="RemoveTemplateButton" Content="Remove" Margin="1" Click="RemoveTemplateButton_Click"  IsEnabled="False"/>
+                        <Button x:Name="AddTemplateButton" Margin="1" Content="Import" Click="AddTemplateButton_Click" IsEnabled="False" />
+                        <Button x:Name="ExportTemplateButton" Content="Export" Margin="1" Click="ExportTemplateButton_Click"  IsEnabled="False"/>
                     </StackPanel>
             </Grid>
 
@@ -165,6 +166,7 @@
             <GridView x:Name="SignGridView"
                   Grid.Row="1"
                   SelectionMode="Multiple"
+                  
                   SelectionChanged="SignGridView_SelectionChanged"
                   ItemsSource="{x:Bind ViewModel.Signs}"
                   BorderBrush="{ThemeResource ControlElevationBorderBrush}" 
@@ -178,6 +180,7 @@
             </GridView.ItemsPanel>
            
             <GridView.ItemTemplate>
+                
                 <DataTemplate x:DataType="models:ChurchSign">
                     <Grid>
                         <Grid.RowDefinitions>
