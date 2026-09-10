@@ -17,14 +17,14 @@ public static class SignPdfService
             return;
 
 
-        if(file != null)
+        if (file != null)
         {
             using var stream = await file.OpenStreamForWriteAsync();
             // Truncate if replacing an existing file
             stream.SetLength(0);
 
             await Task.Run(() => WritePdf(signs, stream));
-            
+
         }
     }
 

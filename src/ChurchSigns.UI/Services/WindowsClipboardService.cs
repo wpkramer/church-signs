@@ -1,7 +1,5 @@
 ﻿using ChurchSigns.UI.Interfaces;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 using Windows.ApplicationModel.DataTransfer;
 
@@ -14,7 +12,7 @@ namespace ChurchSigns.UI.Services
         {
             var view = Clipboard.GetContent();
             if (!view.Contains(StandardDataFormats.Text))
-                return null;
+                return string.Empty;
             return await view.GetTextAsync();
         }
 

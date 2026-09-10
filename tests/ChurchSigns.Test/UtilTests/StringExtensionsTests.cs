@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using ChurchSigns.UI;
-using ChurchSigns.UI.Util;
+﻿using ChurchSigns.UI.Util;
 namespace ChurchSigns.Test.UtilTests
 {
     public class StringExtensionsTests
@@ -12,7 +8,7 @@ namespace ChurchSigns.Test.UtilTests
         {
             string test = "this contains {{onefield}} in the text";
             var result = test.ExtractFieldNames();
-            Assert.True(result.Count == 1) ;
+            Assert.True(result.Count == 1);
         }
         [Fact]
         public void TestMultipleFields()

@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Globalization;
-using System.Runtime.CompilerServices;
 using System.Xml;
 using Windows.Graphics.Printing;
 
@@ -47,7 +46,7 @@ namespace ChurchSigns.UI.Models
             PrintSize = new PrintContentSize(8.5f, 11f);
             try
             {
-                
+
 
                 var xmlDocument = new XmlDocument();
                 xmlDocument.LoadXml(templateStorageItem.Content);
@@ -98,10 +97,10 @@ namespace ChurchSigns.UI.Models
             {
                 return new PrintContentSize(sizeInches.WidthIn, sizeInches.HeightIn);
             }
-            return new PrintContentSize(sizeInches.HeightIn, sizeInches.WidthIn) ;
+            return new PrintContentSize(sizeInches.HeightIn, sizeInches.WidthIn);
         }
 
-        public PrintContentSize PrintSize { get; private set; } 
+        public PrintContentSize PrintSize { get; private set; }
 
         public Size ThumbnailSize
         {

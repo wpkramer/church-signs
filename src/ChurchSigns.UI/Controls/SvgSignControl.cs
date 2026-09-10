@@ -104,7 +104,7 @@ namespace ChurchSigns.UI.Controls
                 return;
             if (SvgTemplate is null)
                 return;
-            if(Data is null )
+            if (Data is null)
                 return;
 
             TemplatedImageSync currentProps = new TemplatedImageSync(SvgTemplate, Data, RenderWidth, RenderHeight);

@@ -107,10 +107,12 @@ namespace ChurchSigns.Test.UtilTests
             MatchConfidence? left = null;
             var right = new MatchConfidence("Name", "Name");
 
+#pragma warning disable CS8604 // Possible null reference argument.
             Assert.True(left < right);
             Assert.True(left <= right);
             Assert.False(left > right);
             Assert.False(left >= right);
+#pragma warning restore CS8604 // Possible null reference argument.
         }
 
         [Fact]

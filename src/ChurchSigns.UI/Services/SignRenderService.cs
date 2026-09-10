@@ -1,19 +1,9 @@
-﻿using ChurchSigns.UI.Interfaces;
-using ChurchSigns.UI.Models;
-using ChurchSigns.UI.Util;
-using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Media;
-using Microsoft.UI.Xaml.Media.Imaging;
+﻿using Microsoft.UI.Xaml.Media.Imaging;
 using SkiaSharp;
-using Svg.Skia;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Windows.Graphics.Imaging;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace ChurchSigns.UI.Services
 {

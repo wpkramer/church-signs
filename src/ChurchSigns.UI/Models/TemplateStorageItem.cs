@@ -1,9 +1,5 @@
-﻿// grok, just wanted to update the thread with some of the existing classes
-using System;
+﻿using ChurchSigns.UI.Util;
 using System.Collections.Generic;
-using ChurchSigns.UI.Util;
-using System.Text;
-using Windows.Graphics.Printing;
 
 namespace ChurchSigns.UI.Models
 {
@@ -14,7 +10,7 @@ namespace ChurchSigns.UI.Models
         public string Filename { get; set; } = "";
         public string Content { get; set; } = "";
 
-        
+
         public TemplateSidecar SideCar { get; set; } = new TemplateSidecar();
 
         // Optional helpers for UI

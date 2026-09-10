@@ -2,10 +2,8 @@
 using ChurchSigns.UI.Interfaces;
 using ChurchSigns.UI.Models;
 using ChurchSigns.UI.Services;
-using ChurchSigns.UI.Util;
 using Microsoft.UI.Xaml;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -47,14 +45,14 @@ namespace ChurchSigns.UI.ViewModels
                 Signs.Clear();
 
                 //SignData sd = new SignData(_selectedTemplate);
-                
+
                 // One placeholder sign so the preview shows the template
                 ChurchSign sd = _selectedTemplate.CreatePlaceholderSign();
 
                 Signs.Add(sd);
 
                 OnPropertyChanged();
-         //       OnPropertyChanged(nameof(Signs));
+                //       OnPropertyChanged(nameof(Signs));
                 OnPropertyChanged(nameof(DataMap));
                 OnPropertyChanged(nameof(IsCustomSelected));
                 MappingReset?.Invoke(this, EventArgs.Empty);
@@ -71,7 +69,7 @@ namespace ChurchSigns.UI.ViewModels
             }
             private set
             {
-                if(_isShowingPlaceholder != value)
+                if (_isShowingPlaceholder != value)
                 {
                     _isShowingPlaceholder = value;
                     OnPropertyChanged();
@@ -105,7 +103,7 @@ namespace ChurchSigns.UI.ViewModels
                 if (_selectedTemplate != null)
                 {
 
-                        return !_selectedTemplate.IsProvided;
+                    return !_selectedTemplate.IsProvided;
                 }
                 return false;
             }
@@ -149,8 +147,8 @@ namespace ChurchSigns.UI.ViewModels
         public SignTemplate? AddTemplates(IEnumerable<TemplateStorageItem> storageItems)
         {
             SignTemplate? lastAdded = null;
-            List<SignTemplate> templates = new List<SignTemplate>();
-            foreach(var storageItem in storageItems)
+            List<SignTemplate> templates = [];
+            foreach (var storageItem in storageItems)
             {
                 var template = new SignTemplate(storageItem);
                 if (!template.IsValid)
@@ -201,20 +199,6 @@ namespace ChurchSigns.UI.ViewModels
             OnPropertyChanged(nameof(GroupedTemplates));
         }
 
-        //public void RebuildGroupedTemplates()
-        //{
-        //    GroupedTemplates = new ObservableCollection<GroupInfoList>(
-        //        from t in Templates
-        //        group t by t.Group into g
-        //        orderby g.Key
-        //        select new GroupInfoList(g.Key, g));
-
-        //    OnPropertyChanged(nameof(GroupedTemplates));
-        //    GroupedTemplatesChanged?.Invoke(this, EventArgs.Empty);
-        //}
-
-        public event EventHandler? GroupedTemplatesChanged;
-
         public async Task PasteAsync()
         {
             var text = await _clipboard.GetTextAsync();
@@ -254,12 +238,12 @@ namespace ChurchSigns.UI.ViewModels
             {
                 var data = new ChurchSign(_dataMap.Template)
                 {
-                    Fields = fields 
+                    Fields = fields
                 };
                 Signs.Add(data);
             }
             IsShowingPlaceholder = false;
-            
+
         }
 
         private void TryAddTemplate(TemplateStorageItem item)
@@ -283,7 +267,7 @@ namespace ChurchSigns.UI.ViewModels
                 Filename = "No Template Selected.svg",
             });
 
-        private void OnPropertyChanged([CallerMemberName] string name = null) =>
+        private void OnPropertyChanged([CallerMemberName] string name = "") =>
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
     }
 }

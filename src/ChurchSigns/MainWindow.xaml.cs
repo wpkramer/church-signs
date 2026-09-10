@@ -1,5 +1,3 @@
-using ChurchSigns.Dialogs;
-using ChurchSigns.UI.Controls;
 using ChurchSigns.UI.Helpers;
 using ChurchSigns.UI.Models;
 using ChurchSigns.UI.Services;
@@ -10,19 +8,13 @@ using Microsoft.UI.Dispatching;
 using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Data;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Imaging;
 using Microsoft.UI.Xaml.Printing;
-using ShimSkiaSharp;
-using SkiaSharp;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.Diagnostics;
-using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -31,9 +23,6 @@ using Windows.ApplicationModel.DataTransfer;
 using Windows.Graphics.Printing;
 using Windows.Storage;
 using Windows.Storage.Pickers;
-using Windows.Storage.Streams;
-using WinRT;
-using WinRT.Interop;
 
 namespace ChurchSigns
 {
@@ -130,7 +119,7 @@ namespace ChurchSigns
 
             if (isCtrlDown && e.Key == Windows.System.VirtualKey.V)
             {
-                try 
+                try
                 {
                     await ViewModel.PasteAsync();
                     AllSignsCheckBox.IsChecked = true;
@@ -172,7 +161,7 @@ namespace ChurchSigns
                         {
                             _ = await ImportTemplateFile(file);
                         }
-                        else if(file.Name.EndsWith(".zip", StringComparison.OrdinalIgnoreCase))
+                        else if (file.Name.EndsWith(".zip", StringComparison.OrdinalIgnoreCase))
                         {
                             _ = await ImportTemplateFile(file);
                         }
@@ -187,10 +176,10 @@ namespace ChurchSigns
 
         private void TemplateGrid_DragOver(object sender, DragEventArgs e)
         {
-            if(e.DataView.Contains(StandardDataFormats.StorageItems))
+            if (e.DataView.Contains(StandardDataFormats.StorageItems))
             {
-               e.AcceptedOperation = DataPackageOperation.Copy;
-            }      
+                e.AcceptedOperation = DataPackageOperation.Copy;
+            }
         }
 
         private async void PasteButton_Click(object sender, RoutedEventArgs e)
@@ -204,7 +193,7 @@ namespace ChurchSigns
                     AllSignsCheckBox.IsChecked = true;
 
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     await ShowMessageAsync($"{ex.GetType().Name}: {ex.Message}");
                 }
@@ -440,9 +429,9 @@ namespace ChurchSigns
 
         private async void RemoveTemplateButton_Click(object sender, RoutedEventArgs e)
         {
-           if(  ViewModel.SelectedTemplate != null )
+            if (ViewModel.SelectedTemplate != null)
             {
-                if(!ViewModel.SelectedTemplate.IsProvided)
+                if (!ViewModel.SelectedTemplate.IsProvided)
                 {
                     bool removeConfirmed = await ConfirmActionAsync($"Please confirm you want to remove {ViewModel.SelectedTemplate.Title}?");
                     if (removeConfirmed)
@@ -487,7 +476,7 @@ namespace ChurchSigns
                 CloseButtonText = "Cancel",
                 XamlRoot = this.Content.XamlRoot
             };
-            
+
             ComboBox comboBox = new ComboBox();
 
 
@@ -500,7 +489,7 @@ namespace ChurchSigns
 
             var dialogResult = await dialog.ShowAsync();
 
-            if(dialogResult == ContentDialogResult.Primary)
+            if (dialogResult == ContentDialogResult.Primary)
             {
                 return comboBox.SelectedValue.ToString() ?? string.Empty;
             }
@@ -570,28 +559,6 @@ namespace ChurchSigns
             WinRT.Interop.InitializeWithWindow.Initialize(picker, hwnd);
         }
 
-        private async void EditTemplateButton_Click(object sender, RoutedEventArgs e)
-        {
-            if (sender is Button button && button.DataContext is SignTemplate template)
-            {
-                var dialog = new SignTemplateDialog(template);
-                dialog.XamlRoot = this.Content.XamlRoot;
-                var dialogResult = await dialog.ShowAsync();
-                if(dialogResult == ContentDialogResult.Primary)
-                {
-                    dialog.ViewModel.UpdateTemplate();
-                    // Save the changes to the template
-                    await TemplateStorageService.Instance.SaveLocalAsync(template.ToStorageItem(), true);
-                    // Update the ViewModel to reflect the changes
-                    ViewModel.RebuildGroupedTemplates();
-                    TemplatesCVS.Source = ViewModel.GroupedTemplates;
-                }
-
-            }
-        }
-
-
-
         private void AllSignsCheckBox_Checked(object sender, RoutedEventArgs e)
         {
             foreach (var item in SignGridView.Items)
@@ -623,11 +590,11 @@ namespace ChurchSigns
             AllSignsCheckBox.Checked -= AllSignsCheckBox_Checked;
             AllSignsCheckBox.Unchecked -= AllSignsCheckBox_Unchecked;
 
-            if ( SignGridView.SelectedItems.Count == SignGridView.Items.Count)
+            if (SignGridView.SelectedItems.Count == SignGridView.Items.Count)
             {
                 AllSignsCheckBox.IsChecked = true;
             }
-            else if(SignGridView.SelectedItems.Count == 0)
+            else if (SignGridView.SelectedItems.Count == 0)
             {
                 AllSignsCheckBox.IsChecked = false;
             }
@@ -637,7 +604,7 @@ namespace ChurchSigns
             }
             AllSignsCheckBox.Checked += AllSignsCheckBox_Checked;
             AllSignsCheckBox.Unchecked += AllSignsCheckBox_Unchecked;
-            if(SignGridView.SelectedItems.Count > 0 )
+            if (SignGridView.SelectedItems.Count > 0)
             {
                 PdfExportButton.IsEnabled = true;
                 PrintButton.IsEnabled = true;
@@ -681,7 +648,7 @@ namespace ChurchSigns
                 try
                 {
                     PrintButton.IsEnabled = false;
-                    
+
                     _printPreviewPages.Clear();
                     PrintCanvas.Children.Clear();
 
@@ -691,7 +658,7 @@ namespace ChurchSigns
                         _printDefaultMediaSize = signTemplate.MediaSize;
                     }
 
-                    
+
                     int totalImages = SignGridView.SelectedItems.Count;
                     bool cancelled = await ProgressDialogHelper.ShowProgressDialogAsync(
                         this.Content.XamlRoot
@@ -702,7 +669,7 @@ namespace ChurchSigns
                             await GenerateImageForPrintingAsync(step, token);
                         });
 
-                    
+
                     Debug.WriteLine($"added {_printPreviewPages.Count} image pages");
 
                     var hWnd = WinRT.Interop.WindowNative.GetWindowHandle(this);
@@ -975,7 +942,7 @@ namespace ChurchSigns
             finally
             {
                 // we only register once, and keep it registered
-        //        UnRegisterForPrinting();
+                //        UnRegisterForPrinting();
             }
         }
 

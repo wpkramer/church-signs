@@ -1,6 +1,5 @@
 ﻿// Can you generate a unit test class for matchconfidence?
 using System;
-using System.Collections.Generic;
 using System.Text;
 
 namespace ChurchSigns.UI.Util
@@ -37,7 +36,7 @@ namespace ChurchSigns.UI.Util
         {
             get
             {
-                if(_score == -1d)
+                if (_score == -1d)
                 {
                     _score = CalculateScore();
                 }
@@ -154,9 +153,9 @@ namespace ChurchSigns.UI.Util
             return -1;
         }
 
-        public int CompareTo(MatchConfidence other)
+        public int CompareTo(MatchConfidence? other)
         {
-            if(other == null) return 1;
+            if (other == null) return 1;
             return this.Score.CompareTo(other.Score);
         }
     }

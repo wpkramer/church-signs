@@ -11,7 +11,6 @@ namespace ChurchSigns.UI.Services
     using System.IO.Compression;
     using System.Linq;
     using System.Threading.Tasks;
-    using Windows.Foundation.Collections;
     using Windows.Storage;
 
     public sealed class TemplateStorageService
@@ -20,7 +19,7 @@ namespace ChurchSigns.UI.Services
 
         static string SidecarName(string svgFileName) =>
             Path.ChangeExtension(svgFileName, ".json"); // LeaderSign.svg → LeaderSign.json
-       
+
 
         private const string TemplatesRoot = "Templates";
         private TemplateStorageService() { }
@@ -78,12 +77,12 @@ namespace ChurchSigns.UI.Services
 
                     string sidecarName = SidecarName(file.Name);
                     var sidecarFile = await categoryFolder.TryGetItemAsync(sidecarName) as StorageFile;
-                    if(sidecarFile != null)
+                    if (sidecarFile != null)
                     {
                         try
                         {
                             var sideCar = await LoadSidecarAsync(sidecarFile);
-                            if(sideCar != null)
+                            if (sideCar != null)
                             {
                                 storageItem.SideCar = sideCar;
                             }
@@ -96,7 +95,7 @@ namespace ChurchSigns.UI.Services
                     }
 
                     results.Add(storageItem);
-                    
+
                 }
             }
 
@@ -162,7 +161,7 @@ namespace ChurchSigns.UI.Services
 
             try
             {
-                var file = await categoryFolder.CreateFileAsync(item.Filename, collision); 
+                var file = await categoryFolder.CreateFileAsync(item.Filename, collision);
                 item.IsProvided = false;
 
                 await FileIO.WriteTextAsync(file, item.Content ?? string.Empty);
@@ -336,7 +335,7 @@ namespace ChurchSigns.UI.Services
 
         private static async Task SaveSidecarAsync(StorageFile file, TemplateSidecar sideCar)
         {
-            string json = JsonSerializer.Serialize(sideCar,SignJsonContext.Default.TemplateSidecar);
+            string json = JsonSerializer.Serialize(sideCar, SignJsonContext.Default.TemplateSidecar);
             await FileIO.WriteTextAsync(file, json);
         }
 

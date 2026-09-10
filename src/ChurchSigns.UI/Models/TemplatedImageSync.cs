@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace ChurchSigns.UI.Models
 {
@@ -33,7 +32,7 @@ namespace ChurchSigns.UI.Models
             {
                 _template = template;
             }
-            if(data == null)
+            if (data == null)
             {
                 _data = new Dictionary<string, string>();
             }

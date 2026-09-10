@@ -1,7 +1,5 @@
 ﻿
 using System.Collections.Generic;
-using System.Linq;
-using ChurchSigns.UI.Models;
 
 namespace ChurchSigns.UI.Models
 {

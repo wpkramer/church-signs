@@ -1,12 +1,8 @@
-﻿using ChurchSigns.UI.Interfaces;
-using ChurchSigns.UI.Util;
+﻿using ChurchSigns.UI.Util;
 using SkiaSharp;
-using Svg.Skia;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.IO;
-using System.Text;
 
 namespace ChurchSigns.UI.Models;
 
@@ -26,10 +22,10 @@ public class ChurchSign
         _fields = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
     }
 
-    public Size ThumbnailSize { get { return _template.ThumbnailSize; }  }
+    public Size ThumbnailSize { get { return _template.ThumbnailSize; } }
     public Size PreviewSize { get { return _template.PreviewSize; } }
 
-    public Dictionary<string, string> Fields 
+    public Dictionary<string, string> Fields
     {
         get { return _fields; }
         set

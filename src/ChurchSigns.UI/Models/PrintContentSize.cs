@@ -31,7 +31,7 @@ namespace ChurchSigns.UI.Models
                     throw new ArgumentOutOfRangeException(nameof(printPixels));
                 if (dips <= 0)
                     throw new ArgumentOutOfRangeException(nameof(dips));
-                if(pdfPoints <= 0)
+                if (pdfPoints <= 0)
                     throw new ArgumentOutOfRangeException(nameof(pdfPoints));
 
                 PrintPixels = printPixels;
@@ -67,7 +67,7 @@ namespace ChurchSigns.UI.Models
             MarginInches = marginInches;
             // if we ever need to be more flexible add a PerInch to the constructor
             PerInchConv = new PerInch();
- 
+
 
             // Bitmap size: physical content size × resolution.
             PixelWidth = Math.Max(1, (int)Math.Round(contentWidthInches * PerInchConv.PrintPixels));
@@ -78,7 +78,7 @@ namespace ChurchSigns.UI.Models
 
         public float PageWidthInches { get; }
         public float PageHeightInches { get; }
-        public double PageWidthDips { get {  return PageWidthInches * PerInchConv.Dips; }  }
+        public double PageWidthDips { get { return PageWidthInches * PerInchConv.Dips; } }
         public double PageHeightDips { get { return PageHeightInches * PerInchConv.Dips; } }
 
         /// <summary>Inset on each edge, in inches.</summary>

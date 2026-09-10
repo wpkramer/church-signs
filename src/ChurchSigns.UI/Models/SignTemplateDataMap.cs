@@ -45,10 +45,7 @@ namespace ChurchSigns.UI.Models
         /// <summary>
         /// Dropdown labels: "(None)" then each template field name.
         /// </summary>
-        
-        // grok, im getting CsWinRT1030 messages on the return of
-        // this function. Is there a coding alternative to the
-        // <AllowUnsafeBlocks>true</AllowUnsafeBlocks> setting?
+
         public string[] DropdownFieldNames
         {
             get
@@ -149,9 +146,9 @@ namespace ChurchSigns.UI.Models
             foreach (var row in _data.Records)
             {
                 var dict = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-                List<string> unusedFieldNames = new List<string>(_template.FieldNames);
+                List<string> unusedFieldNames = [.. _template.FieldNames];
                 for (int col = 0; col < _columnToFieldMap.Length; col++)
-                {                    
+                {
                     var fieldIndex = _columnToFieldMap[col];
                     if (fieldIndex < 0)
                         continue;
@@ -170,9 +167,9 @@ namespace ChurchSigns.UI.Models
                         continue;
                     if (fieldName.Contains("Color", StringComparison.OrdinalIgnoreCase))
                     {
-                        if (Template.PreviewFields.ContainsKey(fieldName))
+                        if (Template.PreviewFields.TryGetValue(fieldName, out string? value))
                         {
-                            dict[fieldName] = Template.PreviewFields[fieldName];
+                            dict[fieldName] = value;
                         }
                         else
                         {

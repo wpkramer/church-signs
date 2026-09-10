@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace ChurchSigns.UI.Interfaces
+﻿namespace ChurchSigns.UI.Interfaces
 {
     public interface ISignData
     {

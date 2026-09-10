@@ -1,6 +1,4 @@
-﻿// grok, can you update this xunit test class with tests
-// that exercise the PastedRecordData class?
-using ChurchSigns.UI.Helpers;
+﻿using ChurchSigns.UI.Helpers;
 
 
 namespace ChurchSigns.Test.HelperTests
@@ -37,9 +35,9 @@ namespace ChurchSigns.Test.HelperTests
         {
             var data = new PastedRecordData("Name\tRoom\nAlice\t101");
 
-            Assert.Equal(new[] { "Name", "Room" }, data.ColumnHeaderNames);
+            Assert.Equal(["Name", "Room"], data.ColumnHeaderNames);
             Assert.Single(data.Records);
-            Assert.Equal(new[] { "Alice", "101" }, data.Records[0]);
+            Assert.Equal(["Alice", "101"], data.Records[0]);
         }
 
         [Fact]
@@ -66,7 +64,7 @@ namespace ChurchSigns.Test.HelperTests
 
             var data = new PastedRecordData(pasted);
 
-            Assert.Equal(new[] { "Name", "Room" }, data.ColumnHeaderNames);
+            Assert.Equal(["Name", "Room"], data.ColumnHeaderNames);
             Assert.Equal(2, data.Records.Count);
             Assert.Equal("Alice", data.Records[0][0]);
             Assert.Equal("102", data.Records[1][1]);
@@ -108,7 +106,7 @@ namespace ChurchSigns.Test.HelperTests
 
             var data = new PastedRecordData(pasted);
 
-            Assert.Equal(new[] { "Name" }, data.ColumnHeaderNames);
+            Assert.Equal(["Name"], data.ColumnHeaderNames);
             Assert.Equal(2, data.Records.Count);
             Assert.Equal("Alice", data.Records[0][0]);
             Assert.Equal("Bob", data.Records[1][0]);

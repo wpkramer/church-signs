@@ -15,7 +15,6 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
-    <None Remove="Dialogs\SignTemplateDialog.xaml" />
     <None Remove="Templates\Awana\2LeaderBucket.json" />
     <None Remove="Templates\Awana\2LeaderBucket.svg" />
     <None Remove="Templates\Awana\BucketLabel.json" />
@@ -64,12 +63,8 @@
     <ProjectReference Include="..\ChurchSigns.UI\ChurchSigns.UI.csproj" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Dialogs\" />
     <Folder Include="Templates\Miscellaneous\" />
-  </ItemGroup>
-  <ItemGroup>
-    <Page Update="Dialogs\SignTemplateDialog.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
   </ItemGroup>
 
   <!--

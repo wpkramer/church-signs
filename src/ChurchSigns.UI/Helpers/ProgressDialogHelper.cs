@@ -1,9 +1,9 @@
-﻿using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml;
+﻿using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
 using System;
+using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Diagnostics;
 
 namespace ChurchSigns.UI.Helpers
 {
@@ -86,7 +86,7 @@ namespace ChurchSigns.UI.Helpers
             {
                 cancelled = true;
             }
-            catch(Exception ex) 
+            catch (Exception ex)
             {
                 Trace.WriteLine($"{ex.GetType().Name} {ex.Message}");
                 cancelled = false;
