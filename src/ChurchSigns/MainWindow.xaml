@@ -127,6 +127,35 @@
         
         
 
+        <!-- Field Mapping area -->
+
+        <Grid Grid.Column="1" Grid.Row="1"              BorderThickness="2" 
+              AllowFocusWhenDisabled="True"
+              BorderBrush="{ThemeResource ControlElevationBorderBrush}"
+              Background="{ThemeResource SolidBackgroundFillColorBaseAltBrush}"
+              >
+            <Grid.RowDefinitions>
+                <RowDefinition Height="120"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <StackPanel Grid.Column="0" Grid.Row="0" Orientation="Horizontal" BorderThickness="2" BorderBrush="Azure">
+                <Image  Source="/Assets/PasteArea.png" Margin="8" Width="87" Height="100"/>
+                
+                <Button x:Name="PasteButton" Content="Paste" Margin="8"
+                        Click="PasteButton_Click"
+                        />
+                <TextBlock x:Name="PasteHelpTextBlock" Margin="8" Width="200" Style="{ThemeResource SubtitleTextBlockStyle}">Paste spreadsheet columns with header names:</TextBlock>
+                
+            </StackPanel>
+
+            <ScrollViewer VerticalScrollBarVisibility="Visible" Grid.Column="0" Grid.Row="1">
+                <Grid x:Name="TemplateMappingGrid">
+                    <!-- All children for this grid are generated in the code -->
+                </Grid>
+            </ScrollViewer>
+        </Grid>
+
         <!-- Preview of Signs to print Here -->
         <Grid Grid.Column="2" Grid.Row="1">
             <Grid.RowDefinitions>
@@ -156,10 +185,10 @@
                     <RowDefinition/>
                     <RowDefinition/>
                 </Grid.RowDefinitions>
-                
+
             </Grid>
 
-                
+
 
 
 
@@ -172,66 +201,39 @@
                   BorderBrush="{ThemeResource ControlElevationBorderBrush}" 
                   Background="LightGray"
                   BorderThickness="2" VerticalAlignment="Top" HorizontalAlignment="Center">
-            
-            <GridView.ItemsPanel>
-                <ItemsPanelTemplate>
-                    <ItemsWrapGrid MaximumRowsOrColumns="1" Orientation="Horizontal"/>
-                </ItemsPanelTemplate>
-            </GridView.ItemsPanel>
-           
-            <GridView.ItemTemplate>
-                
-                <DataTemplate x:DataType="models:ChurchSign">
-                    <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto"/>
-                            <!--<RowDefinition Height="Auto"/>-->
-                        </Grid.RowDefinitions>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto"/>
-                        </Grid.ColumnDefinitions>
-                        <controls:SvgSignControl
+
+                <GridView.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <ItemsWrapGrid MaximumRowsOrColumns="1" Orientation="Horizontal"/>
+                    </ItemsPanelTemplate>
+                </GridView.ItemsPanel>
+
+                <GridView.ItemTemplate>
+
+                    <DataTemplate x:DataType="models:ChurchSign">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <!--<RowDefinition Height="Auto"/>-->
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <controls:SvgSignControl
                             SvgTemplate="{x:Bind SvgTemplate, Mode=OneTime}"
                             Data="{x:Bind Fields, Mode=OneTime}"
                             Height="{x:Bind PreviewSize.Height}"
                             Width="{x:Bind PreviewSize.Width}"
                             RenderHeight="{x:Bind PreviewSize.Height}"
                             RenderWidth="{x:Bind PreviewSize.Height}"/>
-                        
-                        <!-- remove the render attributes and make it the same in the control -->
-                    </Grid>
-                </DataTemplate>
-            </GridView.ItemTemplate>
-        </GridView>
+
+                            <!-- remove the render attributes and make it the same in the control -->
+                        </Grid>
+                    </DataTemplate>
+                </GridView.ItemTemplate>
+            </GridView>
         </Grid>
-        <!-- Field Mapping area -->
 
-        <Grid Grid.Column="1" Grid.Row="1"              BorderThickness="2" 
-              AllowFocusWhenDisabled="True"
-              BorderBrush="{ThemeResource ControlElevationBorderBrush}"
-              Background="{ThemeResource SolidBackgroundFillColorBaseAltBrush}"
-              >
-            <Grid.RowDefinitions>
-                <RowDefinition Height="120"/>
-                <RowDefinition Height="*"/>
-            </Grid.RowDefinitions>
-
-            <StackPanel Grid.Column="0" Grid.Row="0" Orientation="Horizontal" BorderThickness="2" BorderBrush="Azure">
-                <Image  Source="/Assets/PasteArea.png" Margin="8" Width="87" Height="100"/>
-                
-                <Button x:Name="PasteButton" Content="Paste" Margin="8"
-                        Click="PasteButton_Click"
-                        />
-                <TextBlock x:Name="PasteHelpTextBlock" Margin="8" Width="200" Style="{ThemeResource SubtitleTextBlockStyle}">Paste spreadsheet columns with header names:</TextBlock>
-                
-            </StackPanel>
-
-            <ScrollViewer VerticalScrollBarVisibility="Visible" Grid.Column="0" Grid.Row="1">
-                <Grid x:Name="TemplateMappingGrid">
-                    <!-- All children for this grid are generated in the code -->
-                </Grid>
-            </ScrollViewer>
-        </Grid>
 
     </Grid>        
 
