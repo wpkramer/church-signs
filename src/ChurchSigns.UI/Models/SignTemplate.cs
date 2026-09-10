@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.Globalization;
 using System.Xml;
@@ -22,12 +23,7 @@ namespace ChurchSigns.UI.Models
         private readonly bool _isValid;
         private readonly string _errorMessage;
 
-        //private PrintOrientation _signOrientation;
-        //private TemplateMediaSize _mediaSize;
 
-
-
-        // Inches in Portrait orientation
         private static (float WidthIn, float HeightIn) ToInches(TemplateMediaSize size) => size switch
         {
             TemplateMediaSize.Letter => (8.5f, 11f),
@@ -52,15 +48,32 @@ namespace ChurchSigns.UI.Models
                 xmlDocument.LoadXml(templateStorageItem.Content);
 
                 var root = xmlDocument.DocumentElement;
-                if (root is null)
-                    return;
+                if (root != null)
+                {
+                    _isValid = string.Equals(root.LocalName, "svg", StringComparison.OrdinalIgnoreCase);
+                }
+                else
+                {
+                    _isValid = false;
+                }
 
-                _isValid = string.Equals(root.LocalName, "svg", StringComparison.OrdinalIgnoreCase);
-                if (!_isValid)
-                    return;
+       
+                if(templateStorageItem.SideCar.PrintOrientation is PrintOrientation.Default)
+                {
+                    if (root != null && _isValid && TryGetAspectRatio(root, out float aspect) && aspect > LandscapeAspectThreshold)
+                    {
+                        SignOrientation = PrintOrientation.Landscape;
+                    }
+                    else
+                    {
+                        SignOrientation = PrintOrientation.Portrait;
+                    }
+                }
+                else
+                {
+                    SignOrientation = templateStorageItem.SideCar.PrintOrientation;
+                }
 
-                if (TryGetAspectRatio(root, out float aspect) && aspect > LandscapeAspectThreshold)
-                    SignOrientation = PrintOrientation.Landscape;
 
                 PrintSize = CalcPrintSize();
             }
@@ -70,7 +83,14 @@ namespace ChurchSigns.UI.Models
                 _isValid = false;
 
                 SignOrientation = PrintOrientation.Portrait; // ensures PrintSize stays consistent
-
+                try
+                {
+                    PrintSize = CalcPrintSize();
+                }
+                finally
+                {
+                    Trace.WriteLine("Invalid sign template processed");
+                }
             }
         }
 
@@ -102,7 +122,7 @@ namespace ChurchSigns.UI.Models
 
         public PrintContentSize PrintSize { get; private set; }
 
-        public Size ThumbnailSize
+        public Size XAMLThumbnailSize
         {
             get
             {
@@ -113,7 +133,7 @@ namespace ChurchSigns.UI.Models
             }
         }
 
-        public Size PreviewSize
+        public Size XAMLPreviewSize
         {
             get
             {

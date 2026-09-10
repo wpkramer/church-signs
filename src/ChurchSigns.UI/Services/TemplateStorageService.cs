@@ -1,17 +1,18 @@
-﻿using System;
+﻿using ChurchSigns.UI.Helpers;
+using ChurchSigns.UI.Models;
+using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
+using System.IO.Compression;
+using System.Linq;
 using System.Text.Json;
+using System.Threading.Tasks;
+using Windows.Storage;
 
 namespace ChurchSigns.UI.Services
 {
-    using ChurchSigns.UI.Helpers;
-    using ChurchSigns.UI.Models;
-    using System.Diagnostics;
-    using System.IO;
-    using System.IO.Compression;
-    using System.Linq;
-    using System.Threading.Tasks;
-    using Windows.Storage;
+
 
     public sealed class TemplateStorageService
     {

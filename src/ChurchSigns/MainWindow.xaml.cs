@@ -96,6 +96,7 @@ namespace ChurchSigns
 
         private void IsDesigner_Checked(object sender, RoutedEventArgs e)
         {
+            DesignerStackPanel.Visibility = Visibility.Visible;
             AddTemplateButton.IsEnabled = true;
             RemoveTemplateButton.IsEnabled = ViewModel.IsCustomSelected;
             ExportTemplateButton.IsEnabled = true;
@@ -103,6 +104,7 @@ namespace ChurchSigns
 
         private void IsDesigner_Unchecked(object sender, RoutedEventArgs e)
         {
+            DesignerStackPanel.Visibility = Visibility.Collapsed;
             AddTemplateButton.IsEnabled = false;
             RemoveTemplateButton.IsEnabled = false;
             ExportTemplateButton.IsEnabled = false;

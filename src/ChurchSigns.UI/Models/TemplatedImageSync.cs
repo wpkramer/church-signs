@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace ChurchSigns.UI.Models
 {
     /// <summary>
-    /// Supports the synchronization of rendering a XAML
+    /// Supports the synchronization of rendering _data XAML
     /// image when the template, data, or dimensions change
     /// </summary>
     internal class TemplatedImageSync
@@ -50,7 +50,7 @@ namespace ChurchSigns.UI.Models
             ArgumentNullException.ThrowIfNull(other);
 
             _template = other._template;
-            _data = other._data;
+            _data = new Dictionary<string, string>(other._data, StringComparer.OrdinalIgnoreCase);
             _width = other._width;
             _height = other._height;
         }
@@ -59,6 +59,17 @@ namespace ChurchSigns.UI.Models
         public IDictionary<string, string> Data { get => _data; }
         public int Width { get => _width; }
         public int Height { get => _height; }
+        private bool DataEquals(IDictionary<string, string> other)
+        {
+            if (_data.Count != other.Count) return false;
+            foreach (var kv in _data)
+            {
+                if (!other.TryGetValue(kv.Key, out var v)) return false;
+                if (!string.Equals(kv.Value, v, StringComparison.Ordinal)) return false;
+            }
+            return true;
+        }
+
 
         public bool Equals(TemplatedImageSync other)
         {
@@ -67,9 +78,8 @@ namespace ChurchSigns.UI.Models
             if (_width != other._width) return false;
             if (_height != other._height) return false;
             if (_template != other._template) return false;
-            if (_data.Count != other._data.Count) return false;
-            // good enough    
-            return ReferenceEquals(_data, other._data);
+  
+            return DataEquals(other._data);
         }
     }
 }

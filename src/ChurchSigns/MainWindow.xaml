@@ -72,7 +72,7 @@
                     <Image Grid.Column="0"  Source="/Assets/TemplatesArea.png" Width="87" Height="100" Margin="8" />
                 
                     <CheckBox x:Name="IsDesigner" IsChecked="False" Grid.Column="1" VerticalAlignment="Top" Margin="16,8,8,0" Checked="IsDesigner_Checked" Unchecked="IsDesigner_Unchecked" Content="Designer:"/>
-                    <StackPanel Grid.Column="2" Orientation="Vertical" HorizontalAlignment="Right">
+                    <StackPanel x:Name="DesignerStackPanel" Grid.Column="2" Orientation="Vertical" HorizontalAlignment="Right" Visibility="Collapsed">
                         <Button x:Name="RemoveTemplateButton" Content="Remove" Margin="1" Click="RemoveTemplateButton_Click"  IsEnabled="False"/>
                         <Button x:Name="AddTemplateButton" Margin="1" Content="Import" Click="AddTemplateButton_Click" IsEnabled="False" />
                         <Button x:Name="ExportTemplateButton" Content="Export" Margin="1" Click="ExportTemplateButton_Click"  IsEnabled="False"/>
@@ -111,10 +111,10 @@
                                 Margin="4"
                                 SvgTemplate="{x:Bind SvgSignTemplate, Mode=OneTime}"
                                 Data="{x:Bind PreviewFields, Mode=OneTime}"
-                                Height="{x:Bind ThumbnailSize.Height}"
-                                Width="{x:Bind ThumbnailSize.Width}"
-                                RenderHeight="{x:Bind ThumbnailSize.Height}"
-                                RenderWidth="{x:Bind ThumbnailSize.Height}"
+                                Height="{x:Bind XAMLThumbnailSize.Height}"
+                                Width="{x:Bind XAMLThumbnailSize.Width}"
+                                RenderHeight="{x:Bind XAMLThumbnailSize.Height}"
+                                RenderWidth="{x:Bind XAMLThumbnailSize.Width}"
                                 />
                                 <TextBlock Grid.Column="1"  Text="{x:Bind Title}" Style="{ThemeResource CaptionTextBlockStyle}" VerticalAlignment="Center"/>
                         </Grid>
@@ -157,6 +157,7 @@
         </Grid>
 
         <!-- Preview of Signs to print Here -->
+        
         <Grid Grid.Column="2" Grid.Row="1">
             <Grid.RowDefinitions>
                 <RowDefinition Height="120"/>
@@ -175,27 +176,11 @@
                         Unchecked="AllSignsCheckBox_Unchecked"/>
 
             </StackPanel>
-            <Grid Grid.Row="0"  Visibility="{x:Bind ViewModel.SignsWithDataVisiblility, Mode=OneWay}" BorderThickness="2" BorderBrush="Azure" Height="120" Width="400">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition/>
-                    <ColumnDefinition/>
-                </Grid.ColumnDefinitions>
-                <Grid.RowDefinitions>
-                    <RowDefinition/>
-                    <RowDefinition/>
-                    <RowDefinition/>
-                </Grid.RowDefinitions>
-
-            </Grid>
-
-
-
 
 
             <GridView x:Name="SignGridView"
                   Grid.Row="1"
                   SelectionMode="Multiple"
-                  
                   SelectionChanged="SignGridView_SelectionChanged"
                   ItemsSource="{x:Bind ViewModel.Signs}"
                   BorderBrush="{ThemeResource ControlElevationBorderBrush}" 
@@ -204,7 +189,7 @@
 
                 <GridView.ItemsPanel>
                     <ItemsPanelTemplate>
-                        <ItemsWrapGrid MaximumRowsOrColumns="1" Orientation="Horizontal"/>
+                        <ItemsWrapGrid MaximumRowsOrColumns="1" Orientation="Vertical"/>
                     </ItemsPanelTemplate>
                 </GridView.ItemsPanel>
 
@@ -214,7 +199,6 @@
                         <Grid>
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto"/>
-                                <!--<RowDefinition Height="Auto"/>-->
                             </Grid.RowDefinitions>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto"/>
@@ -222,12 +206,11 @@
                             <controls:SvgSignControl
                             SvgTemplate="{x:Bind SvgTemplate, Mode=OneTime}"
                             Data="{x:Bind Fields, Mode=OneTime}"
-                            Height="{x:Bind PreviewSize.Height}"
-                            Width="{x:Bind PreviewSize.Width}"
-                            RenderHeight="{x:Bind PreviewSize.Height}"
-                            RenderWidth="{x:Bind PreviewSize.Height}"/>
+                            Height="{x:Bind XAMLPreviewSize.Height}"
+                            Width="{x:Bind XAMLPreviewSize.Width}"
+                            RenderHeight="{x:Bind XAMLPreviewSize.Height}"
+                            RenderWidth="{x:Bind XAMLPreviewSize.Width}"/>
 
-                            <!-- remove the render attributes and make it the same in the control -->
                         </Grid>
                     </DataTemplate>
                 </GridView.ItemTemplate>

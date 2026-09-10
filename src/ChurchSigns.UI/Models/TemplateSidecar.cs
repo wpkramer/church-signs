@@ -16,7 +16,7 @@ namespace ChurchSigns.UI.Models
         public int Version { get; set; } = 1;
 
         [JsonPropertyName("printOrientation")]
-        public PrintOrientation PrintOrientation { get; set; } = Windows.Graphics.Printing.PrintOrientation.Portrait;
+        public PrintOrientation PrintOrientation { get; set; } = Windows.Graphics.Printing.PrintOrientation.Default;
 
         [JsonPropertyName("printMediaSize")]
         public TemplateMediaSize TemplateMediaSize { get; set; } = ChurchSigns.UI.Models.TemplateMediaSize.Letter;

@@ -165,7 +165,8 @@ namespace ChurchSigns.UI.Models
                 {
                     if (string.IsNullOrEmpty(fieldName))
                         continue;
-                    if (fieldName.Contains("Color", StringComparison.OrdinalIgnoreCase))
+                    if (fieldName.Contains("color", StringComparison.OrdinalIgnoreCase)
+    || fieldName.Contains("colour", StringComparison.OrdinalIgnoreCase))
                     {
                         if (Template.PreviewFields.TryGetValue(fieldName, out string? value))
                         {

@@ -22,8 +22,8 @@ public class ChurchSign
         _fields = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
     }
 
-    public Size ThumbnailSize { get { return _template.ThumbnailSize; } }
-    public Size PreviewSize { get { return _template.PreviewSize; } }
+    public Size XAMLThumbnailSize { get { return _template.XAMLThumbnailSize; } }
+    public Size XAMLPreviewSize { get { return _template.XAMLPreviewSize; } }
 
     public Dictionary<string, string> Fields
     {
@@ -41,8 +41,6 @@ public class ChurchSign
     public string SvgSign => SvgTemplate.MergeTemplateWithData(Fields);
     public PrintContentSize PrintSize => _template.PrintSize;
 
-
-    // so given the PrintContentSize is created correctly, can you review this function
     public SKBitmap? RenderPrintSizeBitmap()
     {
         var merged = SvgTemplate.MergeTemplateWithData(Fields);
