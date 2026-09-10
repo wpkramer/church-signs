@@ -1,5 +1,6 @@
 using ChurchSigns.Dialogs;
 using ChurchSigns.UI.Controls;
+using ChurchSigns.UI.Helpers;
 using ChurchSigns.UI.Models;
 using ChurchSigns.UI.Services;
 using ChurchSigns.UI.Util;
@@ -22,6 +23,7 @@ using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Windows.ApplicationModel.DataTransfer;
 using Windows.Graphics.Printing;
@@ -167,13 +169,15 @@ namespace ChurchSigns
         {
             var dialog = new ContentDialog
             {
-                Title = "Menu Selection",
+                Title = "Church Signs Message",
                 Content = message,
                 CloseButtonText = "OK",
                 XamlRoot = this.Content.XamlRoot
             };
             await dialog.ShowAsync();
         }
+
+
 
         private async void TemplateGrid_Drop(object sender, DragEventArgs e)
         {
@@ -655,6 +659,7 @@ namespace ChurchSigns
         private async void PdfExportButton_Click(object sender, RoutedEventArgs e)
         {
             IReadOnlyList<ChurchSign> signs = SignGridView.SelectedItems.OfType<ChurchSign>().ToList();
+
             var picker = new FileSavePicker
             {
                 SuggestedStartLocation = PickerLocationId.DocumentsLibrary,
@@ -668,6 +673,8 @@ namespace ChurchSigns
 
             await SignPdfService.ExportSelectedSignsAsync(signs, file);
         }
+
+
 
 
 
@@ -690,43 +697,17 @@ namespace ChurchSigns
                         _printDefaultOrientation = signTemplate.SignOrientation;
                         _printDefaultMediaSize = signTemplate.MediaSize;
                     }
+
                     
-
-                    foreach (ChurchSign churchSign in SignGridView.SelectedItems.OfType<ChurchSign>())
-                    {
-
-                        using var skBitmap = churchSign.RenderPrintSizeBitmap();
-                        if (skBitmap == null)
-                            continue;
-
-
-                        BitmapImage? bitmapImage = await skBitmap.ToBitmapImageAsync();
-                        if (bitmapImage == null)
-                            continue;
-
-                        var page = new Border
+                    int totalImages = SignGridView.SelectedItems.Count;
+                    bool cancelled = await ProgressDialogHelper.ShowProgressDialogAsync(
+                        this.Content.XamlRoot
+                        , "Generating Images For Print"
+                        , totalImages,
+                        async (step, token) =>
                         {
-                            Width = churchSign.PrintSize.PageWidthDips,
-                            Height = churchSign.PrintSize.PageHeightDips,
-                            Background = new SolidColorBrush(Colors.White),
-                            Child = new Image
-                            {
-                                Source = bitmapImage,
-                                Width = churchSign.PrintSize.PageWidthDips,
-                                Height = churchSign.PrintSize.PageHeightDips,
-                                Stretch = Stretch.Uniform
-                            }
-                        };
-
-
-                        PrintCanvas.Children.Add(page);
-                        page.InvalidateMeasure();
-                        page.UpdateLayout();
-
-                        _printPreviewPages.Add(page);
-
-
-                    }
+                            await GenerateImageForPrintingAsync(step, token);
+                        });
 
                     
                     Debug.WriteLine($"added {_printPreviewPages.Count} image pages");
@@ -752,6 +733,46 @@ namespace ChurchSigns
 
         }
 
+        private async Task GenerateImageForPrintingAsync(int step, CancellationToken token)
+        {
+            if (token.IsCancellationRequested)
+                throw new TaskCanceledException();
+            int index = step - 1;
+            if (SignGridView.SelectedItems[index] is ChurchSign churchSign)
+            {
+
+                using var skBitmap = churchSign.RenderPrintSizeBitmap();
+                if (skBitmap == null)
+                    return;
+
+
+                BitmapImage? bitmapImage = await skBitmap.ToBitmapImageAsync();
+                if (bitmapImage == null)
+                    return;
+
+                var page = new Border
+                {
+                    Width = churchSign.PrintSize.PageWidthDips,
+                    Height = churchSign.PrintSize.PageHeightDips,
+                    Background = new SolidColorBrush(Colors.White),
+                    Child = new Image
+                    {
+                        Source = bitmapImage,
+                        Width = churchSign.PrintSize.PageWidthDips,
+                        Height = churchSign.PrintSize.PageHeightDips,
+                        Stretch = Stretch.Uniform
+                    }
+                };
+
+
+                PrintCanvas.Children.Add(page);
+                page.InvalidateMeasure();
+                page.UpdateLayout();
+
+                _printPreviewPages.Add(page);
+            }
+
+        }
 
         private PrintMediaSize _printDefaultMediaSize = PrintMediaSize.NorthAmericaLetter;
         private PrintOrientation _printDefaultOrientation = PrintOrientation.Portrait;
