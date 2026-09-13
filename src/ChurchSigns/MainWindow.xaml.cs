@@ -110,6 +110,11 @@ namespace ChurchSigns
             ExportTemplateButton.IsEnabled = false;
         }
 
+        private void DeginerInfoButton_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
 
 
         private async void MainGrid_KeyDown(object sender, KeyRoutedEventArgs e)
@@ -1018,6 +1023,7 @@ namespace ChurchSigns
                 Trace.WriteLine(ex.GetType().Name + " " + ex.Message);
             }
         }
+
 
 
 

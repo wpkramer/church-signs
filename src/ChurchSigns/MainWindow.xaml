@@ -66,17 +66,19 @@
             <Grid Grid.Row="0" BorderThickness="2" BorderBrush="Azure" >
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="120"/>
+                    <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
                     <Image Grid.Column="0"  Source="/Assets/TemplatesArea.png" Width="87" Height="100" Margin="8" />
-                
-                    <CheckBox x:Name="IsDesigner" IsChecked="False" Grid.Column="1" VerticalAlignment="Top" Margin="16,8,8,0" Checked="IsDesigner_Checked" Unchecked="IsDesigner_Unchecked" Content="Designer:"/>
-                    <StackPanel x:Name="DesignerStackPanel" Grid.Column="2" Orientation="Vertical" HorizontalAlignment="Right" Visibility="Collapsed">
-                        <Button x:Name="RemoveTemplateButton" Content="Remove" Margin="1" Click="RemoveTemplateButton_Click"  IsEnabled="False"/>
-                        <Button x:Name="AddTemplateButton" Margin="1" Content="Import" Click="AddTemplateButton_Click" IsEnabled="False" />
-                        <Button x:Name="ExportTemplateButton" Content="Export" Margin="1" Click="ExportTemplateButton_Click"  IsEnabled="False"/>
-                    </StackPanel>
+                <StackPanel Orientation="Vertical" Grid.Column="1" >
+                    <Button x:Name="DeginerInfoButton" Content="ℹ️" VerticalAlignment="Top" Margin="46,8,0,0" Click="DeginerInfoButton_Click"/>
+                    <CheckBox x:Name="IsDesigner" IsChecked="False" VerticalAlignment="Top" Margin="16,4,0,0" Checked="IsDesigner_Checked" Unchecked="IsDesigner_Unchecked" Content="Designer:"/>
+                </StackPanel>
+                <StackPanel x:Name="DesignerStackPanel" Grid.Column="2" Orientation="Vertical" HorizontalAlignment="Right" Visibility="Collapsed">
+                    <Button x:Name="RemoveTemplateButton" Content="Remove" Margin="1" Click="RemoveTemplateButton_Click"  IsEnabled="False"/>
+                    <Button x:Name="AddTemplateButton" Margin="1" Content="Import" Click="AddTemplateButton_Click" IsEnabled="False" />
+                    <Button x:Name="ExportTemplateButton" Content="Export" Margin="1" Click="ExportTemplateButton_Click"  IsEnabled="False"/>
+                </StackPanel>
             </Grid>
 
                 
