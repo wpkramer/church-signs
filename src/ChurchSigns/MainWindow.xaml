@@ -71,7 +71,7 @@
                 </Grid.ColumnDefinitions>
                     <Image Grid.Column="0"  Source="/Assets/TemplatesArea.png" Width="87" Height="100" Margin="8" />
                 <StackPanel Orientation="Vertical" Grid.Column="1" >
-                    <Button x:Name="DeginerInfoButton" Content="ℹ️" VerticalAlignment="Top" Margin="46,8,0,0" Click="DeginerInfoButton_Click"/>
+                    <Button x:Name="DesignerInfoButton" Content="ℹ️" VerticalAlignment="Top" Margin="46,8,0,0" Click="DesignerInfoButton_Click"/>
                     <CheckBox x:Name="IsDesigner" IsChecked="False" VerticalAlignment="Top" Margin="16,4,0,0" Checked="IsDesigner_Checked" Unchecked="IsDesigner_Unchecked" Content="Designer:"/>
                 </StackPanel>
                 <StackPanel x:Name="DesignerStackPanel" Grid.Column="2" Orientation="Vertical" HorizontalAlignment="Right" Visibility="Collapsed">

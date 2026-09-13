@@ -111,7 +111,7 @@ namespace ChurchSigns
             ExportTemplateButton.IsEnabled = false;
         }
 
-        private async void DeginerInfoButton_Click(object sender, RoutedEventArgs e)
+        private async void DesignerInfoButton_Click(object sender, RoutedEventArgs e)
         {
             var uri = new Uri("https://wpkramer.github.io/church-signs/TemplateDesigner.html");
             bool success = await Sys.Launcher.LaunchUriAsync(uri);
@@ -256,9 +256,10 @@ namespace ChurchSigns
         /// </summary>
         private void AddControl(int col, int row, FrameworkElement ctrlToAdd)
         {
-            if (col < 0 || col >= 3)
+            
+            if (col < 0 || col >= TemplateMappingGrid.ColumnDefinitions.Count)
                 throw new ArgumentOutOfRangeException(nameof(col));
-            if (row < 0 || row >= 33)
+            if (row < 0 || row >= TemplateMappingGrid.RowDefinitions.Count)
                 throw new ArgumentOutOfRangeException(nameof(row));
             Grid.SetColumn(ctrlToAdd, col);
             Grid.SetRow(ctrlToAdd, row);
@@ -753,52 +754,52 @@ namespace ChurchSigns
         private IPrintDocumentSource? _printDocumentSource = null;
         private readonly List<UIElement> _printPreviewPages = [];
 
+        // here in case I need to register for each print job
+        //private void UnRegisterForPrinting()
+        //{
+        //    string message = "UnRegisterForPrinting";
+        //    if (_printDocument == null)
+        //    {
+        //        message = "UnRegisterForPrinting _printDocument is null";
+        //    }
+        //    else
+        //    {
+        //        try
+        //        {
+        //            if (_printDocument.DocumentSource == null)
+        //            {
+        //                message = "UnRegisterForPrinting _printDocument.DocumentSource is null";
+        //                return;
+        //            }
+        //            message = "UnRegisterForPrinting Paginate";
+        //            _printDocument.Paginate -= PrintDocument_Paginate;
+        //            message = "UnRegisterForPrinting GetPreviewPage";
+        //            _printDocument.GetPreviewPage -= PrintDocument_GetPreviewPage;
+        //            message = "UnRegisterForPrinting AddPages";
+        //            _printDocument.AddPages -= PrintDocument_AddPages;
+        //            message = "UnRegisterForPrinting GetWindowHandle";
+        //            var hWnd = WinRT.Interop.WindowNative.GetWindowHandle(this);
+        //            message = "UnRegisterForPrinting PrintManagerInterop.GetForWindow";
+        //            PrintManager printManager = PrintManagerInterop.GetForWindow(hWnd);
+        //            message = "UnRegisterForPrinting PrintTaskRequested";
+        //            printManager.PrintTaskRequested -= PrintTask_Requested;
+        //            message = "UnRegisterForPrinting PrintTask_Completed";
+        //        }
+        //        catch (Exception ex)
+        //        {
+        //            message = ex.GetType().Name + " " + ex.Message;
+        //        }
+        //        finally
+        //        {
+        //            _printDocument = null;
+        //            _printDocumentSource = null;
+        //            _printPreviewPages.Clear();
 
-        private void UnRegisterForPrinting()
-        {
-            string message = "UnRegisterForPrinting";
-            if (_printDocument == null)
-            {
-                message = "UnRegisterForPrinting _printDocument is null";
-            }
-            else
-            {
-                try
-                {
-                    if (_printDocument.DocumentSource == null)
-                    {
-                        message = "UnRegisterForPrinting _printDocument.DocumentSource is null";
-                        return;
-                    }
-                    message = "UnRegisterForPrinting Paginate";
-                    _printDocument.Paginate -= PrintDocument_Paginate;
-                    message = "UnRegisterForPrinting GetPreviewPage";
-                    _printDocument.GetPreviewPage -= PrintDocument_GetPreviewPage;
-                    message = "UnRegisterForPrinting AddPages";
-                    _printDocument.AddPages -= PrintDocument_AddPages;
-                    message = "UnRegisterForPrinting GetWindowHandle";
-                    var hWnd = WinRT.Interop.WindowNative.GetWindowHandle(this);
-                    message = "UnRegisterForPrinting PrintManagerInterop.GetForWindow";
-                    PrintManager printManager = PrintManagerInterop.GetForWindow(hWnd);
-                    message = "UnRegisterForPrinting PrintTaskRequested";
-                    printManager.PrintTaskRequested -= PrintTask_Requested;
-                    message = "UnRegisterForPrinting PrintTask_Completed";
-                }
-                catch (Exception ex)
-                {
-                    message = ex.GetType().Name + " " + ex.Message;
-                }
-                finally
-                {
-                    _printDocument = null;
-                    _printDocumentSource = null;
-                    _printPreviewPages.Clear();
+        //        }
 
-                }
-
-            }
-            Trace.WriteLine(message);
-        }
+        //    }
+        //    Trace.WriteLine(message);
+        //}
 
         /// <summary>
         /// Run once after window is constructed
@@ -829,8 +830,7 @@ namespace ChurchSigns
 
         private void PrintTask_Requested(PrintManager sender, PrintTaskRequestedEventArgs args)
         {
-            // Create the PrintTask.
-            // Defines the title and delegate for PrintTaskSourceRequested.
+
             try
             {
                 Debug.WriteLine("PrintTask Requested");
@@ -846,22 +846,15 @@ namespace ChurchSigns
                 });
 
                 // Customize options displayed in print preview UI.
-                // Get the list of displayed options.
+
                 IList<string> displayedOptions = printTask.Options.DisplayedOptions;
 
-                // Choose the printer options to be shown.
-                // The order in which the options are appended determines
-                // the order in which they appear in the UI.
+
                 displayedOptions.Clear();
                 displayedOptions.Add(StandardPrintTaskOptions.Copies);
                 displayedOptions.Add(StandardPrintTaskOptions.Orientation);
                 displayedOptions.Add(StandardPrintTaskOptions.ColorMode);
-                //displayedOptions.Add(StandardPrintTaskOptions.Collation);
-                //displayedOptions.Add(StandardPrintTaskOptions.Duplex);
 
-                // Preset the default value of the print media size option.
-                //  Maybe future adjust generated image to fit media size
-                //  printTask.Options.MediaSize = _printDefaultMediaSize;
                 printTask.Options.Orientation = _printDefaultOrientation;
                 printTask.Options.MediaSize = _printDefaultMediaSize;
             }
@@ -884,19 +877,17 @@ namespace ChurchSigns
             catch (Exception ex)
             {
                 Trace.WriteLine(ex.GetType().Name + " " + ex.Message);
-                // Notify the user if the print operation fails.
-                // StatusBlock.Text = "Failed to print.";
-                // TODO: on the page show failed print status
+
             }
         }
 
         private void PrintTask_Completed(PrintTask sender, PrintTaskCompletedEventArgs args)
         {
             string statusBlockText = string.Empty;
-            // TODO: on the page show print status
+
             try
             {
-                // Notify the user if the print operation fails.
+
                 if (args.Completion == PrintTaskCompletion.Failed)
                 {
                     statusBlockText = "Failed to print.";
@@ -925,21 +916,18 @@ namespace ChurchSigns
             {
                 if (DispatcherQueue == null)
                 {
-                    // If the DispatcherQueue is not available, update the UI directly.
-                    // StatusBlock.Text = statusBlockText;
+
                     PrintButton.IsEnabled = true;
                     return;
                 }
                 bool queued = DispatcherQueue.TryEnqueue(DispatcherQueuePriority.Normal, () =>
                 {
-                    //  StatusBlock.Text = statusBlockText;
                     PrintButton.IsEnabled = true;
                 });
 
                 if (!queued)
                 {
-                    // If the DispatcherQueue is not available, update the UI directly.
-                    // StatusBlock.Text = statusBlockText;
+
                     PrintButton.IsEnabled = true;
                 }
 
@@ -948,15 +936,9 @@ namespace ChurchSigns
             {
                 Trace.WriteLine(ex.GetType().Name + " " + ex.Message);
 
-                // If the DispatcherQueue is not available, update the UI directly.
-                // StatusBlock.Text = statusBlockText;
                 PrintButton.IsEnabled = true;
             }
-            finally
-            {
-                // we only register once, and keep it registered
-                //        UnRegisterForPrinting();
-            }
+
         }
 
         private void PrintDocument_AddPages(object sender, AddPagesEventArgs e)
@@ -979,8 +961,6 @@ namespace ChurchSigns
             catch (Exception ex)
             {
                 Trace.WriteLine(ex.GetType().Name + " " + ex.Message);
-                // TODO: Notify the user if the print operation fails.
-                // StatusBlock.Text = "Failed to print.";
             }
         }
 
@@ -1000,8 +980,7 @@ namespace ChurchSigns
             catch (Exception ex)
             {
                 Trace.WriteLine(ex.GetType().Name + " " + ex.Message);
-                // TODO: Notify the user if the print operation fails.
-                // StatusBlock.Text = "Failed to print.";
+
             }
         }
 
@@ -1009,16 +988,6 @@ namespace ChurchSigns
         {
             try
             {
-
-                //// Get the PrintTaskOptions.
-                //PrintTaskOptions printingOptions = ((PrintTaskOptions)e.PrintTaskOptions);
-
-                //// Get the page description to determine the size of the print page.
-                //// might need to add this to our future object construction
-                //PrintPageDescription pageDescription = printingOptions.GetPageDescription(0);
-                //double pageWidthDips = pageDescription.PageSize.Width;
-                //double pageHeightDips = pageDescription.PageSize.Height;
-
 
                 PrintDocument printDocument = (PrintDocument)sender;
                 printDocument.SetPreviewPageCount(_printPreviewPages.Count, PreviewPageCountType.Final);
