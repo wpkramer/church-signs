@@ -23,6 +23,7 @@ using Windows.ApplicationModel.DataTransfer;
 using Windows.Graphics.Printing;
 using Windows.Storage;
 using Windows.Storage.Pickers;
+using Sys=Windows.System;
 
 namespace ChurchSigns
 {
@@ -110,9 +111,14 @@ namespace ChurchSigns
             ExportTemplateButton.IsEnabled = false;
         }
 
-        private void DeginerInfoButton_Click(object sender, RoutedEventArgs e)
+        private async void DeginerInfoButton_Click(object sender, RoutedEventArgs e)
         {
-
+            var uri = new Uri("https://wpkramer.github.io/church-signs/TemplateDesigner.html");
+            bool success = await Sys.Launcher.LaunchUriAsync(uri);
+            if (!success)
+            {
+                await ShowMessageAsync("Unable to open Template Designer information at this time.");
+            }
         }
 
 
