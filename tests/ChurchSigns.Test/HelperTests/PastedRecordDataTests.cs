@@ -6,21 +6,24 @@ namespace ChurchSigns.Test.HelperTests
     public class PastedRecordDataTests
     {
         [Fact]
-        public void Constructor_EmptyString_ThrowsArgumentException()
+        public void Constructor_EmptyString_ZeroRows()
         {
-            Assert.Throws<ArgumentException>(() => new PastedRecordData(string.Empty));
+           var pr = new PastedRecordData(string.Empty);
+            Assert.Empty(pr.Records) ;
         }
 
         [Fact]
-        public void Constructor_Null_Throws()
+        public void Constructor_DefaultConstructor_ZeroRows()
         {
-            Assert.ThrowsAny<ArgumentException>(() => new PastedRecordData(null!));
+            var pr = new PastedRecordData();
+            Assert.Empty(pr.Records);
         }
 
         [Fact]
-        public void Constructor_WhitespaceOnly_ThrowsArgumentException()
+        public void Constructor_WhitespaceOnly_IsEmpty()
         {
-            Assert.Throws<ArgumentException>(() => new PastedRecordData("   \t\n  "));
+            var pr = new PastedRecordData("   \t\n  ");
+            Assert.Empty(pr.Records);
         }
 
         [Fact]
@@ -135,6 +138,29 @@ namespace ChurchSigns.Test.HelperTests
 
             Assert.Equal("Alice", row["name"]);
             Assert.Equal("101", row["ROOM"]);
+        }
+
+        [Fact]
+        public void ToString_ReturnsOriginalPaste()
+        {
+            const string pasted = "Name\tRoom\nAlice\t101";
+            Assert.Equal(pasted, new PastedRecordData(pasted).ToString());
+        }
+
+        [Fact]
+        public void Equals_SameOriginal_AreEqual()
+        {
+            const string pasted = "Name\nA";
+            Assert.Equal(new PastedRecordData(pasted), new PastedRecordData(pasted));
+        }
+
+        [Fact]
+        public void EqualityOperators_NullSafe()
+        {
+            PastedRecordData? a = null;
+            PastedRecordData? b = new PastedRecordData();
+            Assert.False(a == b);
+            Assert.True(a == null);
         }
     }
 }

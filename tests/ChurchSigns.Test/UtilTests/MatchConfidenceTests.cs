@@ -144,5 +144,13 @@ namespace ChurchSigns.Test.UtilTests
             var m = new MatchConfidence(field, header);
             Assert.Equal(expected, m.Score);
         }
+
+        [Fact]
+        public void Score_PrefixContainment_IsPositive()
+        {
+            // e.g. "Teacher" vs "TeacherName" — document expected band
+            var m = new MatchConfidence("Teacher", "TeacherName");
+            Assert.True(m.Score > 0);
+        }
     }
 }

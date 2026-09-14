@@ -21,7 +21,7 @@ namespace ChurchSigns.UI.Helpers
         public PastedRecordData(string pastedData)
         {
              //   ArgumentException.ThrowIfNullOrWhiteSpace(pastedData);
-            if(string.IsNullOrEmpty(pastedData))
+            if(string.IsNullOrWhiteSpace(pastedData))
             {
                 _originalPaste = string.Empty;
                 ColumnHeaderNames = new List<string>();

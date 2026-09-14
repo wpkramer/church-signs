@@ -36,7 +36,7 @@ namespace ChurchSigns.UI.Util
                 return Array.Empty<string>();
 
             return FieldRegex.Matches(template)
-                .Select(m => m.Groups[1].Value)
+                .Select(m => m.Groups[1].Value.Trim())
                 .Distinct(StringComparer.OrdinalIgnoreCase)
                 .ToList();
         }
