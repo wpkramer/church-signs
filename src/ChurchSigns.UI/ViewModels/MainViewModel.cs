@@ -2,7 +2,6 @@
 using ChurchSigns.UI.Interfaces;
 using ChurchSigns.UI.Models;
 using ChurchSigns.UI.Services;
-using Microsoft.UI.Xaml;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -17,19 +16,26 @@ namespace ChurchSigns.UI.ViewModels
     {
         private readonly IClipboardService _clipboard = clipboard ?? new WindowsClipboardService();
         private SignTemplate _selectedTemplate = CreateBlankTemplate();
-        private PastedRecordData? _lastPaste;
-        private SignTemplateDataMap? _dataMap;
+        private PastedRecordData _lastPaste = new PastedRecordData();
 
         public ObservableCollection<SignTemplate> Templates { get; } = [];
         public ObservableCollection<ChurchSign> Signs { get; } = [];
         public ObservableCollection<GroupInfoList>? GroupedTemplates { get; private set; }
 
-        public SignTemplateDataMap? DataMap => _dataMap;
-        public PastedRecordData? LastPaste => _lastPaste;
-
-        public event EventHandler? MappingReset;
-        public event EventHandler? MappingUpdated;
         public event PropertyChangedEventHandler? PropertyChanged;
+
+        public PastedRecordData LastPaste
+        {
+            get => _lastPaste;
+            set
+            {
+                if(value != _lastPaste)
+                {
+                    _lastPaste = value;
+                    OnPropertyChanged(nameof(LastPaste));
+                }
+            }
+        }
 
         public SignTemplate SelectedTemplate
         {
@@ -40,61 +46,15 @@ namespace ChurchSigns.UI.ViewModels
                     return;
 
                 _selectedTemplate = value;
-                _lastPaste = null;
-                _dataMap = null;
-                Signs.Clear();
-
-                //SignData sd = new SignData(_selectedTemplate);
-
-                // One placeholder sign so the preview shows the template
-                ChurchSign sd = _selectedTemplate.CreatePlaceholderSign();
-
-                Signs.Add(sd);
-
-                OnPropertyChanged();
-                //       OnPropertyChanged(nameof(Signs));
-                OnPropertyChanged(nameof(DataMap));
+                // clear out the pasted data for a different template
+                LastPaste = new PastedRecordData();
                 OnPropertyChanged(nameof(IsCustomSelected));
-                MappingReset?.Invoke(this, EventArgs.Empty);
-                IsShowingPlaceholder = true;
+                OnPropertyChanged(nameof(SelectedTemplate));
+
+
             }
         }
 
-        private bool _isShowingPlaceholder;
-        public bool IsShowingPlaceholder
-        {
-            get
-            {
-                return _isShowingPlaceholder;
-            }
-            private set
-            {
-                if (_isShowingPlaceholder != value)
-                {
-                    _isShowingPlaceholder = value;
-                    OnPropertyChanged();
-                    OnPropertyChanged(nameof(NewSignTemplateVisiblity));
-                    OnPropertyChanged(nameof(SignsWithDataVisiblility));
-                }
-            }
-        }
-
-
-        public Visibility NewSignTemplateVisiblity
-        {
-            get
-            {
-                return IsShowingPlaceholder ? Visibility.Visible : Visibility.Collapsed;
-            }
-        }
-
-        public Visibility SignsWithDataVisiblility
-        {
-            get
-            {
-                return IsShowingPlaceholder ? Visibility.Collapsed : Visibility.Visible;
-            }
-        }
 
         public bool IsCustomSelected
         {
@@ -133,16 +93,23 @@ namespace ChurchSigns.UI.ViewModels
                 SelectedTemplate = Templates[0];
         }
 
-        public SignTemplate? AddLocalTemplate(TemplateStorageItem item)
+        public void ReplaceSignsFromMappedData(IReadOnlyList<Dictionary<string, string>> data)
         {
-            var template = new SignTemplate(item);
-            if (!template.IsValid)
-                return null;
-
-            Templates.Add(template);
-            RebuildGroupedTemplates();
-            return template;
+            Signs.Clear();
+            if (data.Count == 0 || (data.Count == 1 && data[0].Count == 0))
+            {
+                Signs.Add(SelectedTemplate.CreatePlaceholderSign());
+                return;
+            }
+            foreach (var row in data)
+            {
+                if (row is null || row.Count == 0) continue;
+                Signs.Add(new ChurchSign(SelectedTemplate) { Fields = row });
+            }
+            if (Signs.Count == 0)
+                Signs.Add(SelectedTemplate.CreatePlaceholderSign());
         }
+
 
         public SignTemplate? AddTemplates(IEnumerable<TemplateStorageItem> storageItems)
         {
@@ -153,7 +120,7 @@ namespace ChurchSigns.UI.ViewModels
                 var template = new SignTemplate(storageItem);
                 if (!template.IsValid)
                     continue;
-                // TODO: if template name and category already exists then replace
+                
                 templates.Add(template);
                 lastAdded = template;
             }
@@ -208,42 +175,9 @@ namespace ChurchSigns.UI.ViewModels
             ApplyPaste(text);
         }
 
-        /// <summary>Used by unit tests with fixed paste strings.</summary>
-        public void ApplyPaste(string clipboardText)
+        private void ApplyPaste(string clipboardText)
         {
-            var pasted = new PastedRecordData(clipboardText);
-            _lastPaste = pasted;
-            _dataMap = new SignTemplateDataMap(SelectedTemplate, pasted);
-            RebuildSignsFromMap();
-            MappingUpdated?.Invoke(this, EventArgs.Empty);
-        }
-
-        public int SetColumnMapping(int columnIndex, int dropdownIndex)
-        {
-            if (_dataMap is null)
-                return -1;
-
-            int cleared = _dataMap.SetDropdownIndexForColumn(columnIndex, dropdownIndex);
-            RebuildSignsFromMap();
-            return cleared;
-        }
-
-        private void RebuildSignsFromMap()
-        {
-            Signs.Clear();
-            if (_dataMap is null)
-                return;
-
-            foreach (var fields in _dataMap.CreateMappedRecords())
-            {
-                var data = new ChurchSign(_dataMap.Template)
-                {
-                    Fields = fields
-                };
-                Signs.Add(data);
-            }
-            IsShowingPlaceholder = false;
-
+            LastPaste = new PastedRecordData(clipboardText);
         }
 
         private void TryAddTemplate(TemplateStorageItem item)
@@ -252,8 +186,6 @@ namespace ChurchSigns.UI.ViewModels
             if (t.IsValid)
                 Templates.Add(t);
         }
-
-
 
         private static SignTemplate CreateBlankTemplate() =>
             new(new TemplateStorageItem

@@ -9,10 +9,26 @@ namespace ChurchSigns.UI.Helpers
         public IReadOnlyList<string> ColumnHeaderNames { get; }
         public IReadOnlyList<IReadOnlyList<string>> Records { get; }
 
+  //      public static implicit operator string(PastedRecordData data) => data.ToString() ?? string.Empty;
+        public static explicit operator PastedRecordData(string pastedData) => new PastedRecordData(pastedData);
+
+        private readonly string _originalPaste;
+
+        public PastedRecordData()
+            : this(string.Empty)
+        { }
+
         public PastedRecordData(string pastedData)
         {
-            ArgumentException.ThrowIfNullOrWhiteSpace(pastedData);
-
+             //   ArgumentException.ThrowIfNullOrWhiteSpace(pastedData);
+            if(string.IsNullOrEmpty(pastedData))
+            {
+                _originalPaste = string.Empty;
+                ColumnHeaderNames = new List<string>();
+                Records = new List<IReadOnlyList<string>>();
+                return;
+            }
+            _originalPaste = pastedData;
             // Normalize Windows line endings and trim trailing blank lines
             var normalized = pastedData.Replace("\r\n", "\n").Replace('\r', '\n').TrimEnd();
             var lines = normalized.Split('\n', StringSplitOptions.None)
@@ -46,6 +62,28 @@ namespace ChurchSigns.UI.Helpers
             ColumnHeaderNames = headers;
             Records = rows;
         }
+
+        public override string ToString()
+        {
+            return _originalPaste;
+        }
+
+        public static bool operator ==(PastedRecordData? d1, PastedRecordData? d2)
+        {
+            if (ReferenceEquals(d1, d2)) return true;
+            if (d1 is null || d2 is null) return false;
+            return d1.Equals(d2);
+        }
+
+        public static bool operator !=(PastedRecordData? d1, PastedRecordData? d2) => !(d1 == d2);
+
+        public override bool Equals(object? obj) =>
+            obj is PastedRecordData other &&
+            string.Equals(_originalPaste, other._originalPaste, StringComparison.Ordinal);
+
+        public override int GetHashCode() => _originalPaste?.GetHashCode() ?? 0;
+
+
 
         /// <summary>
         /// Convenience: one dictionary per row (header → cell).

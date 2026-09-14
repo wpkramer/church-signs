@@ -151,14 +151,23 @@
                 
             </StackPanel>
 
-            <ScrollViewer VerticalScrollBarVisibility="Visible" Grid.Column="0" Grid.Row="1">
+            <!--<ScrollViewer VerticalScrollBarVisibility="Visible" Grid.Column="0" Grid.Row="1">
                 <Grid x:Name="TemplateMappingGrid">
-                    <!-- All children for this grid are generated in the code -->
+                    --><!-- All children for this grid are generated in the code --><!--
                 </Grid>
-            </ScrollViewer>
+            </ScrollViewer>-->
+            
+            <controls:TemplateMappingView 
+                x:Name="MappingView"
+                Grid.Column="0"
+                Grid.Row="1"
+                SelectedTemplate="{x:Bind ViewModel.SelectedTemplate, Mode=OneWay}"
+                PastedData="{x:Bind ViewModel.LastPaste, Mode=OneWay}"/>
+
         </Grid>
 
-        <!-- Preview of Signs to print Here -->
+        <!-- grok, somehow the preview signs appear horizontal now. Odd since I've only changed to use the above TemplateMappingView
+             controle -->
         
         <Grid Grid.Column="2" Grid.Row="1">
             <Grid.RowDefinitions>
@@ -191,7 +200,7 @@
 
                 <GridView.ItemsPanel>
                     <ItemsPanelTemplate>
-                        <ItemsWrapGrid MaximumRowsOrColumns="1" Orientation="Vertical"/>
+                        <ItemsWrapGrid MaximumRowsOrColumns="1" Orientation="Horizontal"/>
                     </ItemsPanelTemplate>
                 </GridView.ItemsPanel>
 

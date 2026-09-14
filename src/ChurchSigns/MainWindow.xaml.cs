@@ -23,7 +23,7 @@ using Windows.ApplicationModel.DataTransfer;
 using Windows.Graphics.Printing;
 using Windows.Storage;
 using Windows.Storage.Pickers;
-using Sys=Windows.System;
+using Sys = Windows.System;
 
 namespace ChurchSigns
 {
@@ -39,8 +39,9 @@ namespace ChurchSigns
         {
             InitializeComponent();
 
-            ViewModel.MappingUpdated += (_, _) => RebuildMappingGrid();
-            ViewModel.MappingReset += (_, _) => RebuildMappingGrid();
+
+            MappingView.MappedDataChanged += MappingView_MappedDataChanged;
+
             Clipboard.ContentChanged += Clipboard_ContentChanged;
             HasPasteData = Clipboard.GetContent().Contains(StandardDataFormats.Text);
 
@@ -49,6 +50,41 @@ namespace ChurchSigns
 
         }
 
+        private void MappingView_MappedDataChanged(IReadOnlyList<Dictionary<string, string>> data)
+        {
+            ViewModel.ReplaceSignsFromMappedData(data);
+            SelectAllSigns(true);
+            
+            //ViewModel.Signs.Clear();
+            //var template = ViewModel.SelectedTemplate;
+            //if(template is null)
+            //{
+            //    Debug.WriteLine($"{nameof(MappingView_MappedDataChanged)} had a null or SelectedTemplate");
+            //    return;
+            //}
+
+            //int recordCnt = data.Count;
+            //if (data == null || recordCnt == 0)  // data is non-nullable in the signature; null check is dead
+            //{
+            //    ViewModel.Signs.Add(ViewModel.SelectedTemplate.CreatePlaceholderSign());
+            //    Debug.WriteLine($"{nameof(MappingView_MappedDataChanged)} had a null or empty mapped data");
+            //}
+            //else
+            //{
+            //    foreach (var row in data)
+            //    {
+            //        if (row is null || row.Count == 0)
+            //        {
+            //            continue;
+            //        }
+            //        ViewModel.Signs.Add(new ChurchSign(template) { Fields = row});
+            //    }
+            //    if(ViewModel.Signs.Count == 0)
+            //    {
+            //        ViewModel.Signs.Add(template.CreatePlaceholderSign());
+            //    }
+            //}
+        }
 
         private void MainWindow_Activated(object sender, WindowActivatedEventArgs args)
         {
@@ -90,9 +126,8 @@ namespace ChurchSigns
                     RemoveTemplateButton.IsEnabled = signTemplate.IsCustom && IsDesigner.IsChecked == true;
                 }
             }
-            SignGridView_SelectionChanged(sender, e);
-
-
+            UpdatePrintPdfEnabled();
+           
         }
 
         private void IsDesigner_Checked(object sender, RoutedEventArgs e)
@@ -180,7 +215,7 @@ namespace ChurchSigns
                         }
                         else
                         {
-                            await ShowMessageAsync($"Rejected: {file.Name} (not SVG)");
+                            await ShowMessageAsync($"Rejected: {file.Name} (either a svg file or a zip file containing svg and json pairs)");
                         }
                     }
                 }
@@ -234,210 +269,6 @@ namespace ChurchSigns
                 }
             }
         }
-
-        #region Dynamic MappingGrid
-
-        // The following functions and data members support the display
-        // of a grid of SignTemplate Fields, Pasted Sign Columns
-
-        /// <summary>
-        /// Collection of combo boxes that allows the selection of a
-        /// FieldName for the header of data pasted into the app
-        /// </summary>
-        private readonly List<ComboBox> _fieldSelectionBoxes = [];
-
-        /// <summary>
-        /// Map of the template to the pasted data
-        /// </summary>
-        private SignTemplateDataMap? _signTemplateDataMap = null;
-
-        /// <summary>
-        /// Assigns the Grid column and row for a XAML element
-        /// </summary>
-        private void AddControl(int col, int row, FrameworkElement ctrlToAdd)
-        {
-            
-            if (col < 0 || col >= TemplateMappingGrid.ColumnDefinitions.Count)
-                throw new ArgumentOutOfRangeException(nameof(col));
-            if (row < 0 || row >= TemplateMappingGrid.RowDefinitions.Count)
-                throw new ArgumentOutOfRangeException(nameof(row));
-            Grid.SetColumn(ctrlToAdd, col);
-            Grid.SetRow(ctrlToAdd, row);
-            TemplateMappingGrid.Children.Add(ctrlToAdd);
-        }
-        private void RebuildMappingGrid()
-        {
-            TemplateMappingGrid.Children.Clear();
-            TemplateMappingGrid.RowDefinitions.Clear();
-            TemplateMappingGrid.ColumnDefinitions.Clear();
-            // mapping rows
-            TemplateMappingGrid.RowDefinitions.Add(new RowDefinition() { Height = new GridLength(1, GridUnitType.Auto) });
-            TemplateMappingGrid.RowDefinitions.Add(new RowDefinition() { Height = new GridLength(1, GridUnitType.Auto) });
-            TemplateMappingGrid.RowDefinitions.Add(new RowDefinition() { Height = new GridLength(1, GridUnitType.Auto) });
-            // data rows
-            if (ViewModel.LastPaste != null)
-            {
-                for (int i = 0; i < ViewModel.LastPaste.Records.Count; i++)
-                {
-                    TemplateMappingGrid.RowDefinitions.Add(new RowDefinition() { Height = new GridLength(1, GridUnitType.Auto) });
-                }
-            }
-
-            int columnCount = ViewModel.SelectedTemplate.FieldNames.Count;
-            columnCount = Math.Max(1, columnCount);
-
-            if (ViewModel.LastPaste != null)
-            {
-                columnCount = Math.Max(1, ViewModel.LastPaste.ColumnHeaderNames.Count);
-            }
-
-
-            for (int i = 0; i < columnCount; i++)
-            {
-                TemplateMappingGrid.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(1, GridUnitType.Star) });
-            }
-
-
-
-            Thickness columnSeperation = new Thickness(2d);
-            object objColHdrStyle = Application.Current.Resources["BodyStrongTextBlockStyle"];
-
-            // if no pasted data we are just goint to show
-            // our field names
-            if (ViewModel.LastPaste == null)
-            {
-                for (int i = 0; i < columnCount; ++i)
-                {
-                    if (i == ViewModel.SelectedTemplate.FieldNames.Count)
-                        break;
-
-                    TextBlock textBlock = new TextBlock
-                    {
-                        Text = ViewModel.SelectedTemplate.FieldNames[i],
-                        Margin = columnSeperation
-                    };
-                    if (objColHdrStyle is Style style)
-                    {
-                        textBlock.Style = style;
-                    }
-                    // add control the column head row
-                    AddControl(i, 0, textBlock);
-                }
-                return; // we're done
-            }
-
-
-            _signTemplateDataMap = new SignTemplateDataMap(ViewModel.SelectedTemplate, ViewModel.LastPaste);
-            columnCount = ViewModel.LastPaste.ColumnHeaderNames.Count;
-
-            for (int i = 0; i < columnCount; ++i)
-            {
-
-                TextBlock textBlock = new TextBlock
-                {
-                    Text = ViewModel.LastPaste.ColumnHeaderNames[i],
-                    Margin = columnSeperation
-                };
-                if (objColHdrStyle is Style style)
-                {
-                    textBlock.Style = style;
-                }
-                // add control the column head row
-                AddControl(i, 0, textBlock);
-            }
-            _fieldSelectionBoxes.Clear();
-
-            for (int pastedColIndex = 0; pastedColIndex < columnCount; ++pastedColIndex)
-            {
-                // ComboBox of Field Names for each pasted column
-                ComboBox combo = new ComboBox
-                {
-                    Margin = columnSeperation,
-                };
-
-                _fieldSelectionBoxes.Add(combo);
-
-
-
-                foreach (string fieldName in _signTemplateDataMap.DropdownFieldNames)
-                {
-                    combo.Items.Add(fieldName);
-                }
-                combo.SelectedIndex = _signTemplateDataMap.GetDropdownIndexForColumn(pastedColIndex);
-                combo.Tag = pastedColIndex;
-                // watch for any changes to the default;
-                combo.SelectionChanged += (s, e) =>
-                {
-
-                    if (s is ComboBox comboBox)
-                    {
-                        if (comboBox.Tag is int columnIndex)
-                        {
-                            int affectedComboIndex = _signTemplateDataMap.SetDropdownIndexForColumn(columnIndex, comboBox.SelectedIndex);
-                            bool showSigns = true;
-                            if (affectedComboIndex >= 0 && affectedComboIndex < _fieldSelectionBoxes.Count)
-                            {
-                                _fieldSelectionBoxes[affectedComboIndex].SelectedIndex = 0;
-                                showSigns = false; // we'll show them on the next event handler
-                            }
-                            if (showSigns)
-                            {
-                                ViewModel.Signs.Clear();
-                                foreach (var fields in _signTemplateDataMap.CreateMappedRecords())
-                                {
-                                    ChurchSign data = new ChurchSign(_signTemplateDataMap.Template);
-                                    data.Fields = fields;
-                                    ViewModel.Signs.Add(data);
-                                }
-
-                            }
-                        }
-
-                    }
-                };
-
-                AddControl(pastedColIndex, 1, combo);
-            }
-
-            int rowNumber = 1;
-            // Paste in the data rows
-            foreach (var rowData in ViewModel.LastPaste.Records)
-            {
-                rowNumber += 1;
-                int colNumber = 0;
-                foreach (string columnData in rowData)
-                {
-
-                    TextBlock textBlock = new TextBlock
-                    {
-                        Text = columnData,
-                        Margin = columnSeperation
-                    };
-                    if (objColHdrStyle is Style style)
-                    {
-                        textBlock.Style = style;
-                    }
-                    // add control the column head row
-                    AddControl(colNumber++, rowNumber, textBlock);
-                }
-            }
-
-
-            ViewModel.Signs.Clear();
-            foreach (var fields in _signTemplateDataMap.CreateMappedRecords())
-            {
-
-
-                ChurchSign data = new ChurchSign(_signTemplateDataMap.Template);
-                data.Fields = fields;
-                ViewModel.Signs.Add(data);
-            }
-
-        }
-
-
-
-        #endregion
 
 
 
@@ -575,31 +406,34 @@ namespace ChurchSigns
 
         private void AllSignsCheckBox_Checked(object sender, RoutedEventArgs e)
         {
-            foreach (var item in SignGridView.Items)
+            SelectAllSigns(true);
+        }
+
+        private void SelectAllSigns(bool isSelected)
+        {
+            IList<object> list = SignGridView.Items;
+            for (int i = 0; i < list.Count; i++)
             {
+                object? item = list[i];
                 SignGridView.ScrollIntoView(item);
                 if (SignGridView.ContainerFromItem(item) is GridViewItem gridViewItem)
                 {
-                    gridViewItem.IsSelected = true;
+                    gridViewItem.IsSelected = isSelected;
                 }
-
             }
         }
 
         private void AllSignsCheckBox_Unchecked(object sender, RoutedEventArgs e)
         {
-            foreach (var item in SignGridView.Items)
-            {
-                SignGridView.ScrollIntoView(item);
-
-                if (SignGridView.ContainerFromItem(item) is GridViewItem gridViewItem)
-                {
-                    gridViewItem.IsSelected = false;
-                }
-            }
+            SelectAllSigns(false);
         }
 
         private void SignGridView_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            UpdatePrintPdfEnabled();
+        }
+
+        private void UpdatePrintPdfEnabled()
         {
             AllSignsCheckBox.Checked -= AllSignsCheckBox_Checked;
             AllSignsCheckBox.Unchecked -= AllSignsCheckBox_Unchecked;
@@ -644,6 +478,8 @@ namespace ChurchSigns
 
 
             StorageFile file = await picker.PickSaveFileAsync();
+            if (file is null)
+                return;
 
             await SignPdfService.ExportSelectedSignsAsync(signs, file);
         }
