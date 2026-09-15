@@ -40,7 +40,7 @@ namespace ChurchSigns
             InitializeComponent();
 
 
-            MappingView.MappedDataChanged += MappingView_MappedDataChanged;
+            MappingView.MultiSignDataChanged += MappingView_MappedDataChanged;
 
             Clipboard.ContentChanged += Clipboard_ContentChanged;
             HasPasteData = Clipboard.GetContent().Contains(StandardDataFormats.Text);
@@ -504,8 +504,8 @@ namespace ChurchSigns
 
                     if (SignTemplatesListView.SelectedItem is SignTemplate signTemplate)
                     {
-                        _printDefaultOrientation = signTemplate.SignOrientation;
-                        _printDefaultMediaSize = signTemplate.MediaSize;
+                        _printDefaultOrientation = signTemplate.PrintDefaultOrientation;
+                        _printDefaultMediaSize = signTemplate.PrintDefaultMediaSize;
                     }
 
 

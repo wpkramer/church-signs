@@ -22,6 +22,8 @@ namespace ChurchSigns.UI.Models
         private readonly TemplateStorageItem _templateStorageItem;
         private readonly bool _isValid;
         private readonly string _errorMessage;
+        private readonly PrintOrientation _signOrientation;
+        private readonly PrintMediaSize _signMediaSize;
 
 
         private static (float WidthIn, float HeightIn) ToInches(TemplateMediaSize size) => size switch
@@ -39,6 +41,7 @@ namespace ChurchSigns.UI.Models
             _templateStorageItem = templateStorageItem;
             _errorMessage = string.Empty;
             _isValid = false;
+            _signMediaSize = MediaSizeFor(templateStorageItem.SideCar.TemplateMediaSize);
             PrintSize = new PrintContentSize(8.5f, 11f);
             try
             {
@@ -58,20 +61,20 @@ namespace ChurchSigns.UI.Models
                 }
 
        
-                if(templateStorageItem.SideCar.PrintOrientation is PrintOrientation.Default)
+                if(templateStorageItem.SideCar.TemplateOrientation is TemplateOrientation.Default)
                 {
                     if (root != null && _isValid && TryGetAspectRatio(root, out float aspect) && aspect > LandscapeAspectThreshold)
                     {
-                        SignOrientation = PrintOrientation.Landscape;
+                        _signOrientation = PrintOrientation.Landscape;
                     }
                     else
                     {
-                        SignOrientation = PrintOrientation.Portrait;
+                        _signOrientation = PrintOrientation.Portrait;
                     }
                 }
                 else
                 {
-                    SignOrientation = templateStorageItem.SideCar.PrintOrientation;
+                    _signOrientation = OrientationFor(templateStorageItem.SideCar.TemplateOrientation);
                 }
 
 
@@ -82,7 +85,7 @@ namespace ChurchSigns.UI.Models
                 _errorMessage = $"{ex.GetType().Name}: {ex.Message}";
                 _isValid = false;
 
-                SignOrientation = PrintOrientation.Portrait; // ensures PrintSize stays consistent
+                _signOrientation = PrintOrientation.Portrait; // ensures PrintSize stays consistent
                 try
                 {
                     PrintSize = CalcPrintSize();
@@ -94,26 +97,25 @@ namespace ChurchSigns.UI.Models
             }
         }
 
-        // ─── Print size / orientation ────────────────────────────────
-
-        /// <summary>
-        /// Orientation for signs from this template (from SVG aspect ratio).
-        /// Future: user override and paper size (Letter, Legal, etc.).
-        /// </summary>
-        public PrintOrientation SignOrientation
+        public TemplateSignMode SignMode
         {
-            get => _templateStorageItem.SideCar.PrintOrientation;
-            private set
-            {
-                _templateStorageItem.SideCar.PrintOrientation = value;
-                PrintSize = CalcPrintSize();
-            }
+            get => _templateStorageItem.SideCar.SignMode;
+        }
+
+        // ─── Print size / orientation ────────────────────────────────
+        public PrintMediaSize PrintDefaultMediaSize
+        {
+            get => _signMediaSize;
+        }
+        public PrintOrientation PrintDefaultOrientation
+        {
+            get => _signOrientation;
         }
 
         private PrintContentSize CalcPrintSize()
         {
             var sizeInches = ToInches(_templateStorageItem.SideCar.TemplateMediaSize);
-            if (_templateStorageItem.SideCar.PrintOrientation == PrintOrientation.Portrait)
+            if (_templateStorageItem.SideCar.TemplateOrientation == TemplateOrientation.Portrait)
             {
                 return new PrintContentSize(sizeInches.WidthIn, sizeInches.HeightIn);
             }
@@ -144,25 +146,28 @@ namespace ChurchSigns.UI.Models
             }
         }
 
-        public PrintMediaSize MediaSize
+        private static PrintMediaSize MediaSizeFor(TemplateMediaSize templateMediaSize)
         {
-            get
+
+            return templateMediaSize switch
             {
-                switch (_templateStorageItem.SideCar.TemplateMediaSize)
-                {
-                    case TemplateMediaSize.Letter:
-                        return PrintMediaSize.NorthAmericaLetter;
+                TemplateMediaSize.Letter => PrintMediaSize.NorthAmericaLetter,
+                TemplateMediaSize.Legal => PrintMediaSize.NorthAmericaLegal,
+                TemplateMediaSize.Tabloid => PrintMediaSize.NorthAmericaTabloid,
+                _ => PrintMediaSize.NorthAmericaLetter,
+            };
+        }
 
-                    case TemplateMediaSize.Legal:
-                        return PrintMediaSize.NorthAmericaLegal;
-                    case TemplateMediaSize.Tabloid:
-                        return PrintMediaSize.NorthAmericaTabloid;
+        private PrintOrientation OrientationFor(TemplateOrientation orientation)
+        {
 
-
-                }
-                return PrintMediaSize.NorthAmericaLetter;
-
-            }
+            return orientation switch
+            {
+                TemplateOrientation.Default => PrintOrientation.Portrait,
+                TemplateOrientation.Landscape => PrintOrientation.Landscape,
+                TemplateOrientation.Portrait => PrintOrientation.Portrait,
+                _ => PrintOrientation.Portrait,
+            };
         }
 
 

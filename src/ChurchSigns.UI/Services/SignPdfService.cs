@@ -2,6 +2,7 @@
 using SkiaSharp;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
 using Windows.Storage;
@@ -27,7 +28,7 @@ public static class SignPdfService
 
         }
     }
-
+    // grok, pdf sometimes generates and will default to printing legal size, how can i assign the TemplateMediaSize?
     private static void WritePdf(IReadOnlyList<ChurchSign> signs, Stream output)
     {
         var metadata = new SKDocumentPdfMetadata
@@ -45,10 +46,16 @@ public static class SignPdfService
 
         foreach (var sign in signs)
         {
+
             using var bitmap = sign.RenderPrintSizeBitmap();
 
             if (bitmap is null)
                 continue;
+
+            Debug.WriteLine(
+    $"{sign.Title}: {sign.PrintSize.PageWidthInches}x{sign.PrintSize.PageHeightInches} in, " +
+    $"{sign.PrintSize.PageWidthPt}x{sign.PrintSize.PageHeightPt} pt, " +
+    $"bitmap {bitmap.Width}x{bitmap.Height}");
 
             using var canvas = document.BeginPage(sign.PrintSize.PageWidthPt, sign.PrintSize.PageHeightPt);
             canvas.Clear(SKColors.White);

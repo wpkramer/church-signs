@@ -1,8 +1,6 @@
 ﻿using ChurchSigns.UI.Helpers; // or wherever SignJsonContext lives
 using ChurchSigns.UI.Models;
 using System.Text.Json;
-using Windows.Graphics.Printing;
-using Xunit;
 
 namespace ChurchSigns.Test.ModelTests
 {
@@ -30,8 +28,8 @@ namespace ChurchSigns.Test.ModelTests
             var original = new TemplateSidecar
             {
                 Version = 1,
-                PrintOrientation = PrintOrientation.Landscape,
-                TemplateMediaSize = TemplateMediaSize.Letter, // or SignMediaSize if that's your name
+                TemplateOrientation = TemplateOrientation.Landscape,
+                TemplateMediaSize = TemplateMediaSize.Letter, // or PrintDefaultMediaSize if that's your name
                 Fields =
                 {
                     ["Name"] = "Jane Smith",
@@ -45,7 +43,7 @@ namespace ChurchSigns.Test.ModelTests
 
             Assert.NotNull(restored);
             Assert.Equal(original.Version, restored!.Version);
-            Assert.Equal(PrintOrientation.Landscape, restored.PrintOrientation);
+            Assert.Equal(TemplateOrientation.Landscape, restored.TemplateOrientation);
             Assert.Equal(TemplateMediaSize.Letter, restored.TemplateMediaSize);
             Assert.Equal("Jane Smith", restored.Fields["Name"]);
             Assert.Equal("101", restored.Fields["Room"]);
@@ -58,8 +56,9 @@ namespace ChurchSigns.Test.ModelTests
             var sidecar = new TemplateSidecar
             {
                 Version = 1,
-                PrintOrientation = PrintOrientation.Portrait,
-                TemplateMediaSize = TemplateMediaSize.Legal
+                TemplateOrientation = TemplateOrientation.Portrait,
+                TemplateMediaSize = TemplateMediaSize.Legal,
+                SignMode = TemplateSignMode.SingleSign
             };
 
             var json = Serialize(sidecar);
@@ -68,6 +67,7 @@ namespace ChurchSigns.Test.ModelTests
             Assert.Contains("\"printOrientation\"", json);
             Assert.Contains("\"printMediaSize\"", json);
             Assert.Contains("\"fields\"", json);
+            Assert.Contains("\"signMode\"", json);
         }
 
         [Fact]
@@ -75,14 +75,16 @@ namespace ChurchSigns.Test.ModelTests
         {
             var sidecar = new TemplateSidecar
             {
-                PrintOrientation = PrintOrientation.Landscape,
-                TemplateMediaSize = TemplateMediaSize.Tabloid
+                TemplateOrientation = TemplateOrientation.Landscape,
+                TemplateMediaSize = TemplateMediaSize.Tabloid,
+                SignMode = TemplateSignMode.SingleSign
             };
 
             var json = Serialize(sidecar);
 
             Assert.Contains("Landscape", json);
             Assert.Contains("Tabloid", json);
+            Assert.Contains("SingleSign", json);
             // Should not be raw integers only
             Assert.DoesNotContain("\"printOrientation\":2", json);
         }
@@ -107,15 +109,17 @@ namespace ChurchSigns.Test.ModelTests
                   "version": 1,
                   "printOrientation": "Default",
                   "printMediaSize": "Letter",
-                  "fields": {}
+                  "fields": {},
+                  "signMode": "MultiSign"
                 }
                 """;
 
             var sidecar = Deserialize(json);
 
             Assert.NotNull(sidecar);
-            Assert.Equal(PrintOrientation.Default, sidecar!.PrintOrientation);
+            Assert.Equal(TemplateOrientation.Default, sidecar!.TemplateOrientation);
             Assert.Equal(TemplateMediaSize.Letter, sidecar.TemplateMediaSize);
+            Assert.Equal(TemplateSignMode.MultiSign, sidecar.SignMode);
         }
 
         [Fact]
@@ -156,11 +160,11 @@ namespace ChurchSigns.Test.ModelTests
         [Fact]
         public void RoundTrip_AllOrientations()
         {
-            foreach (PrintOrientation orientation in Enum.GetValues<PrintOrientation>())
+            foreach (TemplateOrientation orientation in Enum.GetValues<TemplateOrientation>())
             {
-                var sidecar = new TemplateSidecar { PrintOrientation = orientation };
+                var sidecar = new TemplateSidecar { TemplateOrientation = orientation };
                 var restored = Deserialize(Serialize(sidecar));
-                Assert.Equal(orientation, restored!.PrintOrientation);
+                Assert.Equal(orientation, restored!.TemplateOrientation);
             }
         }
 
@@ -170,7 +174,7 @@ namespace ChurchSigns.Test.ModelTests
             var sidecar = new TemplateSidecar
             {
                 Version = 1,
-                PrintOrientation = PrintOrientation.Portrait,
+                TemplateOrientation = TemplateOrientation.Portrait,
                 TemplateMediaSize = TemplateMediaSize.Legal
             };
 
@@ -191,7 +195,8 @@ namespace ChurchSigns.Test.ModelTests
           "version": 1,
           "printOrientation": "Landscape",
           "printMediaSize": "Tabloid",
-          "fields": { "Name": "Test" }
+          "fields": { "Name": "Test" },
+          "signMode": "SingleSign"
         }
         """;
 
@@ -199,8 +204,26 @@ namespace ChurchSigns.Test.ModelTests
 
             Assert.NotNull(sidecar);
             Assert.Equal(TemplateMediaSize.Tabloid, sidecar!.TemplateMediaSize);
-            Assert.Equal(PrintOrientation.Landscape, sidecar.PrintOrientation);
+            Assert.Equal(TemplateOrientation.Landscape, sidecar.TemplateOrientation);
             Assert.Equal("Test", sidecar.Fields["Name"]);
+            Assert.Equal(TemplateSignMode.SingleSign, sidecar.SignMode);
+        }
+
+        [Fact]
+        public void RoundTrip_AllSignModes()
+        {
+            foreach (TemplateSignMode mode in Enum.GetValues<TemplateSignMode>())
+            {
+                var restored = Deserialize(Serialize(new TemplateSidecar { SignMode = mode }));
+                Assert.Equal(mode, restored!.SignMode);
+            }
+        }
+
+        [Fact]
+        public void Deserialize_MissingSignMode_DefaultsToMultiSign() // or whatever your default is
+        {
+            var sidecar = Deserialize("""{"version":1,"fields":{}}""");
+            Assert.Equal(TemplateSignMode.MultiSign, sidecar!.SignMode);
         }
     }
 }

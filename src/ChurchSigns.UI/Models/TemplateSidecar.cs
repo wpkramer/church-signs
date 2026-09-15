@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
-using Windows.Graphics.Printing;
+
 
 namespace ChurchSigns.UI.Models
 {
@@ -16,7 +16,7 @@ namespace ChurchSigns.UI.Models
         public int Version { get; set; } = 1;
 
         [JsonPropertyName("printOrientation")]
-        public PrintOrientation PrintOrientation { get; set; } = Windows.Graphics.Printing.PrintOrientation.Default;
+        public TemplateOrientation TemplateOrientation { get; set; } = TemplateOrientation.Default;
 
         [JsonPropertyName("printMediaSize")]
         public TemplateMediaSize TemplateMediaSize { get; set; } = ChurchSigns.UI.Models.TemplateMediaSize.Letter;
@@ -26,8 +26,7 @@ namespace ChurchSigns.UI.Models
         public Dictionary<string, string> Fields { get; set; } =
             new(StringComparer.OrdinalIgnoreCase);
 
-        // B7 later:
-        // [JsonPropertyName("signMode")]
-        // public TemplateSignMode SignMode { get; set; } = TemplateSignMode.MultiSign;
+        [JsonPropertyName("signMode")]
+        public TemplateSignMode SignMode { get; set; } = TemplateSignMode.MultiSign;
     }
 }

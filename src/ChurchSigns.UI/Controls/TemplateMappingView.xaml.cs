@@ -24,8 +24,8 @@ namespace ChurchSigns.UI.Controls
             InitializeComponent();
         }
 
-        public delegate void MappedDataHandler( IReadOnlyList< Dictionary<string, string> > data );
-        public event MappedDataHandler? MappedDataChanged;
+        public delegate void MultiSignDataHandler( IReadOnlyList< Dictionary<string, string> > data );
+        public event MultiSignDataHandler? MultiSignDataChanged;
 
         public static readonly DependencyProperty SelectedTemplateProperty =
             DependencyProperty.Register(
@@ -107,17 +107,43 @@ namespace ChurchSigns.UI.Controls
 
         private void Rebuild()
         {
-
-
-            TemplateMappingGrid.Children.Clear();
-            TemplateMappingGrid.RowDefinitions.Clear();
-            TemplateMappingGrid.ColumnDefinitions.Clear();
             if (SelectedTemplate == null)
             {
                 Debug.WriteLine("Rebuiding mapping grid without a selected template!");
                 _signTemplateDataMap = null;
                 return;
             }
+
+            switch (SelectedTemplate.SignMode)
+            {
+                case TemplateSignMode.MultiSign:
+                    GenerateMultiSignGrid();
+                    break;
+                case TemplateSignMode.SingleSign:
+                    GenerateSingleSign();
+                    break;
+                default:
+                    throw new ApplicationException($"Unexpected SignMode {SelectedTemplate.SignMode}");
+            }
+            
+
+        }
+
+        private void GenerateSingleSign()
+        {
+            TemplateMappingGrid.Children.Clear();
+            TemplateMappingGrid.RowDefinitions.Clear();
+            TemplateMappingGrid.ColumnDefinitions.Clear();
+
+
+        }
+
+        private void GenerateMultiSignGrid()
+        {
+            TemplateMappingGrid.Children.Clear();
+            TemplateMappingGrid.RowDefinitions.Clear();
+            TemplateMappingGrid.ColumnDefinitions.Clear();
+
             SignTemplate signTemplate = SelectedTemplate;
 
             // mapping rows
@@ -139,7 +165,7 @@ namespace ChurchSigns.UI.Controls
 
 
             columnCount = Math.Max(columnCount, PastedData.ColumnHeaderNames.Count);
-            
+
 
 
             for (int i = 0; i < columnCount; i++)
@@ -235,12 +261,12 @@ namespace ChurchSigns.UI.Controls
                             if (affectedComboIndex >= 0 && affectedComboIndex < _fieldSelectionBoxes.Count)
                             {
                                 _fieldSelectionBoxes[affectedComboIndex].SelectedIndex = 0;
-                            
-                            //    showSigns = false; // we'll show them on the next event handler
+
+                                //    showSigns = false; // we'll show them on the next event handler
                             }
                             //if (showSigns)
                             //{
-                                BuildRecords();
+                            BuildRecords();
                             //}
                         }
 
@@ -274,9 +300,6 @@ namespace ChurchSigns.UI.Controls
             }
 
             BuildRecords();
-
-
-
         }
 
         private void BuildRecords()
@@ -297,9 +320,9 @@ namespace ChurchSigns.UI.Controls
                 }
             }
 
-            if (MappedDataChanged != null)
+            if (MultiSignDataChanged != null)
             {
-                MappedDataChanged(Records);
+                MultiSignDataChanged(Records);
             }
 
         }
