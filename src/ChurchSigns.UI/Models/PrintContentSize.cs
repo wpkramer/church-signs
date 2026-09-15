@@ -1,5 +1,4 @@
-﻿// grok, can you suggest test class for this
-using System;
+﻿using System;
 
 namespace ChurchSigns.UI.Models
 {

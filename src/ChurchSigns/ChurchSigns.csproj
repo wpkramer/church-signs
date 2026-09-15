@@ -19,6 +19,8 @@
     <None Remove="Templates\Awana\2LeaderBucket.svg" />
     <None Remove="Templates\Awana\BucketLabel.json" />
     <None Remove="Templates\Awana\BucketLabel.svg" />
+    <None Remove="Templates\Miscellaneous\TableTent.json" />
+    <None Remove="Templates\Miscellaneous\TableTent.svg" />
   </ItemGroup>
 
   <ItemGroup>
@@ -38,6 +40,12 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Templates\Awana\BucketLabel.svg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Templates\Miscellaneous\TableTent.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Templates\Miscellaneous\TableTent.svg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
@@ -63,7 +71,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Dialogs\" />
-    <Folder Include="Templates\Miscellaneous\" />
   </ItemGroup>
 
   <!--

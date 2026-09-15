@@ -28,7 +28,6 @@ public static class SignPdfService
 
         }
     }
-    // grok, pdf sometimes generates and will default to printing legal size, how can i assign the TemplateMediaSize?
     private static void WritePdf(IReadOnlyList<ChurchSign> signs, Stream output)
     {
         var metadata = new SKDocumentPdfMetadata

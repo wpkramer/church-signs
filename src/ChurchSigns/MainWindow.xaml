@@ -150,25 +150,27 @@
                 <TextBlock x:Name="PasteHelpTextBlock" Margin="8" Width="200" Style="{ThemeResource SubtitleTextBlockStyle}">Paste spreadsheet columns with header names:</TextBlock>
                 
             </StackPanel>
-
-            <!--<ScrollViewer VerticalScrollBarVisibility="Visible" Grid.Column="0" Grid.Row="1">
-                <Grid x:Name="TemplateMappingGrid">
-                    --><!-- All children for this grid are generated in the code --><!--
-                </Grid>
-            </ScrollViewer>-->
-            
+           
             <controls:TemplateMappingView 
                 x:Name="MappingView"
                 Grid.Column="0"
                 Grid.Row="1"
                 SelectedTemplate="{x:Bind ViewModel.SelectedTemplate, Mode=OneWay}"
-                PastedData="{x:Bind ViewModel.LastPaste, Mode=OneWay}"/>
+                PastedData="{x:Bind ViewModel.LastTablePaste, Mode=OneWay}"
+                Visibility="{x:Bind ViewModel.MultiSignVisibility, Mode=OneWay}"
+                />
+            <controls:FieldPairsView
+                x:Name="PairsView"
+                Grid.Column="0"
+                Grid.Row="1"
+                SelectedTemplate="{x:Bind ViewModel.SelectedTemplate, Mode=OneWay}"
+                PastedData="{x:Bind ViewModel.LastFieldPairs, Mode=OneWay}"
+                Visibility="{x:Bind ViewModel.SingleSignVisibility, Mode=OneWay}"
+                />
 
         </Grid>
 
-        <!-- grok, somehow the preview signs appear horizontal now. Odd since I've only changed to use the above TemplateMappingView
-             controle -->
-        
+
         <Grid Grid.Column="2" Grid.Row="1">
             <Grid.RowDefinitions>
                 <RowDefinition Height="120"/>

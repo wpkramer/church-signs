@@ -1,3 +1,4 @@
+using ChurchSigns.UI.Controls;
 using ChurchSigns.UI.Helpers;
 using ChurchSigns.UI.Models;
 using ChurchSigns.UI.Services;
@@ -41,6 +42,8 @@ namespace ChurchSigns
 
 
             MappingView.MultiSignDataChanged += MappingView_MappedDataChanged;
+            PairsView.SingleSignDataChanged += PairsView_SingleSignDataChanged;
+
 
             Clipboard.ContentChanged += Clipboard_ContentChanged;
             HasPasteData = Clipboard.GetContent().Contains(StandardDataFormats.Text);
@@ -50,40 +53,17 @@ namespace ChurchSigns
 
         }
 
+        private void PairsView_SingleSignDataChanged(IReadOnlyDictionary<string, string> data)
+        {
+            ViewModel.ReplaceSignsFromFieldData(data);
+            SelectAllSigns(true);
+        }
+
         private void MappingView_MappedDataChanged(IReadOnlyList<Dictionary<string, string>> data)
         {
             ViewModel.ReplaceSignsFromMappedData(data);
-            SelectAllSigns(true);
-            
-            //ViewModel.Signs.Clear();
-            //var template = ViewModel.SelectedTemplate;
-            //if(template is null)
-            //{
-            //    Debug.WriteLine($"{nameof(MappingView_MappedDataChanged)} had a null or SelectedTemplate");
-            //    return;
-            //}
+            SelectAllSigns(true);           
 
-            //int recordCnt = data.Count;
-            //if (data == null || recordCnt == 0)  // data is non-nullable in the signature; null check is dead
-            //{
-            //    ViewModel.Signs.Add(ViewModel.SelectedTemplate.CreatePlaceholderSign());
-            //    Debug.WriteLine($"{nameof(MappingView_MappedDataChanged)} had a null or empty mapped data");
-            //}
-            //else
-            //{
-            //    foreach (var row in data)
-            //    {
-            //        if (row is null || row.Count == 0)
-            //        {
-            //            continue;
-            //        }
-            //        ViewModel.Signs.Add(new ChurchSign(template) { Fields = row});
-            //    }
-            //    if(ViewModel.Signs.Count == 0)
-            //    {
-            //        ViewModel.Signs.Add(template.CreatePlaceholderSign());
-            //    }
-            //}
         }
 
         private void MainWindow_Activated(object sender, WindowActivatedEventArgs args)

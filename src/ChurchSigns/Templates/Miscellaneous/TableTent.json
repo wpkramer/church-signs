@@ -1,0 +1,10 @@
+{
+  "version": 1,
+  "printOrientation": "Portrait",
+  "printMediaSize": "Letter",
+  "fields": {
+    "Border Color": "green",
+    "Name": "Table Name"
+  },
+  "signMode": "MultiSign"
+}

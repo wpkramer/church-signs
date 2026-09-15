@@ -22,6 +22,16 @@ public class ChurchSign
         _fields = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
     }
 
+    public ChurchSign(SignTemplate template, IReadOnlyDictionary<string, string> fields) : this(template)
+    {
+        if (fields == null || fields.Count == 0)
+            return;
+        foreach (var kvp in fields)
+        {
+            _fields.TryAdd(kvp.Key, kvp.Value);
+        }
+    }
+
     public Size XAMLThumbnailSize { get { return _template.XAMLThumbnailSize; } }
     public Size XAMLPreviewSize { get { return _template.XAMLPreviewSize; } }
 

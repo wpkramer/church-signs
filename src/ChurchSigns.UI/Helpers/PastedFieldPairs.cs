@@ -8,6 +8,10 @@ namespace ChurchSigns.UI.Helpers
     {
         public IReadOnlyDictionary<string, string> Fields { get; }
 
+        public PastedFieldPairs()
+            : this(string.Empty)
+            { }
+
         public PastedFieldPairs(string pastedText)
         {
            Fields = ParseFieldPairs(pastedText);

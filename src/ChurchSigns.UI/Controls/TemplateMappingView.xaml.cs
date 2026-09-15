@@ -114,31 +114,12 @@ namespace ChurchSigns.UI.Controls
                 return;
             }
 
-            switch (SelectedTemplate.SignMode)
-            {
-                case TemplateSignMode.MultiSign:
-                    GenerateMultiSignGrid();
-                    break;
-                case TemplateSignMode.SingleSign:
-                    GenerateSingleSign();
-                    break;
-                default:
-                    throw new ApplicationException($"Unexpected SignMode {SelectedTemplate.SignMode}");
-            }
-            
+            GenerateSigns();            
 
         }
 
-        private void GenerateSingleSign()
-        {
-            TemplateMappingGrid.Children.Clear();
-            TemplateMappingGrid.RowDefinitions.Clear();
-            TemplateMappingGrid.ColumnDefinitions.Clear();
 
-
-        }
-
-        private void GenerateMultiSignGrid()
+        private void GenerateSigns()
         {
             TemplateMappingGrid.Children.Clear();
             TemplateMappingGrid.RowDefinitions.Clear();

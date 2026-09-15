@@ -2,6 +2,7 @@
 using ChurchSigns.UI.Interfaces;
 using ChurchSigns.UI.Models;
 using ChurchSigns.UI.Services;
+using Microsoft.UI.Xaml;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -16,7 +17,8 @@ namespace ChurchSigns.UI.ViewModels
     {
         private readonly IClipboardService _clipboard = clipboard ?? new WindowsClipboardService();
         private SignTemplate _selectedTemplate = CreateBlankTemplate();
-        private PastedRecordData _lastPaste = new PastedRecordData();
+        private PastedRecordData _lastTablePaste = new PastedRecordData();
+        private PastedFieldPairs _lastFieldPairs = new PastedFieldPairs();
 
         public ObservableCollection<SignTemplate> Templates { get; } = [];
         public ObservableCollection<ChurchSign> Signs { get; } = [];
@@ -24,15 +26,28 @@ namespace ChurchSigns.UI.ViewModels
 
         public event PropertyChangedEventHandler? PropertyChanged;
 
-        public PastedRecordData LastPaste
+        public PastedRecordData LastTablePaste
         {
-            get => _lastPaste;
+            get => _lastTablePaste;
             set
             {
-                if(value != _lastPaste)
+                if(value != _lastTablePaste)
                 {
-                    _lastPaste = value;
-                    OnPropertyChanged(nameof(LastPaste));
+                    _lastTablePaste = value;
+                    OnPropertyChanged(nameof(LastTablePaste));
+                }
+            }
+        }
+
+        public PastedFieldPairs LastFieldPairs
+        {
+            get => _lastFieldPairs;
+            set
+            {
+                if (value != _lastFieldPairs)
+                {
+                    _lastFieldPairs = value;
+                    OnPropertyChanged(nameof(LastFieldPairs));
                 }
             }
         }
@@ -47,11 +62,37 @@ namespace ChurchSigns.UI.ViewModels
 
                 _selectedTemplate = value;
                 // clear out the pasted data for a different template
-                LastPaste = new PastedRecordData();
+                LastTablePaste = new PastedRecordData();
+                LastFieldPairs = new PastedFieldPairs();
                 OnPropertyChanged(nameof(IsCustomSelected));
                 OnPropertyChanged(nameof(SelectedTemplate));
+                OnPropertyChanged(nameof(MultiSignVisibility));
+                OnPropertyChanged(nameof(SingleSignVisibility));
 
+            }
+        }
 
+        public Visibility MultiSignVisibility
+        {
+            get
+            {
+                if (SelectedTemplate == null)
+                    return Visibility.Collapsed;
+                if (SelectedTemplate.SignMode == TemplateSignMode.SingleSign)
+                    return Visibility.Collapsed;
+                return Visibility.Visible;
+            }
+        }
+
+        public Visibility SingleSignVisibility
+        {
+            get
+            {
+                if (SelectedTemplate == null)
+                    return Visibility.Collapsed;
+                if (SelectedTemplate.SignMode == TemplateSignMode.MultiSign)
+                    return Visibility.Collapsed;
+                return Visibility.Visible;
             }
         }
 
@@ -95,19 +136,35 @@ namespace ChurchSigns.UI.ViewModels
 
         public void ReplaceSignsFromMappedData(IReadOnlyList<Dictionary<string, string>> data)
         {
-            Signs.Clear();
-            if (data.Count == 0 || (data.Count == 1 && data[0].Count == 0))
+            if (SelectedTemplate.SignMode == TemplateSignMode.MultiSign)
             {
-                Signs.Add(SelectedTemplate.CreatePlaceholderSign());
-                return;
+                Signs.Clear();
+                if (data.Count == 0 || (data.Count == 1 && data[0].Count == 0))
+                {
+                    Signs.Add(SelectedTemplate.CreatePlaceholderSign());
+                    return;
+                }
+                foreach (var row in data)
+                {
+                    if (row is null || row.Count == 0) continue;
+                    var sign = new ChurchSign(SelectedTemplate, row);
+
+                    Signs.Add(sign);
+                }
+                if (Signs.Count == 0)
+                    Signs.Add(SelectedTemplate.CreatePlaceholderSign());
             }
-            foreach (var row in data)
+        }
+
+        public void ReplaceSignsFromFieldData(IReadOnlyDictionary<string, string> data)
+        {
+            if (SelectedTemplate.SignMode == TemplateSignMode.SingleSign)
             {
-                if (row is null || row.Count == 0) continue;
-                Signs.Add(new ChurchSign(SelectedTemplate) { Fields = row });
+                Signs.Clear();
+
+                Signs.Add( new ChurchSign(SelectedTemplate, data));
+
             }
-            if (Signs.Count == 0)
-                Signs.Add(SelectedTemplate.CreatePlaceholderSign());
         }
 
 
@@ -177,7 +234,16 @@ namespace ChurchSigns.UI.ViewModels
 
         private void ApplyPaste(string clipboardText)
         {
-            LastPaste = new PastedRecordData(clipboardText);
+            if (SelectedTemplate.SignMode == TemplateSignMode.MultiSign)
+            {
+                LastTablePaste = new PastedRecordData(clipboardText);
+                LastFieldPairs = new PastedFieldPairs();
+            }
+            else
+            {
+                LastTablePaste = new PastedRecordData();
+                LastFieldPairs = new PastedFieldPairs(clipboardText);
+            }
         }
 
         private void TryAddTemplate(TemplateStorageItem item)
@@ -201,5 +267,7 @@ namespace ChurchSigns.UI.ViewModels
 
         private void OnPropertyChanged([CallerMemberName] string name = "") =>
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+
+
     }
 }
