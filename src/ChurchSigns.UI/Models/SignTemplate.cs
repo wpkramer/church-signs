@@ -180,9 +180,11 @@ namespace ChurchSigns.UI.Models
         public bool IsProvided => _templateStorageItem.IsProvided;
         public bool IsCustom => !_templateStorageItem.IsProvided;
 
-        public string Group => IsProvided
-            ? $"{Category} Signs"
-            : $"Your {Category} Signs";
+        public string Group => Category.ToString();
+
+        //public string Group => IsProvided
+        //    ? $"{Category} Signs"
+        //    : $"Your {Category} Signs";
 
         // ─── Validity / content ──────────────────────────────────────
 

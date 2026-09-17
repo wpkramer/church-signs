@@ -44,8 +44,6 @@ namespace ChurchSigns.UI.Services
             try
             {
                 templatesRoot = await StorageFolder.GetFolderFromPathAsync(
-                    // Prefer installed location for package content:
-                    // Package.Current.InstalledLocation + "\Templates"
                     System.IO.Path.Combine(
                         Windows.ApplicationModel.Package.Current.InstalledLocation.Path,
                         TemplatesRoot));

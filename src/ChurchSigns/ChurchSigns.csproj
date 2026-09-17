@@ -15,10 +15,10 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
-    <None Remove="Templates\Awana\2LeaderBucket.json" />
-    <None Remove="Templates\Awana\2LeaderBucket.svg" />
-    <None Remove="Templates\Awana\BucketLabel.json" />
-    <None Remove="Templates\Awana\BucketLabel.svg" />
+    <None Remove="Templates\Miscellaneous\Room Sign.json" />
+    <None Remove="Templates\Miscellaneous\Room Sign.svg" />
+    <None Remove="Templates\Miscellaneous\Room2 Sign.json" />
+    <None Remove="Templates\Miscellaneous\Room2 Sign.svg" />
     <None Remove="Templates\Miscellaneous\TableTent.json" />
     <None Remove="Templates\Miscellaneous\TableTent.svg" />
   </ItemGroup>
@@ -30,16 +30,16 @@
     <Content Include="Assets\Square44x44Logo.scale-200.png" />
     <Content Include="Assets\Square44x44Logo.targetsize-24_altform-unplated.png" />
     <Content Include="Assets\Wide310x150Logo.scale-200.png" />
-    <Content Include="Templates\Awana\2LeaderBucket.json">
+    <Content Include="Templates\Miscellaneous\Room Sign.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Templates\Awana\2LeaderBucket.svg">
+    <Content Include="Templates\Miscellaneous\Room Sign.svg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Templates\Awana\BucketLabel.json">
+    <Content Include="Templates\Miscellaneous\Room2 Sign.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Templates\Awana\BucketLabel.svg">
+    <Content Include="Templates\Miscellaneous\Room2 Sign.svg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Templates\Miscellaneous\TableTent.json">

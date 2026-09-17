@@ -1,10 +1,11 @@
 {
   "version": 1,
-  "printOrientation": "Portrait",
+  "printOrientation": "Landscape",
   "printMediaSize": "Letter",
   "fields": {
-    "Border Color": "green",
-    "Name": "Table Name",
+    "Room": "B215",
+    "Name": "John Doe",
+    "BorderColor": "green",
     "FontColor": "black",
     "BibleColor": "navy"
   }

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg width="100%" height="100%" viewBox="0 0 3300 2550" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:affinity="https://www.affinity.studio/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;">
+    <rect id="Artboard1" x="0" y="0" width="3300" height="2550" style="fill:none;"/>
+    <g id="Artboard11" affinity:id="Artboard1">
+        <g transform="matrix(1.763718,0,0,1.26917,-143.701008,-100.145426)">
+            <path d="M1910,138L1910,2029L124,2029L124,138L1910,138ZM1824.952,256.187L209.048,256.188L209.048,1910.812L1824.952,1910.812L1824.952,256.187Z" style="fill:{{BorderColor}};"/>
+        </g>
+        <g id="Bible" transform="matrix(0.709655,0,0,0.709655,1274.307166,1892.784924)">
+            <g id="baseShape">
+                <g transform="matrix(1.127877,0,0,1,-1320.042755,-0)">
+                    <path d="M1840.133,500L1900.424,712.365L1379.09,712.365L1439.381,500C1566.629,585.237 1699.786,582.209 1840.133,500Z" style="fill:{{BibleColor}};"/>
+                </g>
+                <g id="bookCover" transform="matrix(1.409135,0,0,1.409135,-1986.834523,-303.056139)">
+                    <path d="M1628.117,630L1647.022,555C1712.07,555.573 1759.057,587.631 1785.66,616.164C1803.333,585.94 1860.136,549.837 1930.233,551.068L1946.989,630L1628.117,630Z" style="fill:{{BibleColor}};"/>
+                </g>
+                <g transform="matrix(0.986842,0,-0,-0.62069,-1044.700458,1221.556662)">
+                    <path d="M1620.424,781.698L1645.757,820.365L1544.424,820.365L1569.757,781.698L1620.424,781.698Z" style="fill:{{BibleColor}};"/>
+                </g>
+                <g transform="matrix(1,0,0,1,-1077.021823,-0)">
+                    <path d="M1384.424,625.698L1413.757,519.031C1501.891,528.528 1571.884,550.437 1592.424,606.182L1592.424,688.365C1531.051,643.593 1460.021,627.795 1384.424,625.698Z" style="fill:white;"/>
+                </g>
+                <g transform="matrix(1,0,0,1,-1071.688489,-0)">
+                    <path d="M1615.09,606.182L1615.09,688.365C1665.742,645.075 1738.66,628.099 1828.424,631.031L1799.09,519.031C1712.543,522.868 1641.146,541.855 1615.09,606.182Z" style="fill:white;"/>
+                </g>
+            </g>
+            <g id="Cross" transform="matrix(1,0,0,1,-344.000013,10.484296)">
+                <g transform="matrix(1,0,0,0.955415,-1077.021823,10.359899)">
+                    <rect x="1929.757" y="232.365" width="41.333" height="269.151" style="fill:{{BibleColor}};"/>
+                </g>
+                <g transform="matrix(1,0,0,1,-1073.021823,-0)">
+                    <rect x="1855.09" y="299.031" width="182.667" height="41.333" style="fill:{{BibleColor}};"/>
+                </g>
+            </g>
+        </g>
+        <g transform="matrix(1,0,0,1,68.709043,38.826999)">
+            <text x="231.291px" y="1372.696px" style="font-family:'ArialMT', 'Arial', sans-serif;font-size:400px;fill:{{FontColor}};">{{Name}}</text>
+        </g>
+        <g transform="matrix(1,0,0,1,1061.359195,-815.465269)">
+            <text x="314.327px" y="1372.696px" style="font-family:'ArialMT', 'Arial', sans-serif;font-size:400px;fill:{{FontColor}};">{{Room}}</text>
+        </g>
+    </g>
+</svg>

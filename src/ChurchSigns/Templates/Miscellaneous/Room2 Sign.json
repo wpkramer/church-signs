@@ -1,0 +1,13 @@
+{
+  "version": 1,
+  "printOrientation": "Landscape",
+  "printMediaSize": "Letter",
+  "fields": {
+    "Room": "B215",
+    "Name_1": "John Doe /",
+    "Name_2": "Jane Doe",
+    "BorderColor": "green",
+    "FontColor": "black",
+    "BibleColor": "navy"
+  }
+}

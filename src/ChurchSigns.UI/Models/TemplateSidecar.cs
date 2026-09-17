@@ -26,7 +26,22 @@ namespace ChurchSigns.UI.Models
         public Dictionary<string, string> Fields { get; set; } =
             new(StringComparer.OrdinalIgnoreCase);
 
-        [JsonPropertyName("signMode")]
-        public TemplateSignMode SignMode { get; set; } = TemplateSignMode.MultiSign;
+
+        /// <summary>
+        /// Sign Mode is a future. Only supporting multisign now.
+        /// </summary>
+        private TemplateSignMode _signMode = TemplateSignMode.MultiSign;
+        [JsonIgnore]
+        public TemplateSignMode SignMode
+        {
+            get
+            {
+                return TemplateSignMode.MultiSign;
+            }
+            set
+            {
+                _signMode = value;
+            }
+        }
     }
 }

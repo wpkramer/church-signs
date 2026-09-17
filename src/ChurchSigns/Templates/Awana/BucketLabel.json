@@ -1,9 +1,0 @@
-{
-  "version": 1,
-  "printOrientation": "Landscape",
-  "printMediaSize": "Letter",
-  "fields": {
-    "ColorLine": "green",
-    "LastName": "Kramer"
-  }
-}
