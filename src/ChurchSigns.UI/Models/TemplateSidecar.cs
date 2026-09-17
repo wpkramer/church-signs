@@ -30,7 +30,7 @@ namespace ChurchSigns.UI.Models
         /// <summary>
         /// Sign Mode is a future. Only supporting multisign now.
         /// </summary>
-        private TemplateSignMode _signMode = TemplateSignMode.MultiSign;
+        //private TemplateSignMode _signMode = TemplateSignMode.MultiSign;
         [JsonIgnore]
         public TemplateSignMode SignMode
         {
@@ -38,10 +38,10 @@ namespace ChurchSigns.UI.Models
             {
                 return TemplateSignMode.MultiSign;
             }
-            set
-            {
-                _signMode = value;
-            }
+            //set
+            //{
+            //    _signMode = value;
+            //}
         }
     }
 }

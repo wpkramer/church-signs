@@ -6,7 +6,7 @@
     </g>
     <g id="NameBox" transform="matrix(1,0,0,1.058502,-0,-68.876255)">
         <g transform="matrix(1,0,0,0.944732,0.00154,152.621093)">
-            <text x="158.761px" y="2059.566px" style="font-family:'ArialMT', 'Arial', sans-serif;font-size:350px;fill:rgb{{FontColor}};">{{Name}}</text>
+            <text x="158.761px" y="2059.566px" style="font-family:'ArialMT', 'Arial', sans-serif;font-size:350px;fill:{{FontColor}};">{{Name}}</text>
         </g>
         <g transform="matrix(1.068952,-0,-0,0.889683,0.385934,895.729877)">
             <path d="M2314.987,898.074L2314.987,1694.48L69.801,1694.48L69.801,898.074L2314.987,898.074ZM2252.621,968.866L132.167,968.866L132.167,1623.688L2252.621,1623.688L2252.621,968.866Z" style="fill:{{Border Color}};"/>
@@ -14,7 +14,7 @@
     </g>
     <g id="NameBoxReverse" transform="matrix(1,0,0,-1.058502,0,2448.263881)">
         <g transform="matrix(-1,0,0,0.944732,2549.9967,-717.110526)">
-            <text x="158.761px" y="2059.566px" style="font-family:'ArialMT', 'Arial', sans-serif;font-size:350px;fill:rgb{{FontColor}};">{{Name}}</text>
+            <text x="158.761px" y="2059.566px" style="font-family:'ArialMT', 'Arial', sans-serif;font-size:350px;fill:{{FontColor}};">{{Name}}</text>
         </g>
         <g transform="matrix(1.068952,0,-0,0.889683,0.385934,25.998258)">
             <path d="M2314.987,898.074L69.801,898.074L69.801,1694.48L2314.987,1694.48L2314.987,898.074ZM2252.621,968.866L2252.621,1623.688L132.167,1623.688L132.167,968.866L2252.621,968.866Z" style="fill:{{Border Color}};"/>

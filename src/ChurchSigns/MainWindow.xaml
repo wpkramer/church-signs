@@ -147,7 +147,7 @@
                 <Button x:Name="PasteButton" Content="Paste" Margin="8"
                         Click="PasteButton_Click"
                         />
-                <TextBlock x:Name="PasteHelpTextBlock" Margin="8" Width="200" Style="{ThemeResource SubtitleTextBlockStyle}">Paste spreadsheet columns with header names:</TextBlock>
+                <TextBlock x:Name="PasteHelpTextBlock" Margin="8" Width="200" TextWrapping="Wrap" Style="{ThemeResource SubtitleTextBlockStyle}">Paste from a spreadsheet with at least one of these:</TextBlock>
                 
             </StackPanel>
            

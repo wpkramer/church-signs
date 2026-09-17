@@ -7,11 +7,12 @@ namespace ChurchSigns.UI.Models
     public enum SignCategory
     { 
         Awana,
-        Miscellaneous,
         Children,
-        Youth,
-        Adult,
+        Women,
+        Men,
         Seniors,
+        Miscellaneous,
+
     }
 
 }

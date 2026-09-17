@@ -102,6 +102,36 @@ namespace ChurchSigns.Test.HelperTests
             Assert.Throws<ArgumentException>(() => new PastedRecordData(pasted));
         }
 
+        // these are some edge cases that fail. will update if in use becomes an issue
+
+        //[Fact]
+        //public void Constructor_EndTabNewLineTest()
+        //{
+        //    // drops the last field seperator (\t) if the cell is empty
+        //    var pasted = "Name\tFontColor\tBorderColor\tBibleColor\nJones\tgreen\tgreen\tyellow\nSmith\t\t\tblue\nDoe\tnavy\tyellow\t\nRae\tpink\tskljfs\tblue\nMe\t\tred\t\n";
+        //    var recordData = new PastedRecordData(pasted);
+        //    Assert.Equal(4, recordData.Records[0].Count);
+        //    Assert.Equal(4, recordData.Records[1].Count);
+        //    Assert.Equal(4, recordData.Records[2].Count);
+        //    Assert.Equal(4, recordData.Records[3].Count);
+        //    Assert.Equal(4, recordData.Records[4].Count);
+
+        //}
+
+        //[Fact]
+        //public void Constructor_EndTabTest()
+        //{
+        //    // drops the last field seperator (\t) if the cell is empty
+        //    var pasted = "Name\tFontColor\tBorderColor\tBibleColor\nJones\tgreen\tgreen\tyellow\nSmith\t\t\tblue\nDoe\tnavy\tyellow\t\nRae\tpink\tskljfs\tblue\nMe\t\tred\t";
+        //    var recordData = new PastedRecordData(pasted);
+        //    Assert.Equal(4, recordData.Records[0].Count);
+        //    Assert.Equal(4, recordData.Records[1].Count);
+        //    Assert.Equal(4, recordData.Records[2].Count);
+        //    Assert.Equal(4, recordData.Records[3].Count);
+        //    Assert.Equal(4, recordData.Records[4].Count);
+
+        //}
+
         [Fact]
         public void Constructor_SingleColumn_Parses()
         {

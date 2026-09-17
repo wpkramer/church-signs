@@ -51,6 +51,7 @@ namespace ChurchSigns.UI.Helpers
 
                 if (cells.Length != headers.Length)
                 {
+                    
                     throw new ArgumentException(
                         $"Row {i} has {cells.Length} column(s), expected {headers.Length}.",
                         nameof(pastedData));
