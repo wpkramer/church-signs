@@ -8,6 +8,8 @@
     <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <Nullable>enable</Nullable>
+    <Platforms>AnyCPU;x64;ARM64</Platforms>
+    <Configurations>Debug;Release;ARM64</Configurations>
   </PropertyGroup>
   <ItemGroup>
     <None Remove="Controls\FieldPairsView.xaml" />

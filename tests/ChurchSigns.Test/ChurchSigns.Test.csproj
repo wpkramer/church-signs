@@ -5,6 +5,8 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <IsPackable>false</IsPackable>
+    <Platforms>AnyCPU;x64;ARM64</Platforms>
+    <Configurations>Debug;Release;ARM64</Configurations>
   </PropertyGroup>
 
   <ItemGroup>
