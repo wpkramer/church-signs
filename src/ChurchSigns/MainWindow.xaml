@@ -131,25 +131,42 @@
 
         <!-- Field Mapping area -->
 
-        <Grid Grid.Column="1" Grid.Row="1"              BorderThickness="2" 
+        <Grid Grid.Column="1" Grid.Row="1" 
               AllowFocusWhenDisabled="True"
               BorderBrush="{ThemeResource ControlElevationBorderBrush}"
               Background="{ThemeResource SolidBackgroundFillColorBaseAltBrush}"
               >
+            
             <Grid.RowDefinitions>
                 <RowDefinition Height="120"/>
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
 
-            <StackPanel Grid.Column="0" Grid.Row="0" Orientation="Horizontal" BorderThickness="2" BorderBrush="Azure">
-                <Image  Source="/Assets/PasteArea.png" Margin="8" Width="87" Height="100"/>
+            <Grid Grid.Column="0" Grid.Row="0" BorderThickness="2" BorderBrush="Azure">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Image Grid.Column="0" Margin="8,0,0,0" Source="/Assets/PasteArea.png" Width="87" Height="100"/>
                 
-                <Button x:Name="PasteButton" Content="Paste" Margin="8"
+                <Button Grid.Column="1" x:Name="PasteButton" Content="Paste from spreadsheet" Margin="8"
                         Click="PasteButton_Click"
                         />
-                <TextBlock x:Name="PasteHelpTextBlock" Margin="8" Width="200" TextWrapping="Wrap" Style="{ThemeResource SubtitleTextBlockStyle}">Paste from a spreadsheet with at least one of these:</TextBlock>
+                <RichTextBlock Grid.Column="2" x:Name="PasteHelpTextBlock" Margin="8" TextWrapping="WrapWholeWords">
+                    <Paragraph>Copy cells from
+                        <Bold>Google Sheets</Bold> or
+                        <Bold>Excel</Bold>, then click Paste.</Paragraph>
+                    <Paragraph>Use a
+                        <Bold>header row</Bold> (e.g. Name, Room) and
+                        <Bold>one row per sign</Bold>.</Paragraph>
+                    <Paragraph>Do
+                        <Bold>not</Bold> paste from a PDF or Word table—those usually have no column tabs, so ChurchSigns cannot tell columns apart.
+                    </Paragraph>
+                </RichTextBlock>
+            </Grid>
                 
-            </StackPanel>
+
            
             <controls:TemplateMappingView 
                 x:Name="MappingView"
@@ -181,12 +198,16 @@
                 <StackPanel Orientation="Vertical">
                     <Button Margin="4" x:Name="PrintButton" Content="Print" Click="PrintButton_Click" IsEnabled="False"/>
                     <Button Margin="4" x:Name="PdfExportButton" Content="Export to PDF" Click="PdfExportButton_Click" IsEnabled="False"/>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="All Signs" Margin="4" VerticalAlignment="Center"/>
+                        <CheckBox x:Name="AllSignsCheckBox"
+            VerticalAlignment="Center"
+        Checked="AllSignsCheckBox_Checked"
+        Unchecked="AllSignsCheckBox_Unchecked"/>
+                    </StackPanel>
                 </StackPanel>
-                <TextBlock Text="All Signs" Margin="4" VerticalAlignment="Center"/>
-                <CheckBox x:Name="AllSignsCheckBox"
-                            VerticalAlignment="Center"
-                        Checked="AllSignsCheckBox_Checked"
-                        Unchecked="AllSignsCheckBox_Unchecked"/>
+                
+                
 
             </StackPanel>
 

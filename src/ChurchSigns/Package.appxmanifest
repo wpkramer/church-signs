@@ -12,7 +12,7 @@
   <Identity
     Name="12982WPKramer.ChurchSigns"
     Publisher="CN=A0F555D8-C7C2-41D5-A1A1-10343BE938A9"
-    Version="1.0.0.0" />
+    Version="1.0.1.0" />
 
   <mp:PhoneIdentity PhoneProductId="ba626027-0c93-4da2-a7d1-9479e1ec1838" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
 
