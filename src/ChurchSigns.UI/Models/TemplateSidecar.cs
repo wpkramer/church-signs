@@ -15,12 +15,15 @@ namespace ChurchSigns.UI.Models
         [JsonPropertyName("version")]
         public int Version { get; set; } = 1;
 
+        [JsonPropertyName("description")]
+        public string Description { get; set; } = string.Empty;
+
         [JsonPropertyName("printOrientation")]
         public TemplateOrientation TemplateOrientation { get; set; } = TemplateOrientation.Default;
 
         [JsonPropertyName("printMediaSize")]
         public TemplateMediaSize TemplateMediaSize { get; set; } = ChurchSigns.UI.Models.TemplateMediaSize.Letter;
-
+        
         /// <summary>Sample field values for designer preview.</summary>
         [JsonPropertyName("fields")]
         public Dictionary<string, string> Fields { get; set; } =

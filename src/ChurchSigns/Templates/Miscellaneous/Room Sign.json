@@ -1,5 +1,6 @@
 {
   "version": 1,
+  "description": "Sign intended to tape on the door of a classroom. Paste two columns for Room and Name. Optionally customize the colors by pasting in color codes.",
   "printOrientation": "Landscape",
   "printMediaSize": "Letter",
   "fields": {

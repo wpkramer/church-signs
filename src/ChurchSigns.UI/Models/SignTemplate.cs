@@ -210,6 +210,8 @@ namespace ChurchSigns.UI.Models
             }
         }
 
+        public string Description { get { return _templateStorageItem.SideCar.Description;  } }
+
         public ChurchSign CreatePlaceholderSign()
         {
             var signData = new ChurchSign(this);

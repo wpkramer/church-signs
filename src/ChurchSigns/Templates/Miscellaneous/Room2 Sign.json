@@ -1,5 +1,6 @@
 {
   "version": 1,
+  "description": "A room sign with two instructor names.",
   "printOrientation": "Landscape",
   "printMediaSize": "Letter",
   "fields": {

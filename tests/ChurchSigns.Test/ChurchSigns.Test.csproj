@@ -18,7 +18,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\ChurchSigns.UI\ChurchSigns.UI.csproj" />
-    <ProjectReference Include="..\..\src\SignLib\SignLib.csproj" />
   </ItemGroup>
 
   <ItemGroup>

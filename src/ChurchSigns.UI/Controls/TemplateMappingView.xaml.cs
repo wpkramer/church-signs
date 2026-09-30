@@ -184,6 +184,18 @@ namespace ChurchSigns.UI.Controls
                     // add control the column head row
                     AddControl(i, 0, textBlock);
                 }
+                TextBlock descTb = new TextBlock
+                {
+                    Text = SelectedTemplate.Description,
+                    TextWrapping = TextWrapping.Wrap,
+                    Margin = new Thickness(36),
+                };
+                Grid.SetColumn(descTb, 0);
+                Grid.SetRow(descTb, 1);
+                Grid.SetColumnSpan(descTb, columnCount);
+                TemplateMappingGrid.Children.Add(descTb);
+
+
                 BuildRecords();
                 return; // we're done
             }

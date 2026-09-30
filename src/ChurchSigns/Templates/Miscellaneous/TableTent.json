@@ -1,5 +1,6 @@
 {
   "version": 1,
+  "description": "Table top sign that you fold into a tent shape. All fields have a default value. Typical use is to paste a column of data with a column header of Name.",
   "printOrientation": "Portrait",
   "printMediaSize": "Letter",
   "fields": {
