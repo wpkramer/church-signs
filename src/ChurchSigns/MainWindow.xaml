@@ -176,7 +176,7 @@
                 PastedData="{x:Bind ViewModel.LastTablePaste, Mode=OneWay}"
                 Visibility="{x:Bind ViewModel.MultiSignVisibility, Mode=OneWay}"
                 />
-            <controls:FieldPairsView
+            <controls:FieldPairsControl
                 x:Name="PairsView"
                 Grid.Column="0"
                 Grid.Row="1"
