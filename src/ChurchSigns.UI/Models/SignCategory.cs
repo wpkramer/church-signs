@@ -8,9 +8,7 @@ namespace ChurchSigns.UI.Models
     { 
         Awana,
         Children,
-        Women,
-        Men,
-        Seniors,
+        Church,
         Miscellaneous,
 
     }

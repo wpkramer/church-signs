@@ -11,6 +11,9 @@
   <Folder Name="/Solution Items/affinity/">
     <File Path="affinity/ChurchSigns.af" />
   </Folder>
+  <Folder Name="/Solution Items/design/">
+    <File Path="design/ChurchSigns_Packages.puml" />
+  </Folder>
   <Folder Name="/Solution Items/docs/">
     <File Path="docs/index.md" />
     <File Path="docs/PRIVACY.md" />

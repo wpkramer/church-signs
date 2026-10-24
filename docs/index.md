@@ -8,7 +8,8 @@ Simple WinUI app for churches to create and print signs and labels from SVG temp
 
 - [Privacy Policy](PRIVACY.md)
 - [GitHub Repository](https://github.com/wpkramer/church-signs)
-- [Microsoft Store](https://apps.microsoft.com) *(coming soon)*
+- [Microsoft Store](ms-windows-store://pdp/?productid=9P8VGPTVSG9H)
+- [Template Design Guide](TemplateDesigner.md)
 
 ---
 

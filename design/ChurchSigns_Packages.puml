@@ -1,0 +1,142 @@
+' care to make some suggestions on cleaning up these dependencies?
+' dependency graph is messy, at least i think nothing cyclical.
+' I am sure I missed some dependencies.
+' for restructuring i am considering creating 2 or 3 user controls
+' simply to break up the the MainWindow dependencies.
+' As you pointed out Util and Helpers can be combined.
+' There are Controls that have the extension View, change that to Control
+'
+@startuml
+left to right direction
+skinparam packageStyle rectangle
+
+package "ChurchSigns" as cs {
+	[App] as app
+	[MainWindow] as mainwindow
+}
+
+package "ChurchSigns.UI" as ui {
+	[Themes.Generic] as themesgeneric
+	package "Controls" as controls {
+		[FieldPairsView] as fieldpairsview
+		[SvgSignControl] as svgsigncontrol
+		[TemplateMappingView] as templatemappingview
+	}
+	package "Interfaces" as interfaces {
+		[IClipboardService] as iclipboardservice
+	}
+	package "Models" as models {
+		[ChurchSign] as churchsign
+		[GroupInfoList] as groupinfolist
+		[PrintContentSize] as printcontentsize
+		[SignCategory] as signcategory
+		[SignTemplate] as signtemplate
+		[SignTemplateDataMap] as signtemplatedatamap
+		[TemplateImageSync] as templateimagesync
+		[TemplateMediaSize] as templatemediasize
+		[TemplateOrientation] as templateorientation
+		[TemplateSidecar] as templatesidecar
+		[TemplateSignMode] as templatesignmode
+		[TemplateStorageItem] as templatestorageitem
+	}
+
+	package "Services" as services {
+		[SignPdfService] as signpdfservice
+		[TemplateStorageService] as templatestorageservice
+		[WindowsClipboardService] as windowsclipboardservice
+	}
+
+	package "ViewModels" as viewmodels {
+		[MainViewModel] as mainviewmodel
+	}
+
+	package "Helpers" as helpers {
+		[PastedFieldPairs] as pastedfieldpairs
+		[PastedRecordData] as pastedrecorddata
+		[ProgressDialogHelper] as progressdialoghelper
+		[SignJsonContext] as signjsoncontext
+	}
+
+	package "Util" as util {
+		[MatchConfidence] as matchconfidence
+		[SKExtensions] as skextensions
+		[StringExtensions] as stringextensions
+	}
+}
+
+package "ChurchSigns.Tests" as tests
+
+app --> themesgeneric
+app --> mainwindow
+
+mainwindow --> mainviewmodel
+mainwindow --> groupinfolist
+mainwindow --> signtemplate
+mainwindow --> progressdialoghelper
+mainwindow --> signcategory
+mainwindow --> templatestorageitem
+mainwindow --> churchsign
+mainwindow --> templatestorageservice
+mainwindow --> signpdfservice
+mainwindow --> skextensions
+mainwindow --> svgsigncontrol
+mainwindow --> fieldpairsview
+mainwindow --> templatemappingview
+
+mainviewmodel --> windowsclipboardservice
+mainviewmodel --> iclipboardservice
+mainviewmodel --> signtemplate
+mainviewmodel --> pastedrecorddata
+mainviewmodel --> pastedfieldpairs
+mainviewmodel --> churchsign
+mainviewmodel --> groupinfolist
+mainviewmodel --> templatestorageservice
+mainviewmodel --> templatesignmode
+mainviewmodel --> signcategory
+
+
+signtemplatedatamap --> matchconfidence
+signtemplatedatamap --> signtemplate
+
+templatemappingview --> signtemplatedatamap
+templatemappingview --> signtemplate
+
+churchsign --> printcontentsize
+churchsign --> stringextensions
+
+signtemplate --> printcontentsize
+signtemplate --> templateorientation
+signtemplate --> templatemediasize
+signtemplate --> churchsign
+signtemplate --> templatesignmode
+
+signpdfservice --> churchsign
+
+skextensions --> printcontentsize
+
+templatesidecar --> templateorientation
+templatesidecar --> templatemediasize
+templatesidecar --> templatesignmode
+
+signjsoncontext --> templatesidecar
+
+svgsigncontrol --> themesgeneric
+svgsigncontrol --> templateimagesync
+svgsigncontrol --> stringextensions
+
+fieldpairsview --> signtemplate
+
+groupinfolist --> signtemplate
+
+templatestorageitem --> stringextensions
+
+templatestorageservice --> templatestorageitem
+templatestorageservice --> signjsoncontext
+templatestorageservice --> signcategory
+templatestorageservice --> templatesidecar
+
+windowsclipboardservice --> iclipboardservice
+
+
+
+@enduml
