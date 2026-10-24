@@ -1,4 +1,4 @@
-﻿using ChurchSigns.UI.Util;
+﻿using ChurchSigns.UI.Helpers;
 
 namespace ChurchSigns.Test.UtilTests
 {

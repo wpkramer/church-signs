@@ -1,4 +1,4 @@
-﻿using ChurchSigns.UI.Util;
+﻿using ChurchSigns.UI.Helpers;
 using SkiaSharp;
 using System;
 using System.Collections.Generic;
@@ -30,6 +30,14 @@ public class ChurchSign
         {
             _fields.TryAdd(kvp.Key, kvp.Value);
         }
+    }
+
+    public static ChurchSign CreatePlaceholderSign(SignTemplate template)
+    {
+        var signData = new ChurchSign(template);
+        foreach (var name in template.FieldNames)
+            signData.Fields[name] = template.GetPreviewValue(name);
+        return signData;
     }
 
     public Size XAMLThumbnailSize { get { return _template.XAMLThumbnailSize; } }

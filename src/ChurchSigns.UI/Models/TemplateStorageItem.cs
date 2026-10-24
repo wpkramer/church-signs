@@ -1,4 +1,4 @@
-﻿using ChurchSigns.UI.Util;
+﻿using ChurchSigns.UI.Helpers;
 using System.Collections.Generic;
 
 namespace ChurchSigns.UI.Models

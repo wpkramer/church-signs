@@ -2,7 +2,7 @@
 using System;
 using System.Text;
 
-namespace ChurchSigns.UI.Util
+namespace ChurchSigns.UI.Helpers
 {
     public class MatchConfidence : IComparable<MatchConfidence>
     {

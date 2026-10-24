@@ -20,14 +20,14 @@ using Windows.Foundation.Collections;
 
 namespace ChurchSigns.UI.Controls
 {
-    public sealed partial class FieldPairsView : UserControl
+    public sealed partial class FieldPairsControl : UserControl
     {
         private readonly Dictionary<string, string> _fields;
 
         public delegate void SingleSignDataHandler(IReadOnlyDictionary<string, string> data);
         public event SingleSignDataHandler? SingleSignDataChanged;
 
-        public FieldPairsView()
+        public FieldPairsControl()
         {
             _fields = new Dictionary<string, string>();
             InitializeComponent();
@@ -37,20 +37,20 @@ namespace ChurchSigns.UI.Controls
             DependencyProperty.Register(
             nameof(SelectedTemplate),
             typeof(SignTemplate),
-            typeof(FieldPairsView),
+            typeof(FieldPairsControl),
             new PropertyMetadata(null, OnTemplateChanged));
 
         public static readonly DependencyProperty PastedDataProperty =
             DependencyProperty.Register(
             nameof(PastedData),
             typeof(PastedFieldPairs),
-            typeof(FieldPairsView),
+            typeof(FieldPairsControl),
             new PropertyMetadata(new PastedFieldPairs(string.Empty), OnPasteDataChanged));
 
 
         private static void OnPasteDataChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            if (d is FieldPairsView control)
+            if (d is FieldPairsControl control)
             {
                 control.Rebuild();
             }
@@ -58,7 +58,7 @@ namespace ChurchSigns.UI.Controls
 
         private static void OnTemplateChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            if (d is FieldPairsView control)
+            if (d is FieldPairsControl control)
             {
                 control.Rebuild();
             }

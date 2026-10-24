@@ -212,18 +212,18 @@ namespace ChurchSigns.UI.Models
 
         public string Description { get { return _templateStorageItem.SideCar.Description;  } }
 
-        public ChurchSign CreatePlaceholderSign()
-        {
-            var signData = new ChurchSign(this);
-            foreach (var name in FieldNames)
-                signData.Fields[name] = GetPreviewValue(name);
-            return signData;
-        }
+        //public ChurchSign CreatePlaceholderSign()
+        //{
+        //    var signData = new ChurchSign(this);
+        //    foreach (var name in FieldNames)
+        //        signData.Fields[name] = GetPreviewValue(name);
+        //    return signData;
+        //}
 
 
         public TemplateStorageItem ToStorageItem() => _templateStorageItem;
 
-        private string GetPreviewValue(string fieldName)
+        public string GetPreviewValue(string fieldName)
         {
             if (_templateStorageItem.SideCar.Fields.TryGetValue(fieldName, out var value))
                 return value;

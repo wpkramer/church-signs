@@ -8,7 +8,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:controls="using:ChurchSigns.UI.Controls"
     xmlns:models="using:ChurchSigns.UI.Models"
-    xmlns:util="using:ChurchSigns.UI.Util"
+    xmlns:util="using:ChurchSigns.UI.Helpers"
     mc:Ignorable="d"
     Title="ChurchSigns"
     >
@@ -168,7 +168,7 @@
                 
 
            
-            <controls:TemplateMappingView 
+            <controls:TemplateMappingControl 
                 x:Name="MappingView"
                 Grid.Column="0"
                 Grid.Row="1"

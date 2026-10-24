@@ -14,11 +14,11 @@ namespace ChurchSigns.UI.Controls
     /// mapped to pasted data and notifying clients of our
     /// records and fields
     /// </summary>
-    public sealed partial class TemplateMappingView : UserControl
+    public sealed partial class TemplateMappingControl : UserControl
     {
         private readonly List< Dictionary<string, string> > _records;
 
-        public TemplateMappingView()
+        public TemplateMappingControl()
         {
             _records = new List< Dictionary<string, string> >();
             InitializeComponent();
@@ -31,21 +31,21 @@ namespace ChurchSigns.UI.Controls
             DependencyProperty.Register(
                 nameof(SelectedTemplate),
                 typeof(SignTemplate),
-                typeof(TemplateMappingView),
+                typeof(TemplateMappingControl),
                 new PropertyMetadata(null, OnTemplateChanged));
 
         public static readonly DependencyProperty PastedDataProperty =
             DependencyProperty.Register(
                 nameof(PastedData),
                 typeof(PastedRecordData),
-                typeof(TemplateMappingView),
+                typeof(TemplateMappingControl),
                 new PropertyMetadata(new PastedRecordData(string.Empty), OnPasteDataChanged));
 
 
 
         private static void OnPasteDataChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            if (d is TemplateMappingView control)
+            if (d is TemplateMappingControl control)
             {
                 control.Rebuild();
             }
@@ -53,7 +53,7 @@ namespace ChurchSigns.UI.Controls
 
         private static void OnTemplateChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            if (d is TemplateMappingView control)
+            if (d is TemplateMappingControl control)
             {
                 control.Rebuild();
             }

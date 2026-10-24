@@ -141,7 +141,8 @@ namespace ChurchSigns.UI.ViewModels
                 Signs.Clear();
                 if (data.Count == 0 || (data.Count == 1 && data[0].Count == 0))
                 {
-                    Signs.Add(SelectedTemplate.CreatePlaceholderSign());
+                    var placeholder = ChurchSign.CreatePlaceholderSign(SelectedTemplate);
+                    Signs.Add(placeholder);
                     return;
                 }
                 foreach (var row in data)
@@ -152,7 +153,10 @@ namespace ChurchSigns.UI.ViewModels
                     Signs.Add(sign);
                 }
                 if (Signs.Count == 0)
-                    Signs.Add(SelectedTemplate.CreatePlaceholderSign());
+                {
+                    var placeholder = ChurchSign.CreatePlaceholderSign(SelectedTemplate);
+                    Signs.Add(placeholder);
+                }
             }
         }
 

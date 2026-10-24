@@ -1,7 +1,6 @@
 using ChurchSigns.UI.Helpers;
 using ChurchSigns.UI.Models;
 using ChurchSigns.UI.Services;
-using ChurchSigns.UI.Util;
 using ChurchSigns.UI.ViewModels;
 using Microsoft.UI;
 using Microsoft.UI.Dispatching;

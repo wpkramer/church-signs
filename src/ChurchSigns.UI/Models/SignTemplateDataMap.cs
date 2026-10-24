@@ -1,5 +1,4 @@
 ﻿using ChurchSigns.UI.Helpers;
-using ChurchSigns.UI.Util;
 using System;
 using System.Collections.Generic;
 using System.Linq;
