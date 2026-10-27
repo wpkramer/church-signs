@@ -6,6 +6,7 @@
     xmlns:local="using:ChurchSigns"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:uctl="using:ChurchSigns.UserControls"
     xmlns:controls="using:ChurchSigns.UI.Controls"
     xmlns:models="using:ChurchSigns.UI.Models"
     xmlns:util="using:ChurchSigns.UI.Helpers"
@@ -20,7 +21,7 @@
     
             
 
-    <Grid x:Name="MainGrid" KeyDown="MainGrid_KeyDown">
+    <Grid x:Name="MainGrid" KeyDown="MainGrid_KeyDown" Loaded="MainGrid_Loaded">
 
         <Grid.ColumnDefinitions>
             <!-- Template definitions are in the left Column -->
@@ -44,90 +45,10 @@
         <TextBlock Grid.Column="0" Grid.ColumnSpan="3" Grid.Row="0" Text="Church Signs" Margin="36,0,32,32" Style="{ThemeResource TitleTextBlockStyle}" />
         
         <!-- Display available templates -->
-        <Grid x:Name="TemplateGrid" Grid.Column="0" Grid.Row="1"
-              AllowDrop="True"
-              DragOver="TemplateGrid_DragOver"
-              Drop="TemplateGrid_Drop"
-              BorderThickness="2"
-              BorderBrush="{ThemeResource ControlElevationBorderBrush}"
-              Background="{ThemeResource CardBackgroundFillColorSecondaryBrush}">
-            <Grid.Resources>
-                <CollectionViewSource x:Name="TemplatesCVS" IsSourceGrouped="True"/>
-            </Grid.Resources>
-            
-            <Grid.RowDefinitions>
-                <RowDefinition Height="120"/> <!-- Header -->
-                <RowDefinition Height="*"/>    <!-- List of templates -->
-            </Grid.RowDefinitions>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
-            </Grid.ColumnDefinitions>
+        <uctl:TemplateUserControl x:Name="TemplateSelector" Grid.Column="0" Grid.Row="1"
+                          SelectedTemplate="{x:Bind ViewModel.SelectedTemplate, Mode=OneWay}"
+                          />
 
-            <Grid Grid.Row="0" BorderThickness="2" BorderBrush="Azure" >
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="Auto"/>
-                </Grid.ColumnDefinitions>
-                    <Image Grid.Column="0"  Source="/Assets/TemplatesArea.png" Width="87" Height="100" Margin="8" />
-                <StackPanel Orientation="Vertical" Grid.Column="1" >
-                    <Button x:Name="DesignerInfoButton" Content="ℹ️" VerticalAlignment="Top" Margin="46,8,0,0" Click="DesignerInfoButton_Click"/>
-                    <CheckBox x:Name="IsDesigner" IsChecked="False" VerticalAlignment="Top" Margin="16,4,0,0" Checked="IsDesigner_Checked" Unchecked="IsDesigner_Unchecked" Content="Designer:"/>
-                </StackPanel>
-                <StackPanel x:Name="DesignerStackPanel" Grid.Column="2" Orientation="Vertical" HorizontalAlignment="Right" Visibility="Collapsed">
-                    <Button x:Name="RemoveTemplateButton" Content="Remove" Margin="1" Click="RemoveTemplateButton_Click"  IsEnabled="False"/>
-                    <Button x:Name="AddTemplateButton" Margin="1" Content="Import" Click="AddTemplateButton_Click" IsEnabled="False" />
-                    <Button x:Name="ExportTemplateButton" Content="Export" Margin="1" Click="ExportTemplateButton_Click"  IsEnabled="False"/>
-                </StackPanel>
-            </Grid>
-
-                
-            <ListView x:Name="SignTemplatesListView" Grid.Column="0" Grid.Row="1" 
-                      SelectionChanged="SignTemplatesListView_SelectionChanged"
-                      ItemsSource="{x:Bind TemplatesCVS.View, Mode=OneWay}">
-                <ListView.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <ItemsStackPanel AreStickyGroupHeadersEnabled="False"/>
-                    </ItemsPanelTemplate>
-                </ListView.ItemsPanel>
-                <ListView.GroupStyle>
-                    <GroupStyle>
-                        <GroupStyle.HeaderTemplate>
-                            <DataTemplate x:DataType="models:GroupInfoList">
-                                <Border AutomationProperties.AccessibilityView="Raw">
-                                    <TextBlock Text="{x:Bind Key}" AutomationProperties.AccessibilityView="Raw" Style="{ThemeResource SubtitleTextBlockStyle}"/>
-                                </Border>
-                            </DataTemplate>
-                        </GroupStyle.HeaderTemplate>
-                    </GroupStyle>
-                </ListView.GroupStyle>
-                <ListView.ItemTemplate>
-                    <DataTemplate x:DataType="models:SignTemplate">
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto"/>
-                                <ColumnDefinition Width="Auto"/>
-                            </Grid.ColumnDefinitions>
-                            <controls:SvgSignControl
-                                Grid.Column="0"
-                                Margin="4"
-                                SvgTemplate="{x:Bind SvgSignTemplate, Mode=OneTime}"
-                                Data="{x:Bind PreviewFields, Mode=OneTime}"
-                                Height="{x:Bind XAMLThumbnailSize.Height}"
-                                Width="{x:Bind XAMLThumbnailSize.Width}"
-                                RenderHeight="{x:Bind XAMLThumbnailSize.Height}"
-                                RenderWidth="{x:Bind XAMLThumbnailSize.Width}"
-                                />
-                                <TextBlock Grid.Column="1"  Text="{x:Bind Title}" Style="{ThemeResource CaptionTextBlockStyle}" VerticalAlignment="Center"/>
-                        </Grid>
-                       
-                    </DataTemplate>
-                </ListView.ItemTemplate>
-            </ListView>
-            
-        </Grid>
-        
-        
 
         <!-- Field Mapping area -->
 

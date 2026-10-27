@@ -15,6 +15,7 @@ namespace ChurchSigns.UI.Models
 
         public string Key { get; set; }
 
+        
         public override string ToString() => Key;
     }
 }

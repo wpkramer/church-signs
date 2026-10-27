@@ -22,6 +22,7 @@
     <None Remove="Templates\Miscellaneous\Room2 Sign.svg" />
     <None Remove="Templates\Miscellaneous\TableTent.json" />
     <None Remove="Templates\Miscellaneous\TableTent.svg" />
+    <None Remove="UserControls\TemplateUserControl.xaml" />
   </ItemGroup>
 
   <ItemGroup>
@@ -72,6 +73,11 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Dialogs\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="UserControls\TemplateUserControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
 
   <!--

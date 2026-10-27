@@ -2,20 +2,29 @@
 using ChurchSigns.UI.Interfaces;
 using ChurchSigns.UI.Models;
 using ChurchSigns.UI.Services;
+using Microsoft.UI;
 using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Shapes;
+using Microsoft.Windows.Storage.Pickers;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
+using Windows.Storage;
+using LegacyPickers = Windows.Storage.Pickers; // Only for PickerLocationId enum
+
 
 namespace ChurchSigns.UI.ViewModels
 {
-    public partial class MainViewModel(IClipboardService? clipboard = null) : INotifyPropertyChanged
+    public partial class MainViewModel : INotifyPropertyChanged
     {
-        private readonly IClipboardService _clipboard = clipboard ?? new WindowsClipboardService();
+        private readonly IClipboardService _clipboard;
         private SignTemplate _selectedTemplate = CreateBlankTemplate();
         private PastedRecordData _lastTablePaste = new PastedRecordData();
         private PastedFieldPairs _lastFieldPairs = new PastedFieldPairs();
@@ -24,6 +33,16 @@ namespace ChurchSigns.UI.ViewModels
         public ObservableCollection<ChurchSign> Signs { get; } = [];
         public ObservableCollection<GroupInfoList>? GroupedTemplates { get; private set; }
 
+        public XamlRoot? XamlRoot { get; set; }
+        public WindowId WindowId { get; set; }
+        public Window? MainWindow { get; set; }
+
+
+        public MainViewModel()
+        {
+            _clipboard = new WindowsClipboardService();
+        }
+
         public event PropertyChangedEventHandler? PropertyChanged;
 
         public PastedRecordData LastTablePaste
@@ -31,7 +50,7 @@ namespace ChurchSigns.UI.ViewModels
             get => _lastTablePaste;
             set
             {
-                if(value != _lastTablePaste)
+                if (value != _lastTablePaste)
                 {
                     _lastTablePaste = value;
                     OnPropertyChanged(nameof(LastTablePaste));
@@ -52,6 +71,27 @@ namespace ChurchSigns.UI.ViewModels
             }
         }
 
+        // MainViewModel
+        private bool _isDesignerMode;
+        public bool IsDesignerMode
+        {
+            get => _isDesignerMode;
+            set
+            {
+                _isDesignerMode = value;
+
+                OnPropertyChanged(nameof(IsDesignerMode));
+            }
+        }
+
+
+
+        // TODO: 3. Prefer VM over export / remove events
+
+        // Remove enabled when designer + custom template
+        public bool CanRemoveSelectedTemplate =>
+            IsDesignerMode && SelectedTemplate is { IsProvided: false };
+
         public SignTemplate SelectedTemplate
         {
             get => _selectedTemplate;
@@ -68,8 +108,72 @@ namespace ChurchSigns.UI.ViewModels
                 OnPropertyChanged(nameof(SelectedTemplate));
                 OnPropertyChanged(nameof(MultiSignVisibility));
                 OnPropertyChanged(nameof(SingleSignVisibility));
+            }
+        }
+
+
+        public async Task<bool> ImportTemplateFileAsync(StorageFile file)
+        {
+            string category = await ShowSignTemplateOptionsAsync(System.IO.Path.GetFileName(file.Path));
+            if (string.IsNullOrEmpty(category))
+            {
+                return false;
+            }
+            SignCategory signCategory;
+
+            if (SignCategory.TryParse(category, out signCategory))
+            {
+                var templateStorageItems = await TemplateStorageService.Instance.ImportSignTemplatesAsync(file);
+                var addedTemplates = new List<TemplateStorageItem>();
+                foreach (var storageItem in templateStorageItems)
+                {
+                    storageItem.SignCategory = signCategory;
+                    await TemplateStorageService.Instance.SaveLocalAsync(storageItem, overwrite: true);
+                    addedTemplates.Add(storageItem);
+                }
+                if (addedTemplates.Count > 0)
+                {
+                    var lastTemplateAdded = AddTemplates(addedTemplates);
+                    if (lastTemplateAdded != null)
+                    {
+                        SelectedTemplate = lastTemplateAdded;
+                    }
+                }
+
 
             }
+
+            return true;
+        }
+
+        private async Task<string> ShowSignTemplateOptionsAsync(string filename)
+        {
+            var dialog = new ContentDialog
+            {
+                Title = "Template Category",
+                PrimaryButtonText = "OK",
+                CloseButtonText = "Cancel",
+                XamlRoot = this.XamlRoot
+            };
+
+            ComboBox comboBox = new ComboBox();
+
+
+            foreach (SignCategory category in Enum.GetValues<SignCategory>())
+            {
+                comboBox.Items.Add(category.ToString());
+            }
+            comboBox.SelectedIndex = 0;
+            dialog.Content = comboBox;
+
+            var dialogResult = await dialog.ShowAsync();
+
+            if (dialogResult == ContentDialogResult.Primary)
+            {
+                return comboBox.SelectedValue.ToString() ?? string.Empty;
+            }
+
+            return string.Empty;
         }
 
         public Visibility MultiSignVisibility
@@ -110,6 +214,7 @@ namespace ChurchSigns.UI.ViewModels
             }
         }
 
+
         public async Task InitializeAsync()
         {
             await TemplateStorageService.Instance.EnsureLocalFolderStructureAsync();
@@ -120,19 +225,22 @@ namespace ChurchSigns.UI.ViewModels
             foreach (var item in await TemplateStorageService.Instance.GetLocalTemplatesAsync())
                 TryAddTemplate(item);
 
-            var grouped =
-                from item in Templates
-                group item by item.Group into g
-                orderby g.Key
-                select new GroupInfoList(g.Key, g);
+            RebuildGroupedTemplates();
 
-            GroupedTemplates = new ObservableCollection<GroupInfoList>(grouped);
-
-            OnPropertyChanged(nameof(GroupedTemplates));
-
-            if (Templates.Count > 0)
-                SelectedTemplate = Templates[0];
         }
+
+        //private void SortGroupTemplates()
+        //{
+        //    var grouped =
+        //            from item in Templates
+        //            group item by item.Group into g
+        //            orderby g.Key
+        //            select new GroupInfoList(g.Key, g);
+
+        //    GroupedTemplates = new ObservableCollection<GroupInfoList>(grouped);
+
+        //    OnPropertyChanged(nameof(GroupedTemplates));
+        //}
 
         public void ReplaceSignsFromMappedData(IReadOnlyList<Dictionary<string, string>> data)
         {
@@ -166,7 +274,7 @@ namespace ChurchSigns.UI.ViewModels
             {
                 Signs.Clear();
 
-                Signs.Add( new ChurchSign(SelectedTemplate, data));
+                Signs.Add(new ChurchSign(SelectedTemplate, data));
 
             }
         }
@@ -181,7 +289,7 @@ namespace ChurchSigns.UI.ViewModels
                 var template = new SignTemplate(storageItem);
                 if (!template.IsValid)
                     continue;
-                
+
                 templates.Add(template);
                 lastAdded = template;
             }
@@ -220,6 +328,7 @@ namespace ChurchSigns.UI.ViewModels
         {
             GroupedTemplates = new ObservableCollection<GroupInfoList>(
                 from t in Templates
+                orderby t.Filename
                 group t by t.Group into g
                 orderby g.Key
                 select new GroupInfoList(g.Key, g));
@@ -254,7 +363,11 @@ namespace ChurchSigns.UI.ViewModels
         {
             var t = new SignTemplate(item);
             if (t.IsValid)
+            {
                 Templates.Add(t);
+
+            }
+
         }
 
         private static SignTemplate CreateBlankTemplate() =>
@@ -272,6 +385,165 @@ namespace ChurchSigns.UI.ViewModels
         private void OnPropertyChanged([CallerMemberName] string name = "") =>
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
 
+        //private void UpdatePrintPdfEnabled()
+        //{
+        //    AllSignsCheckBox.Checked -= AllSignsCheckBox_Checked;
+        //    AllSignsCheckBox.Unchecked -= AllSignsCheckBox_Unchecked;
+
+        //    if (SignGridView.SelectedItems.Count == SignGridView.Items.Count)
+        //    {
+        //        AllSignsCheckBox.IsChecked = true;
+        //    }
+        //    else if (SignGridView.SelectedItems.Count == 0)
+        //    {
+        //        AllSignsCheckBox.IsChecked = false;
+        //    }
+        //    else
+        //    {
+        //        AllSignsCheckBox.IsChecked = null;
+        //    }
+        //    AllSignsCheckBox.Checked += AllSignsCheckBox_Checked;
+        //    AllSignsCheckBox.Unchecked += AllSignsCheckBox_Unchecked;
+        //    if (SignGridView.SelectedItems.Count > 0)
+        //    {
+        //        PdfExportButton.IsEnabled = true;
+        //        PrintButton.IsEnabled = true;
+        //    }
+        //    else
+        //    {
+        //        PdfExportButton.IsEnabled = false;
+        //        PrintButton.IsEnabled = false;
+        //    }
+        //}
+
+        public void InitializeWithWindow(object picker)
+        {
+            //var hwnd = Win32Interop.GetWindowFromWindowId(AppWindow.Id);
+            //Trace.WriteLine($"Initializing picker with HWND: {hwnd}");
+
+            var hwnd = Win32Interop.GetWindowFromWindowId(this.WindowId);
+
+            WinRT.Interop.InitializeWithWindow.Initialize(picker, hwnd);
+        }
+
+        public async Task ShowMessageAsync(string message)
+        {
+            var dialog = new ContentDialog
+            {
+                Title = "Church Signs Message",
+                Content = message,
+                CloseButtonText = "OK",
+                XamlRoot = this.XamlRoot
+            };
+            await dialog.ShowAsync();
+        }
+
+        public async Task RemoveSelectedTemplateAsync()
+        {
+            if (SelectedTemplate != null)
+            {
+                if (!SelectedTemplate.IsProvided)
+                {
+                    bool removeConfirmed = await ConfirmActionAsync($"Please confirm you want to remove {SelectedTemplate.Title}?");
+                    if (removeConfirmed)
+                    {
+                        await TemplateStorageService.Instance.DeleteLocalAsync(SelectedTemplate.Category, SelectedTemplate.Filename);
+                        // update so the template shows in the list
+                        Templates.Remove(SelectedTemplate);
+                        RebuildGroupedTemplates();
+                    }
+                }
+            }
+        }
+
+        private async Task<bool> ConfirmActionAsync(string message)
+        {
+            var dialog = new ContentDialog
+            {
+                Content = message,
+                Title = "Confirm",
+                PrimaryButtonText = "Yes",
+                CloseButtonText = "No",
+                XamlRoot = XamlRoot
+            };
+            var dialogResult = await dialog.ShowAsync();
+            return dialogResult == ContentDialogResult.Primary;
+        }
+
+        public async Task<bool> ImportSignTemplateAsync()
+        {
+            bool importedTemplate = false;
+            var picker = new FileOpenPicker(WindowId)
+            {
+                SuggestedStartLocation = PickerLocationId.DocumentsLibrary,
+                ViewMode = PickerViewMode.List
+            };
+            picker.FileTypeFilter.Add(".svg");
+            picker.FileTypeFilter.Add(".zip");
+
+            var pickFileResult = await picker.PickSingleFileAsync();
+            if (pickFileResult != null)
+            {
+                StorageFile? file = await StorageFile.GetFileFromPathAsync(pickFileResult.Path);
+                if (file != null)
+                {
+                    _ = await ImportTemplateFileAsync(file);
+                    importedTemplate = true;
+                }
+            }
+            else
+            {
+                Trace.WriteLine("Manual load canceled by user.");
+
+            }
+            return importedTemplate;
+        }
+
+        public async Task ExportSelectedTemplateAsync()
+        {
+            try
+            {
+                if (SelectedTemplate is null)
+                    return;
+
+
+                var savePicker = new FileSavePicker(this.WindowId)
+                {
+                    SuggestedStartLocation = PickerLocationId.DocumentsLibrary,
+                    SuggestedFileName = System.IO.Path.ChangeExtension(SelectedTemplate.Filename, "zip"),
+                    CommitButtonText = "Save Template",
+                    FileTypeChoices =
+                    {
+                        {"Zip", new List<string> {".zip" } }
+                    },
+                    DefaultFileExtension = ".zip"
+                };
+
+                // Show the picker
+                var pickerResult = await savePicker.PickSaveFileAsync();
+                if (pickerResult is null)
+                    return; // cancel
+
+                if(!File.Exists(pickerResult.Path))
+                {
+                    using(var fs = File.Create(pickerResult.Path))
+                    {
+                        // no content needed - just touching the file
+                    }
+                }
+
+                // Now safely get the StorageFile
+                StorageFile pickedFile = await StorageFile.GetFileFromPathAsync(pickerResult.Path);
+
+                await TemplateStorageService.Instance.ExportSignTemplate(SelectedTemplate.ToStorageItem(), pickedFile);
+
+
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex.GetType().Name + " " + ex.Message);
+            }
+        }
 
     }
 }
