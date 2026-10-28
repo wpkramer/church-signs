@@ -28,19 +28,18 @@ namespace ChurchSigns
         protected override async void OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs args)
         {
             _window = new MainWindow();
-
-            //// Ensure WinRT/WinUI window is associated with a native HWND for WinRT interop APIs
-            //try
-            //{
-            //    var hwnd = WindowNative.GetWindowHandle(_window);
-            //    InitializeWithWindow.Initialize(_window, hwnd);
-            //}
-            //catch (Exception ex)
-            //{
-            //    // Log but continue; downstream calls will check for invalid hwnd
-            //    System.Diagnostics.Trace.WriteLine($"InitializeWithWindow failed: {ex.GetType().Name} {ex.Message}");
-            //}
-            await ((MainWindow)_window).PrepareWindowAsync();
+            nint hwnd = new();
+            // Ensure WinRT/WinUI window is associated with a native HWND for WinRT interop APIs
+            try
+            {
+                hwnd = WinRT.Interop.WindowNative.GetWindowHandle(_window);
+            }
+            catch (System.Exception ex)
+            {
+                // Log but continue; downstream calls will check for invalid hwnd
+                System.Diagnostics.Trace.WriteLine($"InitializeWithWindow failed: {ex.GetType().Name} {ex.Message}");
+            }
+            await ((MainWindow)_window).PrepareWindowAsync(hwnd);
 
             _window.Activate();
         }

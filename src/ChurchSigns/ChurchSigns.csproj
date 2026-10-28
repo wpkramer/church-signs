@@ -75,6 +75,11 @@
     <Folder Include="Dialogs\" />
   </ItemGroup>
   <ItemGroup>
+    <Page Update="UserControls\SignPrintUserControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
     <Page Update="UserControls\TemplateUserControl.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>

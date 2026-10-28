@@ -80,7 +80,7 @@ namespace ChurchSigns.UI.Controls
 
         private void Rebuild()
         {
-            if(SingleSignDataChanged != null)
+            if (SingleSignDataChanged != null)
             {
                 SingleSignDataChanged(Fields);
             }

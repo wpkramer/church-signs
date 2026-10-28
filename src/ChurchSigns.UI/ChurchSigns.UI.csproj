@@ -12,16 +12,13 @@
     <Configurations>Debug;Release;ARM64</Configurations>
   </PropertyGroup>
   <ItemGroup>
-    <None Remove="Controls\FieldPairsView.xaml" />
-  </ItemGroup>
-  <ItemGroup>
     <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.28000.2705" />
     <PackageReference Include="Microsoft.WindowsAppSDK" Version="2.4.0" />
     <PackageReference Include="SkiaSharp" Version="4.151.1" />
     <PackageReference Include="Svg.Skia" Version="5.2.2" />
   </ItemGroup>
   <ItemGroup>
-    <Page Update="Controls\FieldPairsView.xaml">
+    <Page Update="Controls\FieldPairsControl.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>

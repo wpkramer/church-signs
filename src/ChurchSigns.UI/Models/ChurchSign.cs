@@ -54,6 +54,23 @@ public class ChurchSign
         }
     }
 
+    public bool HasNoMappings
+    {
+        get
+        {
+            foreach(var kvp in Fields)
+            {
+                // Data was actually mapped from a paste operation
+                if(!string.IsNullOrEmpty(kvp.Value) && kvp.Value != _template.GetPreviewValue(kvp.Key))
+                {
+                    return false;
+                }
+            }
+            // every field was either empty or a default value
+            return true;
+        }
+    }
+
     public string Title => _template.Title;
     public string SvgTemplate => _template.SvgSignTemplate;
     public string SvgSign => SvgTemplate.MergeTemplateWithData(Fields);

@@ -43,10 +43,13 @@ namespace ChurchSigns.UI.Services
 
             try
             {
+                // the following statement just hangs, used to work?
+                string path = Windows.ApplicationModel.Package.Current.InstalledLocation.Path;
+                string troot = TemplatesRoot;
                 templatesRoot = await StorageFolder.GetFolderFromPathAsync(
                     System.IO.Path.Combine(
-                        Windows.ApplicationModel.Package.Current.InstalledLocation.Path,
-                        TemplatesRoot));
+                        path,
+                        troot));
             }
             catch
             {
