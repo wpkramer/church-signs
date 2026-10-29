@@ -1,5 +1,8 @@
-﻿using System;
+﻿using ChurchSigns.UI.Helpers;
+using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Text.Json;
 using System.Text.Json.Serialization;
 
 
@@ -12,6 +15,39 @@ namespace ChurchSigns.UI.Models
     /// </summary>
     public class TemplateSidecar
     {
+        public TemplateSidecar()
+        {
+
+        }
+
+        public static TemplateSidecar CreateFromJsonText(string jsonText)
+        {
+            TemplateSidecar? sidecar = new TemplateSidecar();
+            if (!string.IsNullOrEmpty(jsonText))
+            {
+                try
+                {
+                    sidecar = JsonSerializer.Deserialize(jsonText, SignJsonContext.Default.TemplateSidecar);
+                    if (sidecar == null)
+                    {
+                        sidecar = new TemplateSidecar();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine($"{nameof(CreateFromJsonText)} {ex.GetType().Name} {ex.Message}");
+                }
+
+            }
+            return sidecar!;
+        }
+
+        public string ToJson()
+        {
+            string json = JsonSerializer.Serialize(this, SignJsonContext.Default.TemplateSidecar);
+            return json;
+        }
+
         [JsonPropertyName("version")]
         public int Version { get; set; } = 1;
 

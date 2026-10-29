@@ -3,26 +3,22 @@ using ChurchSigns.UI.Interfaces;
 using ChurchSigns.UI.Models;
 using ChurchSigns.UI.Services;
 using Microsoft.UI;
-using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Imaging;
 using Microsoft.UI.Xaml.Printing;
-using Microsoft.UI.Xaml.Shapes;
 using Microsoft.Windows.Storage.Pickers;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Windows.Graphics.Printing;
-using Windows.Storage;
 
 
 namespace ChurchSigns.UI.ViewModels
@@ -115,9 +111,9 @@ namespace ChurchSigns.UI.ViewModels
         }
 
 
-        public async Task<bool> ImportTemplateFileAsync(StorageFile file)
+        public async Task<bool> ImportTemplateFileAsync(string filepath)
         {
-            string category = await ShowSignTemplateOptionsAsync(System.IO.Path.GetFileName(file.Path));
+            string category = await ShowSignTemplateOptionsAsync(System.IO.Path.GetFileName(filepath));
             if (string.IsNullOrEmpty(category))
             {
                 return false;
@@ -126,12 +122,12 @@ namespace ChurchSigns.UI.ViewModels
 
             if (SignCategory.TryParse(category, out signCategory))
             {
-                var templateStorageItems = await TemplateStorageService.Instance.ImportSignTemplatesAsync(file);
+                var templateStorageItems = TemplateFileService.Read(filepath);
                 var addedTemplates = new List<TemplateStorageItem>();
                 foreach (var storageItem in templateStorageItems)
                 {
                     storageItem.SignCategory = signCategory;
-                    await TemplateStorageService.Instance.SaveLocalAsync(storageItem, overwrite: true);
+                    TemplateFileService.Instance.Save(storageItem);
                     addedTemplates.Add(storageItem);
                 }
                 if (addedTemplates.Count > 0)
@@ -223,12 +219,10 @@ namespace ChurchSigns.UI.ViewModels
             _hwnd = hwnd;
             RegisterForPrinting();
 
-            await TemplateStorageService.Instance.EnsureLocalFolderStructureAsync();
-
             Templates.Clear();
-            foreach (var item in await TemplateStorageService.Instance.GetContentTemplatesAsync())
+            foreach (var item in TemplateFileService.Instance.GetProvidedTemplates())
                 TryAddTemplate(item);
-            foreach (var item in await TemplateStorageService.Instance.GetLocalTemplatesAsync())
+            foreach (var item in TemplateFileService.Instance.GetUserTemplates())
                 TryAddTemplate(item);
 
             RebuildGroupedTemplates();
@@ -407,9 +401,9 @@ namespace ChurchSigns.UI.ViewModels
                 {
                     bool removeConfirmed = await ConfirmActionAsync($"Please confirm you want to remove {SelectedTemplate.Title}?");
                     if (removeConfirmed)
-                    {
-                        await TemplateStorageService.Instance.DeleteLocalAsync(SelectedTemplate.Category, SelectedTemplate.Filename);
-                        // update so the template shows in the list
+                    {                        
+                        TemplateFileService.Instance.Delete(SelectedTemplate.ToStorageItem());
+                        // update the list
                         Templates.Remove(SelectedTemplate);
                         RebuildGroupedTemplates();
                     }
@@ -445,12 +439,8 @@ namespace ChurchSigns.UI.ViewModels
             var pickFileResult = await picker.PickSingleFileAsync();
             if (pickFileResult != null)
             {
-                StorageFile? file = await StorageFile.GetFileFromPathAsync(pickFileResult.Path);
-                if (file != null)
-                {
-                    _ = await ImportTemplateFileAsync(file);
-                    importedTemplate = true;
-                }
+
+                importedTemplate = await ImportTemplateFileAsync(pickFileResult.Path);
             }
             else
             {
@@ -485,19 +475,7 @@ namespace ChurchSigns.UI.ViewModels
                 if (pickerResult is null)
                     return; // cancel
 
-                if(!File.Exists(pickerResult.Path))
-                {
-                    using(var fs = File.Create(pickerResult.Path))
-                    {
-                        // no content needed - just touching the file
-                    }
-                }
-
-                // Now safely get the StorageFile
-                StorageFile pickedFile = await StorageFile.GetFileFromPathAsync(pickerResult.Path);
-
-                await TemplateStorageService.Instance.ExportSignTemplate(SelectedTemplate.ToStorageItem(), pickedFile);
-
+                TemplateFileService.Export(SelectedTemplate.ToStorageItem(), pickerResult.Path);
 
             }
             catch (Exception ex)
@@ -529,19 +507,8 @@ namespace ChurchSigns.UI.ViewModels
             if (pickerResult is null)
                 return; // cancel
 
-            if (!File.Exists(pickerResult.Path))
-            {
-                using (var fs = File.Create(pickerResult.Path))
-                {
-                    // no content needed - just touching the file
-                }
-            }
 
-            // Now safely get the StorageFile
-            StorageFile pickedFile = await StorageFile.GetFileFromPathAsync(pickerResult.Path);
-
-
-            await SignPdfService.ExportSelectedSignsAsync(signs, pickedFile);
+            await SignPdfService.ExportSelectedSignsAsync(signs, pickerResult.Path);
         }
 
 

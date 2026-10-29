@@ -10,20 +10,22 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using Windows.Storage;
 
+
 namespace ChurchSigns.UI.Services
 {
 
 
-    public sealed class TemplateStorageService
+    public sealed class TemplateStorageServiceX
     {
-        public static TemplateStorageService Instance { get; } = new();
+        public static TemplateStorageServiceX Instance { get; } = new();
 
         static string SidecarName(string svgFileName) =>
             Path.ChangeExtension(svgFileName, ".json"); // LeaderSign.svg → LeaderSign.json
 
 
+
         private const string TemplatesRoot = "Templates";
-        private TemplateStorageService() { }
+        private TemplateStorageServiceX() { }
 
         public async Task EnsureLocalFolderStructureAsync()
         {
@@ -43,7 +45,6 @@ namespace ChurchSigns.UI.Services
 
             try
             {
-                // the following statement just hangs, used to work?
                 string path = Windows.ApplicationModel.Package.Current.InstalledLocation.Path;
                 string troot = TemplatesRoot;
                 templatesRoot = await StorageFolder.GetFolderFromPathAsync(

@@ -126,19 +126,19 @@ namespace ChurchSigns.UserControls
                 var items = await e.DataView.GetStorageItemsAsync();
                 foreach (var item in items)
                 {
-                    if (item is StorageFile file)
+                    if (item is StorageFile storageItem)
                     {
-                        if (file.Name.EndsWith(".svg", StringComparison.OrdinalIgnoreCase))
+                        if (storageItem.Name.EndsWith(".svg", StringComparison.OrdinalIgnoreCase))
                         {
-                            _ = await ViewModel.ImportTemplateFileAsync(file);
+                            _ = await ViewModel.ImportTemplateFileAsync(storageItem.Path);
                         }
-                        else if (file.Name.EndsWith(".zip", StringComparison.OrdinalIgnoreCase))
+                        else if (storageItem.Name.EndsWith(".zip", StringComparison.OrdinalIgnoreCase))
                         {
-                            _ = await ViewModel.ImportTemplateFileAsync(file);
+                            _ = await ViewModel.ImportTemplateFileAsync(storageItem.Path);
                         }
                         else
                         {
-                            await ViewModel.ShowMessageAsync($"Rejected: {file.Name} (either a svg file or a zip file containing svg and json pairs)");
+                            await ViewModel.ShowMessageAsync($"Rejected: {storageItem.Name} (either a svg file or a zip file containing svg and json pairs)");
                         }
                     }
                 }

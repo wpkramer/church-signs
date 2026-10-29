@@ -10,24 +10,25 @@ namespace ChurchSigns.UI.Services;
 
 public static class SignPdfService
 {
-    public static async Task ExportSelectedSignsAsync(IReadOnlyList<ChurchSign> signs, StorageFile file)
+    public static async Task ExportSelectedSignsAsync(IReadOnlyList<ChurchSign> signs, string filepath)
     {
         ArgumentNullException.ThrowIfNull(signs);
+        ArgumentNullException.ThrowIfNullOrEmpty(filepath);
 
         if (signs.Count == 0)
             return;
 
 
-        if (file != null)
+
+        using (var stream = File.OpenWrite(filepath))
         {
-            using var stream = await file.OpenStreamForWriteAsync();
             // Truncate if replacing an existing file
             stream.SetLength(0);
 
             await Task.Run(() => WritePdf(signs, stream));
-
         }
     }
+
     private static void WritePdf(IReadOnlyList<ChurchSign> signs, Stream output)
     {
         var metadata = new SKDocumentPdfMetadata

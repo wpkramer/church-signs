@@ -118,6 +118,54 @@ namespace ChurchSigns.Test.ModelTests
         }
 
         [Fact]
+        public void Deserialize_CubbySign2()
+        {
+            const string json = @"{
+  ""version"": 1,
+  ""description"": ""Sign for the Sparx bucket. Just paste the leader names. The color line is optional and defaults to green. This sign is also used on Mom\u2019s or Dad\u2019s night; it marks the row of seats for the Sparkies in the sanctuary."",
+  ""printOrientation"": ""Landscape"",
+  ""printMediaSize"": ""Letter"",
+  ""fields"": {
+    ""ColorLine"": ""red"",
+    ""Leader1"": ""Leader1"",
+    ""Leader2"": ""Leader2""
+  }
+}";
+            var sidecar = Deserialize(json);
+
+            Assert.NotNull(sidecar);
+            Assert.Equal(TemplateOrientation.Landscape, sidecar!.TemplateOrientation);
+            Assert.Equal(TemplateMediaSize.Letter, sidecar.TemplateMediaSize);
+            Assert.Equal(TemplateSignMode.MultiSign, sidecar.SignMode);
+            Assert.Equal(3, sidecar.Fields.Count);
+            Assert.Equal("Leader2", sidecar.Fields["Leader2"]);
+        }
+
+        [Fact]
+        public void CreateFromJsonTextTest()
+        {
+                        const string json = @"{
+  ""version"": 1,
+  ""description"": ""Sign for the Sparx bucket. Just paste the leader names. The color line is optional and defaults to green. This sign is also used on Mom\u2019s or Dad\u2019s night; it marks the row of seats for the Sparkies in the sanctuary."",
+  ""printOrientation"": ""Landscape"",
+  ""printMediaSize"": ""Letter"",
+  ""fields"": {
+    ""ColorLine"": ""red"",
+    ""Leader1"": ""Leader1"",
+    ""Leader2"": ""Leader2""
+  }
+}";
+            TemplateSidecar sidecar = TemplateSidecar.CreateFromJsonText(json);
+
+            Assert.NotNull(sidecar);
+            Assert.Equal(TemplateOrientation.Landscape, sidecar!.TemplateOrientation);
+            Assert.Equal(TemplateMediaSize.Letter, sidecar.TemplateMediaSize);
+            Assert.Equal(TemplateSignMode.MultiSign, sidecar.SignMode);
+            Assert.Equal(3, sidecar.Fields.Count);
+            Assert.Equal("Leader2", sidecar.Fields["Leader2"]);
+        }
+
+        [Fact]
         public void Deserialize_EmptyObject_DoesNotThrow()
         {
             var sidecar = Deserialize("{}");
