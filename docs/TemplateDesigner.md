@@ -14,9 +14,11 @@ You should be comfortable exporting SVG from a design tool and editing the file 
 |--------|------|
 | **`.svg` file** | Artwork plus placeholders for variable text and colors |
 | **`.json` sidecar** (optional but recommended) | Sample preview values, paper size, orientation |
-| **Category** | App grouping (e.g. Awana, Children, Miscellaneous) |
 
 **Provided templates** ship with the app. **Custom templates** are stored after **Import** (local app data).
+
+After enabling **Designer** you can export any sign template, including **Provided templates**, to
+use as an a example or starting point for your custom template.
 
 ---
 
@@ -110,19 +112,6 @@ If the JSON is missing, ChurchSigns uses Letter, derives orientation when possib
 
 ---
 
-## Multi-sign vs single-sign
-
-If your build supports template modes:
-
-| Mode | Paste shape | Result |
-|------|-------------|--------|
-| **Multi-sign** (typical) | Header row + one **row per sign** | Many signs (name badges, door cards, …) |
-| **Single-sign** | Two columns: **field name** \| **value** | One sign with many fields (e.g. seating chart) |
-
-Set the mode in the designer UI or sidecar according to your app version so Sign Makers get the correct paste behavior.
-
----
-
 ## Import and export
 
 ### Import (Designer mode)
@@ -141,7 +130,7 @@ Creates a **zip** containing the SVG and its JSON sidecar, suitable for sharing 
 ## How Sign Makers use your template
 
 1. Select the template in the left column.  
-2. Paste from Google Sheets or Excel (header names ≈ your field names).  
+2. Paste from Google Sheets or Excel (with a header row). Pasting from a PDF table often fails because columns are not tab-seperated.  
 3. Adjust column → field mapping if auto-match misses.  
 4. Print or export PDF.
 
@@ -158,12 +147,12 @@ They should not need to edit SVG. Clear field names and a sensible sidecar make 
 - [ ] Sidecar samples look correct in the app thumbnail  
 - [ ] Media size is correct (Letter is the usual default)  
 - [ ] Smoke-test: small paste, then Print or Export to PDF  
+- [ ] Sidecar description is clear (if used)
 
 ---
 
 ## Avoid
 
-- Depending on element `id`s for mail-merge  
 - Publishing templates with empty color attributes instead of `{{BadgeColor}}`  
 - Putting real personal data into sidecar sample fields  
 - Assuming HTML / `foreignObject` layout will match print output (the app rasterizes with Skia)
@@ -188,12 +177,13 @@ They should not need to edit SVG. Clear field names and a sensible sidecar make 
 ```json
 {
   "version": 1,
-  "printOrientation": "Landscape",
+  "description": "Awana leader sign — landscape letter",
+  "printOrientation": "Default",
   "templateMediaSize": "Letter",
   "fields": {
-    "Name": "Jane Smith",
-    "Room": "Fellowship Hall",
-    "BadgeColor": "#1E4D8C"
+    "Name": "John Doe",
+    "Room": "101",
+    "BadgeColor": "#000000"
   }
 }
 ```
