@@ -89,6 +89,7 @@ LeaderSign.json
 ```json
 {
   "version": 1,
+  "description": "Temporary room sign",
   "printOrientation": "Default",
   "templateMediaSize": "Letter",
   "fields": {
@@ -102,6 +103,7 @@ LeaderSign.json
 | Property | Meaning |
 |----------|---------|
 | `version` | Sidecar format version (`1`) |
+| `description` | Descriptive text to assist sign maker |
 | `printOrientation` | `Default` (from SVG aspect), `Portrait`, or `Landscape` |
 | `templateMediaSize` | `Letter` (8.5×11), `Legal` (8.5×14), `Tabloid` (11×17) |
 | `fields` | Sample values for thumbnails and designer preview only |
@@ -194,4 +196,4 @@ They should not need to edit SVG. Clear field names and a sensible sidecar make 
 
 - Sign Maker flow: select template → paste → print / PDF  
 - Project repository: https://github.com/wpkramer/church-signs  
-```
+
