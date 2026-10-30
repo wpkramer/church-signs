@@ -12,7 +12,10 @@
     <File Path="affinity/ChurchSigns.af" />
   </Folder>
   <Folder Name="/Solution Items/design/">
+    <File Path="design/App.puml" />
     <File Path="design/ChurchSigns_Packages.puml" />
+    <File Path="design/ImportSignTemplate.puml" />
+    <File Path="design/PasteSpreadsheetData.puml" />
   </Folder>
   <Folder Name="/Solution Items/docs/">
     <File Path="docs/index.md" />

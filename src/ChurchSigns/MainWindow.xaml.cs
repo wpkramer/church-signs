@@ -1,27 +1,10 @@
-using ChurchSigns.UI.Helpers;
-using ChurchSigns.UI.Models;
-using ChurchSigns.UI.Services;
 using ChurchSigns.UI.ViewModels;
-using Microsoft.UI;
-using Microsoft.UI.Dispatching;
-using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
-using Microsoft.UI.Xaml.Media;
-using Microsoft.UI.Xaml.Media.Imaging;
-using Microsoft.UI.Xaml.Printing;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using Windows.ApplicationModel.DataTransfer;
-using Windows.Graphics.Printing;
-using Windows.Storage;
-using Windows.Storage.Pickers;
 
 
 namespace ChurchSigns
@@ -48,23 +31,9 @@ namespace ChurchSigns
             
 
             this.Activated += MainWindow_Activated;
-    //        ViewModel.Templates.CollectionChanged += Templates_CollectionChanged;
-           // ViewModel.WindowId = Win32Interop.GetWindowFromWindowId(AppWindow.Id);
+
         }
 
-       
-
-        //private void Templates_CollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
-        //{
-        //    TemplateSelector.RefreshGrouping();
-        //}
-
-        //private void PairsView_SingleSignDataChanged(IReadOnlyDictionary<string, string> data)
-        //{
-        //    // test removing this ViewModel.ReplaceSignsFromFieldData(data);
-        //    //SignPrintSelector.ShowSigns();
-        //    //SignPrintSelector.SelectAllSigns();
-        //}
 
         private async void MappingView_MappedDataChangedAsync(IReadOnlyList<Dictionary<string, string>> data)
         {

@@ -1,0 +1,26 @@
+@startuml ChurchSigns_App
+title ChurchSigns — App structure (logical)
+hide members
+
+class App
+class MainWindow
+class MainViewModel
+class TemplateUserControl
+class SignPrintUserControl
+class TemplateMappingControl
+class FieldPairsControl
+class SvgSignControl
+class "Themes.Generic" as Themes
+
+App --> MainWindow
+MainWindow --> MainViewModel
+MainWindow --> TemplateUserControl
+MainWindow --> SignPrintUserControl
+MainWindow --> TemplateMappingControl
+MainWindow --> FieldPairsControl
+MainWindow --> Themes
+TemplateUserControl --> MainViewModel
+SignPrintUserControl --> MainViewModel
+TemplateMappingControl --> MainViewModel
+SignPrintUserControl --> SvgSignControl
+@enduml

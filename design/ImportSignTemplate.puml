@@ -1,0 +1,17 @@
+@startuml ChurchSigns_ImportSignTemplate
+title Import Sign Template
+autonumber
+
+actor User as Boundary
+participant "TemplateUserControl" as TUC
+participant "MainViewModel" as VM
+participant "FileOpenPicker" as Picker
+participant "TemplateFileService" as Files
+
+Boundary -> TUC : AddTemplateButton_Click
+TUC -> VM : ImportSignTemplatesAsync
+VM -> Picker : PickSingleFileAsync
+VM -> VM : ImportTemplateFile
+VM -> Files : Read(path)
+VM -> Files : Save(item)
+@enduml

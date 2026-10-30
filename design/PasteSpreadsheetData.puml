@@ -1,0 +1,32 @@
+@startuml ChurchSigns_PasteSpreadsheetData
+title Paste Spreadsheet Data
+autonumber
+
+participant Keyboard
+participant MainWindow
+participant MainViewModel
+participant WindowsClipboardService
+participant Clipboard
+participant PastedRecordData
+participant TemplateMappingControl
+participant SignTemplateDataMap
+participant ChurchSign
+participant SignPrintUserControl
+
+Keyboard -> MainWindow : KeyDown
+MainWindow -> MainViewModel : PasteAsync
+MainViewModel -> WindowsClipboardService : GetTextAsync()
+WindowsClipboardService -> Clipboard : GetContent
+MainViewModel -> MainViewModel : ApplyPaste
+MainViewModel -> PastedRecordData : PastedRecordData(string)
+MainViewModel -> MainWindow : LastTablePasteChanged
+MainWindow -> TemplateMappingControl : Set PastedData
+TemplateMappingControl -> TemplateMappingControl : Rebuild
+TemplateMappingControl -> SignTemplateDataMap : CreateMappedRecords()
+SignTemplateDataMap -> SignTemplateDataMap : PerformFieldMatching
+TemplateMappingControl -> TemplateMappingControl : GenerateSigns
+SignTemplateDataMap -> MainWindow : MappedDataChanged
+MainWindow -> MainViewModel : ReplaceSignsFromMappedDataAsync
+MainViewModel -> ChurchSign : ChurchSign()
+MainViewModel -> SignPrintUserControl : SelectAllSigns()
+@enduml
