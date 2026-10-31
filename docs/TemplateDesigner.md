@@ -95,7 +95,7 @@ LeaderSign.json
   "fields": {
     "Name": "John Doe",
     "Room": "101",
-    "BadgeColor": "#000000"
+    "Border_Color": "#000000"
   }
 }
 ```
@@ -163,29 +163,30 @@ They should not need to edit SVG. Clear field names and a sensible sidecar make 
 
 ## Minimal example
 
-**LeaderSign.svg**
+**RoomSign.svg**
 
 ```xml
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 850">
-  <rect width="1100" height="850" fill="#f5f5f5"/>
-  <rect x="40" y="40" width="1020" height="120" fill="{{BadgeColor}}"/>
-  <text x="550" y="120" text-anchor="middle" font-size="48" fill="#ffffff">{{Name}}</text>
-  <text x="550" y="400" text-anchor="middle" font-size="32" fill="#333333">{{Room}}</text>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg viewBox="0 0 3300 2550" version="1.1" xmlns="http://www.w3.org/2000/svg">
+  <rect x="284" y="268" width="2800" height="2000" stroke="{{Border_Color}}" fill="white" stroke-width="100px"/>
+  <text x="1800px" y="660px" font-size="280" fill="black">{{Room}}</text>
+  <text x="486px" y="1600" font-size="280" fill="black">{{Name}}</text>
 </svg>
 ```
 
-**LeaderSign.json**
+**RoomSign.json**
 
 ```json
 {
   "version": 1,
-  "description": "Awana leader sign — landscape letter",
+  "description": "Room example. Paste Name, Room, and Border_Color columns.",
   "printOrientation": "Default",
   "templateMediaSize": "Letter",
   "fields": {
     "Name": "John Doe",
     "Room": "101",
-    "BadgeColor": "#000000"
+    "Border_Color": "green"
   }
 }
 ```
