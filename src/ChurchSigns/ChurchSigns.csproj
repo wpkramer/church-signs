@@ -75,6 +75,11 @@
     <Folder Include="Dialogs\" />
   </ItemGroup>
   <ItemGroup>
+    <Content Update="Assets\ChurchSigns.ico">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
     <Page Update="UserControls\SignPrintUserControl.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>

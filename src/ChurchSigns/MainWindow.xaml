@@ -38,7 +38,8 @@
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-        <TextBlock x:Name="StatusTextBlock" Grid.Row="2" Grid.ColumnSpan="3"/>
+        
+        <TextBlock x:Name="StatusTextBlock" Grid.Row="2" Grid.ColumnSpan="3" HorizontalAlignment="Right" Text="{x:Bind ApplicationVersion,Mode=OneTime}"/>
 
         <!-- Display application title -->
         <TextBlock Grid.Column="0" Grid.ColumnSpan="3" Grid.Row="0" Text="Church Signs" Margin="36,0,32,32" Style="{ThemeResource TitleTextBlockStyle}" />

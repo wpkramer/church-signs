@@ -1,10 +1,13 @@
 using ChurchSigns.UI.ViewModels;
+using Microsoft.UI;
+using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Input;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Windows.ApplicationModel.DataTransfer;
+using WinRT.Interop;
 
 
 namespace ChurchSigns
@@ -17,9 +20,14 @@ namespace ChurchSigns
 
         public MainViewModel ViewModel { get; } = new MainViewModel();
 
+        public string ApplicationVersion => $"v{Windows.ApplicationModel.Package.Current.Id.Version.Major}.{Windows.ApplicationModel.Package.Current.Id.Version.Minor}.{Windows.ApplicationModel.Package.Current.Id.Version.Build}";
+
         public MainWindow()
         {
             InitializeComponent();
+
+            // Set the window icon
+            this.AppWindow.SetIcon("Assets\\ChurchSigns.ico");
 
 
             MappingView.MultiSignDataChanged += MappingView_MappedDataChangedAsync;
