@@ -1,7 +1,4 @@
 ﻿using ChurchSigns.UI.Models;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace ChurchSigns.Test.ModelTests
 {
@@ -30,7 +27,7 @@ namespace ChurchSigns.Test.ModelTests
         {
             var tsi = new TemplateStorageItem();
             tsi.Content = twoFields;
-            Assert.Equal(2,tsi.FieldNames.Count);
+            Assert.Equal(2, tsi.FieldNames.Count);
             Assert.Contains("Name", tsi.FieldNames);
             Assert.Contains("Room", tsi.FieldNames);
         }
@@ -88,7 +85,7 @@ namespace ChurchSigns.Test.ModelTests
                 Content = """<svg xmlns="http://www.w3.org/2000/svg"><text>{{ Last Name }}</text></svg>"""
             };
             Assert.Single(tsi.FieldNames);
-            Assert.Equal(["Last Name"], tsi.FieldNames); 
+            Assert.Equal(["Last Name"], tsi.FieldNames);
         }
 
         [Fact]

@@ -60,8 +60,8 @@ namespace ChurchSigns.UI.Models
                     _isValid = false;
                 }
 
-       
-                if(templateStorageItem.SideCar.TemplateOrientation is TemplateOrientation.Default)
+
+                if (templateStorageItem.SideCar.TemplateOrientation is TemplateOrientation.Default)
                 {
                     if (root != null && _isValid && TryGetAspectRatio(root, out float aspect) && aspect > LandscapeAspectThreshold)
                     {
@@ -210,7 +210,7 @@ namespace ChurchSigns.UI.Models
             }
         }
 
-        public string Description { get { return _templateStorageItem.SideCar.Description;  } }
+        public string Description { get { return _templateStorageItem.SideCar.Description; } }
 
         //public ChurchSign CreatePlaceholderSign()
         //{

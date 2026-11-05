@@ -8,8 +8,8 @@ namespace ChurchSigns.Test.HelperTests
         [Fact]
         public void Constructor_EmptyString_ZeroRows()
         {
-           var pr = new PastedRecordData(string.Empty);
-            Assert.Empty(pr.Records) ;
+            var pr = new PastedRecordData(string.Empty);
+            Assert.Empty(pr.Records);
         }
 
         [Fact]

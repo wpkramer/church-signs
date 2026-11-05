@@ -1,13 +1,10 @@
 using ChurchSigns.UI.ViewModels;
-using Microsoft.UI;
-using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Input;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Windows.ApplicationModel.DataTransfer;
-using WinRT.Interop;
 
 
 namespace ChurchSigns
@@ -31,12 +28,12 @@ namespace ChurchSigns
 
 
             MappingView.MultiSignDataChanged += MappingView_MappedDataChangedAsync;
-       //     PairsView.SingleSignDataChanged += PairsView_SingleSignDataChanged;
+            //     PairsView.SingleSignDataChanged += PairsView_SingleSignDataChanged;
 
 
             Clipboard.ContentChanged += Clipboard_ContentChanged;
             HasPasteData = Clipboard.GetContent().Contains(StandardDataFormats.Text);
-            
+
 
             this.Activated += MainWindow_Activated;
 
@@ -79,7 +76,7 @@ namespace ChurchSigns
             await ViewModel.InitializeAsync(hwnd);
             TemplateSelector.ViewModel = ViewModel;
             SignPrintSelector.ViewModel = ViewModel;
-            
+
         }
 
 

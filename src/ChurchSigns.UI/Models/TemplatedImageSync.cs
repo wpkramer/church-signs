@@ -78,7 +78,7 @@ namespace ChurchSigns.UI.Models
             if (_width != other._width) return false;
             if (_height != other._height) return false;
             if (_template != other._template) return false;
-  
+
             return DataEquals(other._data);
         }
     }

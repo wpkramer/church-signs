@@ -1,5 +1,4 @@
 ﻿using ChurchSigns.UI.Models;
-using Xunit;
 
 namespace ChurchSigns.Test.ModelTests
 {

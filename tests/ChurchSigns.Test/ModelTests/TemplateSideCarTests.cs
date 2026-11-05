@@ -144,7 +144,7 @@ namespace ChurchSigns.Test.ModelTests
         [Fact]
         public void CreateFromJsonTextTest()
         {
-                        const string json = @"{
+            const string json = @"{
   ""version"": 1,
   ""description"": ""Sign for the Sparx bucket. Just paste the leader names. The color line is optional and defaults to green. This sign is also used on Mom\u2019s or Dad\u2019s night; it marks the row of seats for the Sparkies in the sanctuary."",
   ""printOrientation"": ""Landscape"",

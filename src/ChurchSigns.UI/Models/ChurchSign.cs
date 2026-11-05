@@ -58,10 +58,10 @@ public class ChurchSign
     {
         get
         {
-            foreach(var kvp in Fields)
+            foreach (var kvp in Fields)
             {
                 // Data was actually mapped from a paste operation
-                if(!string.IsNullOrEmpty(kvp.Value) && kvp.Value != _template.GetPreviewValue(kvp.Key))
+                if (!string.IsNullOrEmpty(kvp.Value) && kvp.Value != _template.GetPreviewValue(kvp.Key))
                 {
                     return false;
                 }

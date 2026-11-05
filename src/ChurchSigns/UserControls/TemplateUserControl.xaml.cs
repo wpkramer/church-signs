@@ -42,7 +42,7 @@ namespace ChurchSigns.UserControls
 
         private void ViewModel_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
-            if(e.PropertyName == nameof(MainViewModel.GroupedTemplates))
+            if (e.PropertyName == nameof(MainViewModel.GroupedTemplates))
             {
                 RefreshGrouping();
             }
@@ -182,9 +182,9 @@ namespace ChurchSigns.UserControls
         {
             if (ViewModel?.GroupedTemplates is null)
                 return;
-            
+
             TemplatesCVS.Source = ViewModel.GroupedTemplates;
         }
     }
- 
+
 }

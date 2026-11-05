@@ -27,7 +27,7 @@ namespace ChurchSigns.UI.Services
             _userTemplatesRoot = Path.Combine(Windows.Storage.ApplicationData.Current.LocalFolder.Path, _templateRootName);
 
             // establish application folder structure
-            if(!Directory.Exists(_providedTemplatesRoot))
+            if (!Directory.Exists(_providedTemplatesRoot))
             {
                 throw new ApplicationException("Installation problem, provided templates are missing!");
             }
@@ -59,7 +59,7 @@ namespace ChurchSigns.UI.Services
         /// </summary>
         public void Save(TemplateStorageItem item)
         {
-            item.IsProvided = false; 
+            item.IsProvided = false;
             string filePath = Path.Combine(_userTemplatesRoot, item.SignCategory.ToString(), item.Filename);
             _ = Directory.CreateDirectory(Path.GetDirectoryName(filePath)!);
             File.WriteAllText(filePath, item.Content ?? string.Empty);
@@ -89,7 +89,7 @@ namespace ChurchSigns.UI.Services
         /// </summary>
         public static void Export(TemplateStorageItem storageItem, string filePath)
         {
-            using(FileStream fstream = File.Create(filePath))
+            using (FileStream fstream = File.Create(filePath))
             using (var templateArchive = new ZipArchive(fstream, ZipArchiveMode.Create, false))
             {
                 AddZipEntry(storageItem.Content, templateArchive, storageItem.Filename);
@@ -106,18 +106,18 @@ namespace ChurchSigns.UI.Services
         public static IReadOnlyList<TemplateStorageItem> Read(string filePath)
         {
             ArgumentNullException.ThrowIfNullOrEmpty(filePath);
- 
+
             using FileStream fstreamToImport = File.OpenRead(filePath);
 
             string extension = Path.GetExtension(filePath);
-            if(extension.Equals(_svgExtension, StringComparison.OrdinalIgnoreCase))
+            if (extension.Equals(_svgExtension, StringComparison.OrdinalIgnoreCase))
             {
                 string filename = Path.GetFileName(filePath);
                 TemplateStorageItem? oneTemplate = ReadSvg(fstreamToImport, filename);
                 return oneTemplate is null ? Array.Empty<TemplateStorageItem>() : new[] { oneTemplate };
             }
 
-            if(extension.Equals(_zipExtension, StringComparison.OrdinalIgnoreCase))
+            if (extension.Equals(_zipExtension, StringComparison.OrdinalIgnoreCase))
             {
                 return ReadZip(fstreamToImport);
             }
@@ -184,11 +184,11 @@ namespace ChurchSigns.UI.Services
                 }
 
                 using (var signStream = signEntry.Open())
-                using(TextReader reader = new StreamReader(signStream))
+                using (TextReader reader = new StreamReader(signStream))
                 {
                     content = reader.ReadToEnd();
                 }
-  
+
                 results.Add(new TemplateStorageItem
                 {
                     IsProvided = false,
@@ -234,7 +234,7 @@ namespace ChurchSigns.UI.Services
             }
         }
 
-        private (string svgContent,TemplateSidecar sideCar) ReadContentAndSideCar(string svgFilePath)
+        private (string svgContent, TemplateSidecar sideCar) ReadContentAndSideCar(string svgFilePath)
         {
             string content = string.Empty;
             TemplateSidecar sideCar = new TemplateSidecar();
@@ -250,7 +250,7 @@ namespace ChurchSigns.UI.Services
                     sideCar = TemplateSidecar.CreateFromJsonText(json);
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Debug.WriteLine($"{ex.GetType().Name} reading sidecar");
                 // ignore sidecar error and just leave it blank
@@ -265,11 +265,11 @@ namespace ChurchSigns.UI.Services
         {
             var results = new List<TemplateStorageItem>();
 
-                foreach(SignCategory category in Enum.GetValues<SignCategory>())
+            foreach (SignCategory category in Enum.GetValues<SignCategory>())
+            {
+                string categoryPath = Path.Combine(templatesRoot, category.ToString());
+                if (Directory.Exists(categoryPath))
                 {
-                    string categoryPath = Path.Combine(templatesRoot, category.ToString());
-                    if(Directory.Exists(categoryPath))
-                    {
                     // Sign templates are svg files and may also have a sidecar json file
                     foreach (var filepath in Directory.EnumerateFiles(categoryPath, "*" + _svgExtension))
                     {
@@ -285,8 +285,8 @@ namespace ChurchSigns.UI.Services
 
                         results.Add(storageItem);
 
-                    }                        
-                    
+                    }
+
                 }
             }
 

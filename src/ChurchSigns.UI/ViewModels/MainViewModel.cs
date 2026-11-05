@@ -401,7 +401,7 @@ namespace ChurchSigns.UI.ViewModels
                 {
                     bool removeConfirmed = await ConfirmActionAsync($"Please confirm you want to remove {SelectedTemplate.Title}?");
                     if (removeConfirmed)
-                    {                        
+                    {
                         TemplateFileService.Instance.Delete(SelectedTemplate.ToStorageItem());
                         // update the list
                         Templates.Remove(SelectedTemplate);
@@ -577,7 +577,7 @@ namespace ChurchSigns.UI.ViewModels
 
 
                 Debug.WriteLine($"added {_printPreviewPages.Count} image pages");
-                
+
 
                 await PrintManagerInterop.ShowPrintUIForWindowAsync(_hwnd);
 
@@ -592,8 +592,8 @@ namespace ChurchSigns.UI.ViewModels
 
         }
 
-            
-        
+
+
 
 
 

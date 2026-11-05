@@ -8,7 +8,7 @@ using System.Diagnostics;
 
 
 namespace ChurchSigns.UI.Controls
-{   
+{
     /// <summary>
     /// Responsible for presenting a grid of a sign template
     /// mapped to pasted data and notifying clients of our
@@ -16,15 +16,15 @@ namespace ChurchSigns.UI.Controls
     /// </summary>
     public sealed partial class TemplateMappingControl : UserControl
     {
-        private readonly List< Dictionary<string, string> > _records;
+        private readonly List<Dictionary<string, string>> _records;
 
         public TemplateMappingControl()
         {
-            _records = new List< Dictionary<string, string> >();
+            _records = new List<Dictionary<string, string>>();
             InitializeComponent();
         }
 
-        public delegate void MultiSignDataHandler( IReadOnlyList< Dictionary<string, string> > data );
+        public delegate void MultiSignDataHandler(IReadOnlyList<Dictionary<string, string>> data);
         public event MultiSignDataHandler? MultiSignDataChanged;
 
         public static readonly DependencyProperty SelectedTemplateProperty =
@@ -59,7 +59,7 @@ namespace ChurchSigns.UI.Controls
             }
         }
 
- 
+
 
         public PastedRecordData PastedData
         {
@@ -114,7 +114,7 @@ namespace ChurchSigns.UI.Controls
                 return;
             }
 
-            GenerateSigns();            
+            GenerateSigns();
 
         }
 

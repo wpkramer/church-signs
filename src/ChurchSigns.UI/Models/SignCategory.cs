@@ -5,7 +5,7 @@ namespace ChurchSigns.UI.Models
     /// Pre-determined categories for signs
     /// </summary>
     public enum SignCategory
-    { 
+    {
         Awana,
         Children,
         Church,

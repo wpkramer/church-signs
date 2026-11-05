@@ -9,7 +9,7 @@ namespace ChurchSigns.UI.Helpers
         public IReadOnlyList<string> ColumnHeaderNames { get; }
         public IReadOnlyList<IReadOnlyList<string>> Records { get; }
 
-  //      public static implicit operator string(PastedRecordData data) => data.ToString() ?? string.Empty;
+        //      public static implicit operator string(PastedRecordData data) => data.ToString() ?? string.Empty;
         public static explicit operator PastedRecordData(string pastedData) => new PastedRecordData(pastedData);
 
         private readonly string _originalPaste;
@@ -20,8 +20,8 @@ namespace ChurchSigns.UI.Helpers
 
         public PastedRecordData(string pastedData)
         {
-             //   ArgumentException.ThrowIfNullOrWhiteSpace(pastedData);
-            if(string.IsNullOrWhiteSpace(pastedData))
+            //   ArgumentException.ThrowIfNullOrWhiteSpace(pastedData);
+            if (string.IsNullOrWhiteSpace(pastedData))
             {
                 _originalPaste = string.Empty;
                 ColumnHeaderNames = new List<string>();
@@ -51,7 +51,7 @@ namespace ChurchSigns.UI.Helpers
 
                 if (cells.Length != headers.Length)
                 {
-                    
+
                     throw new ArgumentException(
                         $"Row {i} has {cells.Length} column(s), expected {headers.Length}.",
                         nameof(pastedData));

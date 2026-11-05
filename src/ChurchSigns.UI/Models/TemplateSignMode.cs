@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace ChurchSigns.UI.Models
+﻿namespace ChurchSigns.UI.Models
 {
     /// <summary>
     /// Type of data merge for the sign template. A seating chart is

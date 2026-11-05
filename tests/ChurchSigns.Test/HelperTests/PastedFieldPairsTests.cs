@@ -1,7 +1,4 @@
 ﻿using ChurchSigns.UI.Helpers;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace ChurchSigns.Test.HelperTests
 {
@@ -20,7 +17,7 @@ namespace ChurchSigns.Test.HelperTests
         public void TwoEntriesTest()
         {
             var pairs = new PastedFieldPairs("Name\tAlice\nRoom\t101");
-            Assert.Equal(2,pairs.Fields.Count);
+            Assert.Equal(2, pairs.Fields.Count);
             Assert.Equal("Alice", pairs.Fields["Name"]);
             Assert.Equal("101", pairs.Fields["Room"]);
         }

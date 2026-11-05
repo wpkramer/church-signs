@@ -59,7 +59,7 @@ namespace ChurchSigns.UI.Models
 
         [JsonPropertyName("printMediaSize")]
         public TemplateMediaSize TemplateMediaSize { get; set; } = ChurchSigns.UI.Models.TemplateMediaSize.Letter;
-        
+
         /// <summary>Sample field values for designer preview.</summary>
         [JsonPropertyName("fields")]
         public Dictionary<string, string> Fields { get; set; } =
